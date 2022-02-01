@@ -9,6 +9,6 @@ public class FirstTimeSetup extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_time_setup2);
+        setContentView(R.layout.activity_first_time_setup);
     }
 }
