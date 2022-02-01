@@ -23,4 +23,7 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.example.myapplication", appContext.getPackageName());
     }
+    //Add test to verify button shouldn't work during first time setup
+    //Add test to make sure first time setup only runs once if complete
+
 }
