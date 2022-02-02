@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         //here we add a check to see if first titime setup is done.
         //if(setup != true) {
         //Calls alert popup!
-        firstTimeSetup();
+//        firstTimeSetup();
        // }
     }
     public void firstTimeSetup(){
