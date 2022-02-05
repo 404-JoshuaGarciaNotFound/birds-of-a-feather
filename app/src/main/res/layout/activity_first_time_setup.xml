@@ -5,33 +5,54 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FirstTimeSetup">
+    tools:context=".MainActivity">
+
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="165dp"
-        android:layout_marginTop="135dp"
-        android:layout_marginEnd="165dp"
-        android:layout_marginBottom="170dp"
-        android:text="Change me"
+        android:id="@+id/FNText"
+        android:layout_width="209dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="61dp"
+        android:layout_marginTop="93dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="184dp"
+        android:text="Please type your prefered name!"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/SubmitFirstName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="146dp"
-        android:layout_marginTop="181dp"
-        android:layout_marginEnd="148dp"
-        android:layout_marginBottom="95dp"
-        android:text="Button"
+        android:layout_marginStart="118dp"
+        android:layout_marginTop="171dp"
+        android:layout_marginEnd="118dp"
+        android:layout_marginBottom="80dp"
+
+        android:text="Submit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/personName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="134dp"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
