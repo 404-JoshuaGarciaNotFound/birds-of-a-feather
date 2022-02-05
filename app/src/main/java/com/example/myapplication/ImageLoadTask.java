@@ -44,6 +44,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
         super.onPostExecute(result);
         imageView.setImageBitmap(result);
     }
+
     public static Bitmap getBitmapFromURL(String src) {
         try {
             Log.e("src",src);

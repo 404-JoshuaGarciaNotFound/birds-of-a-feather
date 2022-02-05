@@ -47,12 +47,13 @@ public class MainActivity extends AppCompatActivity {
         DemoMock.setVisibility(View.INVISIBLE);
         Button mockEnter = findViewById(R.id.SubmitMockUser);
         mockEnter.setVisibility(View.INVISIBLE);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+
+        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        //StrictMode.setThreadPolicy(policy);
 
         //Load images example Use this for opening image.
         //String URLY = "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0";
-        //ImageView imgView =(ImageView)findViewById(R.id.imageView2);
+        //ImageView imgView =(ImageView)findViewById(R.id.imageView);
         //imgView.setImageBitmap(getBitmapFromURL(URLY));
 
     }
@@ -73,9 +74,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v8) {
                 final EditText name = (EditText) FTSetup.findViewById(R.id.personName);
                 String userName = name.getText().toString();
-                Log.d("Name that was typed in ", userName);
-                FTSetup.dismiss();
+                //Require users to type name no blanks name should be saved to database
+                if(!userName.equals("")){
+                    FTSetup.dismiss();
+                    //Save name to database
 
+                }
+                Log.d("Name that was typed in ", userName);
             }
         });
 
@@ -132,8 +137,11 @@ public class MainActivity extends AppCompatActivity {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String MockUserInfo = newUser.getText().toString();
                     Log.d("Mock User info: ", MockUserInfo);
-                    //Store the information to the database here.
+                    //Case to check for empty field. Should not run if text box is empty
+                    if(!MockUserInfo.equals("")) {
+                        //Store the information to the database here.
 
+                    }
                     DemoMock.setText("");
                 }
             });
