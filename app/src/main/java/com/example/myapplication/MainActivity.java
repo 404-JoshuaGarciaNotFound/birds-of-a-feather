@@ -1,18 +1,36 @@
 package com.example.myapplication;
 
+import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import android.widget.ImageView;
+import com.example.myapplication.student.studentInfo;
+import com.example.myapplication.student.student_placeholder;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
+
 public class MainActivity extends AppCompatActivity {
+    //This variable should be saved to database.
     private boolean setup = false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +47,15 @@ public class MainActivity extends AppCompatActivity {
         DemoMock.setVisibility(View.INVISIBLE);
         Button mockEnter = findViewById(R.id.SubmitMockUser);
         mockEnter.setVisibility(View.INVISIBLE);
-    }
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
+        //Load images example Use this for opening image.
+        //String URLY = "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0";
+        //ImageView imgView =(ImageView)findViewById(R.id.imageView2);
+        //imgView.setImageBitmap(getBitmapFromURL(URLY));
+
+    }
 
     public void firstTimeSetup(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -55,8 +80,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Add method to save name to csv file on db ie. name,,,
+        //Next add step to input URL
+        //Save URL to database
+
         //Next step add classes
         //Call add classes interface
+        //Once First time setup is done set setup boolean to true.
 
     }
 
@@ -64,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void StartStopButton(View view){
         //Add check if setup complete
+
         Button startStop = findViewById(R.id.StartStopBttn);
 
         String current = startStop.getText().toString();
@@ -101,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v2) {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String MockUserInfo = newUser.getText().toString();
+                    Log.d("Mock User info: ", MockUserInfo);
                     //Store the information to the database here.
 
                     DemoMock.setText("");
@@ -108,8 +139,6 @@ public class MainActivity extends AppCompatActivity {
             });
             //Blue color code
             mockSwitch.setBackgroundColor(0xff0099cc);
-
-
         }
         if(current.equals("LIST")){
             //LIST STUDENT MODE
@@ -124,8 +153,10 @@ public class MainActivity extends AppCompatActivity {
             studentList.setVisibility(View.VISIBLE);
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
+
         }
     }
+
 
 
 }
