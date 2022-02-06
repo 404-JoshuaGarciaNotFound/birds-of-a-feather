@@ -19,12 +19,6 @@ import com.example.myapplication.student.database.AppDatabase;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 
@@ -100,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
                     FTSetup.dismiss();
                     //Save name to userTextFile in assets. Not sure how to get the file stream going
                     SetURL();
+                } else {
+                    name.setError("Name cannot be empty!");
                 }
                 Log.d("Name that was typed in ", userName);
 
@@ -146,8 +142,12 @@ public class MainActivity extends AppCompatActivity {
     public void firstTimeAddClasses() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View addClassesView = inflater.inflate(R.layout.activity_add_classes, null);
+        View addClassesView = inflater.inflate(R.layout.activity_first_time_add_classes, null);
         builder.setView(addClassesView);
+        builder.setCancelable(false);
+        AlertDialog addClasses = builder.create();
+        addClasses.setTitle("Add Classes");
+        addClasses.show();
 
         // Spinner for selecting year
         Spinner spinner1 = (Spinner) addClassesView.findViewById(R.id.selectYear);
@@ -164,34 +164,57 @@ public class MainActivity extends AppCompatActivity {
         spinner2.setAdapter(adapter2);
 
         // Edit text field for subject
-        EditText editSubject = (EditText)addClassesView.findViewById(R.id.editSubject);
+        EditText editSubject = (EditText) addClassesView.findViewById(R.id.editSubject);
 
         // Edit text field for course number
-        EditText editCourseNumber = (EditText)addClassesView.findViewById(R.id.editCourseNumber);
+        EditText editCourseNumber = (EditText) addClassesView.findViewById(R.id.editCourseNumber);
 
-        builder.setCancelable(false)
-                .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String subject = editSubject.getText().toString();
-                        String courseNumber = editCourseNumber.getText().toString();
+        // Enter button
+        Button enterCourseInfo = (Button) addClassesView.findViewById(R.id.enterCourseInfo);
+        enterCourseInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int yearInd = spinner1.getSelectedItemPosition();
+                int quarterInd = spinner2.getSelectedItemPosition();
+                String subject = editSubject.getText().toString().trim();
+                String courseNumber = editCourseNumber.getText().toString().trim();
 
-                        // TODO: Save info to database
+                // To get string of year and quarter use the following two lines
+                // String year = getResources().getStringArray(R.array.year)[yearInd];
+                // String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
 
-                        dialogInterface.cancel();
-                        repeatAddClasses();
-                    }
-                });
-        AlertDialog addClasses = builder.create();
-        addClasses.setTitle("Add Classes");
-        addClasses.show();
+                // Course number can also be converted to int when saving to db
+
+                boolean exit = true;
+
+                if (subject.equalsIgnoreCase("")) {
+                    editSubject.setError("You didn't input a subject!");
+                    exit = false;
+                }
+
+                if (courseNumber.equalsIgnoreCase("")) {
+                    editCourseNumber.setError("You didn't input a course number!");
+                    exit = false;
+                }
+
+                if (exit) {
+                    // TODO: save info to database
+                    addClasses.cancel();
+                    repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
+                }
+            }
+        });
     }
 
-    public void repeatAddClasses() {
+    public void repeatAddClasses(int previousYearInd, int previousQuarterInd, String previousSubject, String previousCourseNumber) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View addClassesView = inflater.inflate(R.layout.activity_add_classes, null);
+        View addClassesView = inflater.inflate(R.layout.activity_repeat_add_classes, null);
         builder.setView(addClassesView);
+        builder.setCancelable(false);
+        AlertDialog addClasses = builder.create();
+        addClasses.setTitle("Add Classes");
+        addClasses.show();
 
         // Spinner for selecting year
         Spinner spinner1 = (Spinner) addClassesView.findViewById(R.id.selectYear);
@@ -199,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
                 R.array.year, android.R.layout.simple_spinner_item);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(adapter1);
+        spinner1.setSelection(previousYearInd);
 
         // Spinner for selecting quarter
         Spinner spinner2 = (Spinner) addClassesView.findViewById(R.id.selectQuarter);
@@ -206,42 +230,72 @@ public class MainActivity extends AppCompatActivity {
                 R.array.quarter, android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner2.setAdapter(adapter2);
+        spinner2.setSelection(previousQuarterInd);
 
         // Edit text field for subject
-        EditText editSubject = (EditText)addClassesView.findViewById(R.id.editSubject);
+        EditText editSubject = (EditText) addClassesView.findViewById(R.id.editSubject);
+        editSubject.setText(previousSubject);
 
         // Edit text field for course number
-        EditText editCourseNumber = (EditText)addClassesView.findViewById(R.id.editCourseNumber);
+        EditText editCourseNumber = (EditText) addClassesView.findViewById(R.id.editCourseNumber);
+        editCourseNumber.setText(previousCourseNumber);
 
-        builder.setCancelable(false)
-                .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String subject = editSubject.getText().toString();
-                        String courseNumber = editCourseNumber.getText().toString();
+        // Enter button
+        Button enterCourseInfo = (Button) addClassesView.findViewById(R.id.enterCourseInfo);
+        enterCourseInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int yearInd = spinner1.getSelectedItemPosition();
+                int quarterInd = spinner2.getSelectedItemPosition();
+                String subject = editSubject.getText().toString().trim();
+                String courseNumber = editCourseNumber.getText().toString().trim();
 
-                        // TODO: Save info to database
+                // To get string of year and quarter use the following two lines
+                // String year = getResources().getStringArray(R.array.year)[yearInd];
+                // String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
 
-                        dialogInterface.cancel();
-                        repeatAddClasses();
-                    }
-                })
-                .setNegativeButton("Done", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String subject = editSubject.getText().toString();
-                        String courseNumber = editCourseNumber.getText().toString();
+                // Course number can also be converted to int when saving to db
 
-                        // TODO: Save info to database
+                boolean exit = true;
 
-                        dialogInterface.cancel();
-                    }
-                });
-        AlertDialog addClasses = builder.create();
-        addClasses.setTitle("Add Classes");
-        addClasses.show();
+                if (subject.equalsIgnoreCase("")) {
+                    editSubject.setError("You didn't input a subject!");
+                    exit = false;
+                }
 
-        //This method should set first time setup to true when it is finished.
+                if (courseNumber.equalsIgnoreCase("")) {
+                    editCourseNumber.setError("You didn't input a course number!");
+                    exit = false;
+                }
+
+                // Make sure the user has changed some fields
+                if (yearInd == previousYearInd
+                        && quarterInd == previousQuarterInd
+                        && subject.equalsIgnoreCase(previousSubject)
+                        && courseNumber.equalsIgnoreCase(previousCourseNumber)
+                ) {
+                    editCourseNumber.setError("Please add a different class!");
+                    exit = false;
+                }
+
+                if (exit) {
+                    // TODO: save info to database
+                    addClasses.cancel();
+                    repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
+                }
+            }
+        });
+
+        // Done button
+        Button doneAddingClasses = (Button) addClassesView.findViewById(R.id.doneAddingClasses);
+        doneAddingClasses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Set first time setup to true when adding classes is finished
+                setup = true;
+                addClasses.cancel();
+            }
+        });
     }
 
     public void StartStopButton(View view) {

@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:gravity="center">
 
 
     <TextView
@@ -53,4 +54,10 @@
         android:ems="10"
         android:inputType="number"
         android:hint="Course Number (e.g. 110)" />
+
+    <Button
+        android:id="@+id/enterCourseInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter" />
 </LinearLayout>
