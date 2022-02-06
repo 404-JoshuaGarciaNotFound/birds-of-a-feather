@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
                     //Save name to database
                     FTSetup2.dismiss();
                     firstTimeAddClasses();
+                } else {
+                    URLy.setError("URL cannot be empty!");
                 }
                 Log.d("URL that was typed in ", headshotURL);
 
