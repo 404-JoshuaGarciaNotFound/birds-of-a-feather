@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
-    android:layout_width="match_parent"
-    android:layout_height="64sp"
+    android:id="@+id/student_row"
+    android:layout_width="378dp"
+    android:layout_height="64dp"
     android:layout_marginLeft="16sp"
     android:layout_marginRight="16sp"
     android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/student_firstname"
-        android:layout_width="222dp"
-        android:layout_height="19dp"
+        android:layout_width="196dp"
+        android:layout_height="23dp"
         android:height="24sp"
         android:lineHeight="16sp"
         android:textSize="12sp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="141dp"
+        tools:layout_editor_absoluteX="144dp"
         tools:layout_editor_absoluteY="16dp"
         tools:text="Name" />
 
@@ -25,6 +24,8 @@
         android:id="@+id/student_headshot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="0dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -32,8 +33,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="#"
-        tools:layout_editor_absoluteX="139dp"
-        tools:layout_editor_absoluteY="37dp" />
+        tools:layout_editor_absoluteX="144dp"
+        tools:layout_editor_absoluteY="40dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

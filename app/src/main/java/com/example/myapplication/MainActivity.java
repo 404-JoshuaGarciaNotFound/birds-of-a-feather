@@ -1,36 +1,27 @@
 package com.example.myapplication;
 
-import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import android.widget.ImageView;
-import com.example.myapplication.student.studentInfo;
-import com.example.myapplication.student.student_placeholder;
+import com.example.myapplication.student.database.AppDatabase;
+import com.example.myapplication.student.database.Student;
+import com.example.myapplication.student.database.StudentDao;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     //This variable should be saved to database.
     private boolean setup = false;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +109,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void switchMocktoList(View view) {
+        AppDatabase db = AppDatabase.singleton(this);
+        RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
+        RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
+        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+
         Button mockSwitch = findViewById(R.id.nearByMockScreen);
         String current = mockSwitch.getText().toString();
         if(current.equals("MOCK")) {
@@ -125,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
             //Sets the recycler view invisible and input text visible for the mock user
             mockSwitch.setText("LIST");
-            RecyclerView studentList = findViewById(R.id.recyclerView2);
+            RecyclerView studentList = findViewById(R.id.list_of_students);
             studentList.setVisibility(View.INVISIBLE);
             EditText DemoMock = findViewById(R.id.DemomockUserInput);
             DemoMock.setVisibility(View.VISIBLE);
@@ -135,14 +131,34 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v2) {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
-                    String MockUserInfo = newUser.getText().toString();
-                    Log.d("Mock User info: ", MockUserInfo);
-                    //Case to check for empty field. Should not run if text box is empty
-                    if(!MockUserInfo.equals("")) {
-                        //Store the information to the database here.
+                    String mockUserInfo = newUser.getText().toString();
+                    Log.d("Mock User info: ", mockUserInfo);
 
+                    // FIXME: missing type checking. try regex
+                    // parse input for create new student instance
+                    // input is in form: {name,,,}\n{url,,,}\n{course1}\n{course2}\n...
+                    String[] parsedUserInfo = mockUserInfo.split("\n");
+                    int idOfNewStudent = 300; // FIXME: need count method to increase id (or perhaps UUID)
+                    String nameOfNewStudent = parsedUserInfo[0]
+                            .substring(0,
+                                    parsedUserInfo[0].length() - 3); // drop ,,,
+                    String headShotURLOfNewStudent = parsedUserInfo[1]
+                            .substring(0,
+                                    parsedUserInfo[1].length() - 3); // drop ,,,
+                    StringBuilder coursesOfNewStudent = new StringBuilder();
+                    for (int i = 2; i < parsedUserInfo.length; i++) {
+                        coursesOfNewStudent.append(parsedUserInfo[i]);
+                        if (i != parsedUserInfo.length - 1) {
+                            coursesOfNewStudent.append(" ");
+                        }
                     }
-                    DemoMock.setText("");
+                    Student toAddStudent = new Student(
+                            idOfNewStudent, nameOfNewStudent, headShotURLOfNewStudent,
+                            coursesOfNewStudent.toString()
+                    );
+
+                    StudentDao studentDao = db.studentDao();
+                    studentDao.insertStudent(toAddStudent);
                 }
             });
             //Blue color code
@@ -157,14 +173,18 @@ public class MainActivity extends AppCompatActivity {
             DemoMock.setVisibility(View.INVISIBLE);
             Button mockEnter = findViewById(R.id.SubmitMockUser);
             mockEnter.setVisibility(View.INVISIBLE);
-            RecyclerView studentList = findViewById(R.id.recyclerView2);
+            RecyclerView studentList = findViewById(R.id.list_of_students);
             studentList.setVisibility(View.VISIBLE);
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
 
+            // get list of students from database, set recycler view according to the list
+            StudentDao studentDao = db.studentDao();
+            List<Student> listOfStudent = studentDao.getAll();
+            RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
+            StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudent);
+            listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
         }
     }
-
-
 
 }
