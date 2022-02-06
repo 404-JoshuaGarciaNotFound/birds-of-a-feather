@@ -205,13 +205,15 @@ public class MainActivity extends AppCompatActivity {
 
                 if (exit) {
                     // TODO: save info to database
-                    String courseCode = subject+courseNumber;
-                    int courseId = dbCourse.courseDao().count() + 1;
-                    String courseYear = String.valueOf(yearInd);
-                    String courseQuarter = String.valueOf(quarterInd);
-                    Course addedCourse = new Course(courseId, courseYear, courseQuarter, courseCode);
-                    CourseDao CourseDao = dbCourse.courseDao();
-                    CourseDao.insertCourse(addedCourse);
+//                    String courseCode = subject + courseNumber;
+//                    CourseDao courseDao = dbCourse.courseDao();
+//                    courseDao.insertCourse(
+//                            new Course(
+//                                    courseDao.count() + 1,
+//                                    String.valueOf(yearInd),
+//                                    String.valueOf(quarterInd),
+//                                    courseCode
+//                            ));
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -293,13 +295,15 @@ public class MainActivity extends AppCompatActivity {
 
                 if (exit) {
                     // TODO: save info to database
-                    String courseCode = subject+courseNumber;
-                    int courseId = dbCourse.courseDao().count() + 1;
-                    String courseYear = String.valueOf(yearInd);
-                    String courseQuarter = String.valueOf(quarterInd);
-                    Course addedCourse = new Course(courseId, courseYear, courseQuarter, courseCode);
-                    CourseDao CourseDao = dbCourse.courseDao();
-                    CourseDao.insertCourse(addedCourse);
+//                    String courseCode = subject + courseNumber;
+//                    CourseDao courseDao = dbCourse.courseDao();
+//                    courseDao.insertCourse(
+//                            new Course(
+//                                    courseDao.count() + 1,
+//                                    String.valueOf(yearInd),
+//                                    String.valueOf(quarterInd),
+//                                    courseCode
+//                            ));
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
