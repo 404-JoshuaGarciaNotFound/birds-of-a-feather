@@ -13,6 +13,12 @@ public interface StudentDao {
     @Query("SELECT * FROM students")
     public List<Student> getAll();
 
+    @Query("SELECT * FROM students WHERE id=:id")
+    public Student getStudentByID(int id);
+
     @Insert
     public void insertStudent(Student student);
+
+    @Query("SELECT COUNT(*) FROM students")
+    int count();
 }
