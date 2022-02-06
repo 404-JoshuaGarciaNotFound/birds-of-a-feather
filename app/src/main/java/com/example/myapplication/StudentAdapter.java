@@ -73,17 +73,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             this.personName.setText(student.getHeadShotURL());
             this.personIcon.setImageBitmap(getBitmapFromURL(student.getName()));
 
-            //String studentClasses = student.getCourses();
-            //String[] studentClassesToCompare = studentClasses.split(" ");
-
 
         }
     }
 }
-/*
-Bill,,,
-https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,
-2021,FA,CSE,210
-2022,WI,CSE,110
-2022,SP,CSE,110
- */
