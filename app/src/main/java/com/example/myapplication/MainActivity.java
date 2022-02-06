@@ -18,24 +18,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //here we add a check to see if first titime setup is done.
+        //here we add a check to see if first time setup is done.
         //if(setup != true) {
         //Calls alert popup!
-//        firstTimeSetup();
+        firstTimeSetup();
        // }
     }
-    public void firstTimeSetup(){
+    public void firstTimeSetup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         // layout activity_first_time_setup.xml
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup, null));
         AlertDialog FTSetup = builder.create();
         FTSetup.setTitle("First Time Setup");
-        //Note this alert can be dismissed if someone clicks out. Have to find a way to prevent that
-        FTSetup.show();
 
+        // TODO
+        //Note this alert can be dismissed if someone clicks out. Have to find a way to prevent it
+        FTSetup.show();
     }
-    public void StartStopButton(View view){
+
+    public void StartStopButton(View view) {
         //Add check if setup complete
         Button startStop = findViewById(R.id.StartStopBttn);
         String current = startStop.getText().toString();
@@ -46,12 +48,10 @@ public class MainActivity extends AppCompatActivity {
             startStop.setBackgroundColor(0xFFFF0000);
 
         }
-        if(current.equals("STOP")){
+        if(current.equals("STOP")) {
             startStop.setText("START");
             //Green color code
             startStop.setBackgroundColor(0Xff99cc00);
         }
     }
-
-
 }
