@@ -62,6 +62,7 @@ public class ExampleUnitTest {
                         "110"
                 ));
 
+        // TypeCast crucial
         Course actual = (Course) courseDao.getAllCourses().toArray()[0];
 
         ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
