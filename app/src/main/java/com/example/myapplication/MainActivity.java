@@ -17,12 +17,12 @@ import android.widget.Spinner;
 
 import com.example.myapplication.student.database.AppDatabaseCourses;
 import com.example.myapplication.student.database.AppDatabaseStudent;
-import com.example.myapplication.student.database.Course;
-import com.example.myapplication.student.database.CourseDao;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -38,18 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //This method doesnt work yet.
-        try {
-            File dbFile = new File("src/main/assets/userTextFile.txt");
-            if (dbFile.exists()) {
-                dbFile.delete();
-            }
-            dbFile.createNewFile();
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-
 
         //here we add a check to see if first time setup is done.
         if(setup != true) {
@@ -80,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         // layout activity_first_time_setup.xml
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup, null));
-        builder.setCancelable(false);
+        //builder.setCancelable(false);
         AlertDialog FTSetup = builder.create();
         FTSetup.setTitle("First Time Setup");
         //Note this alert can be dismissed if someone clicks out. Have to find a way to prevent that
@@ -94,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 String userName = name.getText().toString();
                 //Require users to type name no blanks name should be saved to database
                 if(!userName.equals("")){
-
-
 
                     FTSetup.dismiss();
                     //Save name to userTextFile in assets. Not sure how to get the file stream going
@@ -118,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup_geturl, null));
-        builder.setCancelable(false);
+        //builder.setCancelable(false);
         AlertDialog FTSetup2 = builder.create();
         FTSetup2.setTitle("First Time Setup");
         FTSetup2.show();
@@ -148,13 +134,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void firstTimeAddClasses() {
-        dbCourse = AppDatabaseCourses.singleton(this);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View addClassesView = inflater.inflate(R.layout.activity_first_time_add_classes, null);
         builder.setView(addClassesView);
-        builder.setCancelable(false);
+        //builder.setCancelable(false);
         AlertDialog addClasses = builder.create();
         addClasses.setTitle("Add Classes");
         addClasses.show();
@@ -208,15 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    String courseCode = subject + courseNumber;
-                    CourseDao courseDao = dbCourse.courseDao();
-                    courseDao.insertCourse(
-                            new Course(
-                                    courseDao.count() + 1,
-                                    String.valueOf(yearInd),
-                                    String.valueOf(quarterInd),
-                                    courseCode
-                            ));
+                    // TODO: save info to database
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -225,8 +201,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void repeatAddClasses(int previousYearInd, int previousQuarterInd, String previousSubject, String previousCourseNumber) {
-        dbCourse = AppDatabaseCourses.singleton(this);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View addClassesView = inflater.inflate(R.layout.activity_repeat_add_classes, null);
@@ -299,15 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    String courseCode = subject + courseNumber;
-                    CourseDao courseDao = dbCourse.courseDao();
-                    courseDao.insertCourse(
-                        new Course(
-                            courseDao.count() + 1,
-                            String.valueOf(yearInd),
-                            String.valueOf(quarterInd),
-                            courseCode
-                    ));
+                    // TODO: save info to database
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -431,5 +397,7 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         dbStudent.studentDao().clear();
+        dbCourse.courseDao().clear();
     }
+
 }
