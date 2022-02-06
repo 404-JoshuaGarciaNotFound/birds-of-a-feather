@@ -16,17 +16,37 @@ import com.example.myapplication.student.database.AppDatabase;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     //This variable should be saved to database.
-    private boolean setup = true;
+    private boolean setup = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        /*
+        //This method doesnt work yet.
+        try {
+            File dbFile = new File("app/src/main/assets/students.db");
+            if (dbFile.exists()) {
+                dbFile.delete();
+            }
+            dbFile.createNewFile();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        */
 
         //here we add a check to see if first time setup is done.
         if(setup != true) {
@@ -38,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
         DemoMock.setVisibility(View.INVISIBLE);
         Button mockEnter = findViewById(R.id.SubmitMockUser);
         mockEnter.setVisibility(View.INVISIBLE);
+
+
+
 
         //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         //StrictMode.setThreadPolicy(policy);
@@ -67,24 +90,56 @@ public class MainActivity extends AppCompatActivity {
                 String userName = name.getText().toString();
                 //Require users to type name no blanks name should be saved to database
                 if(!userName.equals("")){
-                    FTSetup.dismiss();
-                    //Save name to database
 
+
+
+                    FTSetup.dismiss();
+                    //Save name to userTextFile in assets. Not sure how to get the file stream going
+                    SetURL();
                 }
                 Log.d("Name that was typed in ", userName);
+
             }
         });
-
-        //Add method to save name to csv file on db ie. name,,,
-        //Next add step to input URL
-        //Save URL to database
 
         //Next step add classes
         //Call add classes interface
         //Once First time setup is done set setup boolean to true.
 
     }
+    public void SetURL(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        builder.setView(inflater.inflate(R.layout.activity_first_time_setup_geturl, null));
+        AlertDialog FTSetup2 = builder.create();
+        FTSetup2.setTitle("First Time Setup");
+        FTSetup2.show();
+        Button submitted = (Button) FTSetup2.findViewById(R.id.SubmitURL);
+        submitted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v3) {
 
+                final EditText URLy = (EditText) FTSetup2.findViewById(R.id.personURL);
+                String headshotURL = URLy.getText().toString();
+                //Require users to type name no blanks name should be saved to database
+                if(!headshotURL.equals("")){
+
+
+
+                    //Save name to database
+                    FTSetup2.dismiss();
+                    addClasses();
+                }
+                Log.d("URL that was typed in ", headshotURL);
+
+
+            }
+        });
+    }
+    public void addClasses(){
+
+        //This method should set first time setup to true when it is finished.
+    }
 
 
     public void StartStopButton(View view){

@@ -56,10 +56,12 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         private Student student;
         private final TextView personName;
         private final ImageView personIcon;
+        private final TextView personMatchClasses;
         ViewHolder(View itemView) {
             super(itemView);
             this.personName = itemView.findViewById(R.id.student_firstname);
             this.personIcon = itemView.findViewById(R.id.student_headshot);
+            this.personMatchClasses = itemView.findViewById(R.id.number_matches);
         }
 
         public void setStudent(Student student) {
@@ -70,6 +72,11 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             Log.d("name", student.getName());
             this.personName.setText(student.getHeadShotURL());
             this.personIcon.setImageBitmap(getBitmapFromURL(student.getName()));
+
+            //String studentClasses = student.getCourses();
+            //String[] studentClassesToCompare = studentClasses.split(" ");
+
+
         }
     }
 }

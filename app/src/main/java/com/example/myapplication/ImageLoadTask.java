@@ -47,14 +47,14 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
     public static Bitmap getBitmapFromURL(String src) {
         try {
-            Log.e("src",src);
+            //Log.e("src",src);
             URL url = new URL(src);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
             Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            Log.e("Bitmap","returned");
+            //Log.e("Bitmap","returned");
             return myBitmap;
         } catch (MalformedURLException e) {
             e.printStackTrace();
