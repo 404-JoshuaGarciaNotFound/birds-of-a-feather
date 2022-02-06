@@ -17,9 +17,13 @@ import android.widget.Spinner;
 
 import com.example.myapplication.student.database.AppDatabaseCourses;
 import com.example.myapplication.student.database.AppDatabaseStudent;
+import com.example.myapplication.student.database.Course;
+import com.example.myapplication.student.database.CourseDao;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -34,10 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*
         //This method doesnt work yet.
         try {
-            File dbFile = new File("app/src/main/assets/students.db");
+            File dbFile = new File("src/main/assets/userTextFile.txt");
             if (dbFile.exists()) {
                 dbFile.delete();
             }
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-        */
+
 
         //here we add a check to see if first time setup is done.
         if(setup != true) {
@@ -204,6 +207,15 @@ public class MainActivity extends AppCompatActivity {
 
                 if (exit) {
                     // TODO: save info to database
+                    String courseCode = subject + courseNumber;
+                    CourseDao courseDao = dbCourse.courseDao();
+                    courseDao.insertCourse(
+                            new Course(
+                                    courseDao.count() + 1,
+                                    String.valueOf(yearInd),
+                                    String.valueOf(quarterInd),
+                                    courseCode
+                            ));
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -284,7 +296,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    // TODO: save info to database
+                    String courseCode = subject + courseNumber;
+                    CourseDao courseDao = dbCourse.courseDao();
+                    courseDao.insertCourse(
+                        new Course(
+                            courseDao.count() + 1,
+                            String.valueOf(yearInd),
+                            String.valueOf(quarterInd),
+                            courseCode
+                    ));
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -408,7 +428,5 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         dbStudent.studentDao().clear();
-        dbCourse.courseDao().clear();
     }
-
 }
