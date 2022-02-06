@@ -148,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void firstTimeAddClasses() {
+        dbCourse = AppDatabaseCourses.singleton(this);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View addClassesView = inflater.inflate(R.layout.activity_first_time_add_classes, null);
@@ -206,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    // TODO: save info to database
                     String courseCode = subject + courseNumber;
                     CourseDao courseDao = dbCourse.courseDao();
                     courseDao.insertCourse(
@@ -224,6 +225,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void repeatAddClasses(int previousYearInd, int previousQuarterInd, String previousSubject, String previousCourseNumber) {
+        dbCourse = AppDatabaseCourses.singleton(this);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View addClassesView = inflater.inflate(R.layout.activity_repeat_add_classes, null);
