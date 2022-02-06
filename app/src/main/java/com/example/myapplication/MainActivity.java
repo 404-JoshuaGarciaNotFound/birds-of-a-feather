@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.myapplication.student.database.AppDatabaseCourses;
 import com.example.myapplication.student.database.AppDatabaseStudent;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
@@ -22,6 +23,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     //This variable should be saved to database.
     private boolean setup = false;
+    private AppDatabaseStudent dbStudent;
+    private AppDatabaseCourses dbCourse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void switchMocktoList(View view) {
-        AppDatabaseStudent db = AppDatabaseStudent.singleton(this);
+        dbStudent = AppDatabaseStudent.singleton(this);
         RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
         RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
@@ -187,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                     // parse input for create new student instance
                     // input is in form: {name,,,}\n{url,,,}\n{course1}\n{course2}\n...
                     String[] parsedUserInfo = mockUserInfo.split("\n");
-                    int idOfNewStudent = db.studentDao().count() + 1;
+                    int idOfNewStudent = dbStudent.studentDao().count() + 1;
                     String nameOfNewStudent = parsedUserInfo[0]
                             .substring(0,
                                     parsedUserInfo[0].length() - 3); // drop ,,,
@@ -206,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                             coursesOfNewStudent.toString()
                     );
 
-                    StudentDao studentDao = db.studentDao();
+                    StudentDao studentDao = dbStudent.studentDao();
                     studentDao.insertStudent(toAddStudent);
                     DemoMock.setText("");
                 }
@@ -230,12 +233,18 @@ public class MainActivity extends AppCompatActivity {
             mockSwitch.setBackgroundColor(0Xff99cc00);
 
             // get list of students from database, set recycler view according to the list
-            StudentDao studentDao = db.studentDao();
+            StudentDao studentDao = dbStudent.studentDao();
             List<Student> listOfStudent = studentDao.getAll();
             RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
             StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudent);
             listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
         }
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        dbStudent.studentDao().clear();
+        dbCourse.courseDao().clear();
     }
 
 }
