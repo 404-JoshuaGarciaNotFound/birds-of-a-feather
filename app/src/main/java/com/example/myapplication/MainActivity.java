@@ -5,12 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.example.myapplication.student.database.AppDatabase;
 import com.example.myapplication.student.database.Student;
@@ -72,11 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void firstTimeSetup(){
+    public void firstTimeSetup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         // layout activity_first_time_setup.xml
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup, null));
+        builder.setCancelable(false);
         AlertDialog FTSetup = builder.create();
         FTSetup.setTitle("First Time Setup");
         //Note this alert can be dismissed if someone clicks out. Have to find a way to prevent that
@@ -107,10 +111,12 @@ public class MainActivity extends AppCompatActivity {
         //Once First time setup is done set setup boolean to true.
 
     }
-    public void SetURL(){
+
+    public void SetURL() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup_geturl, null));
+        builder.setCancelable(false);
         AlertDialog FTSetup2 = builder.create();
         FTSetup2.setTitle("First Time Setup");
         FTSetup2.show();
@@ -128,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Save name to database
                     FTSetup2.dismiss();
-                    addClasses();
+                    firstTimeAddClasses();
                 }
                 Log.d("URL that was typed in ", headshotURL);
 
@@ -136,13 +142,109 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public void addClasses(){
+
+    public void firstTimeAddClasses() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View addClassesView = inflater.inflate(R.layout.activity_add_classes, null);
+        builder.setView(addClassesView);
+
+        // Spinner for selecting year
+        Spinner spinner1 = (Spinner) addClassesView.findViewById(R.id.selectYear);
+        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
+                R.array.year, android.R.layout.simple_spinner_item);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(adapter1);
+
+        // Spinner for selecting quarter
+        Spinner spinner2 = (Spinner) addClassesView.findViewById(R.id.selectQuarter);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.quarter, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(adapter2);
+
+        // Edit text field for subject
+        EditText editSubject = (EditText)addClassesView.findViewById(R.id.editSubject);
+
+        // Edit text field for course number
+        EditText editCourseNumber = (EditText)addClassesView.findViewById(R.id.editCourseNumber);
+
+        builder.setCancelable(false)
+                .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String subject = editSubject.getText().toString();
+                        String courseNumber = editCourseNumber.getText().toString();
+
+                        // TODO: Save info to database
+
+                        dialogInterface.cancel();
+                        repeatAddClasses();
+                    }
+                });
+        AlertDialog addClasses = builder.create();
+        addClasses.setTitle("Add Classes");
+        addClasses.show();
+    }
+
+    public void repeatAddClasses() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View addClassesView = inflater.inflate(R.layout.activity_add_classes, null);
+        builder.setView(addClassesView);
+
+        // Spinner for selecting year
+        Spinner spinner1 = (Spinner) addClassesView.findViewById(R.id.selectYear);
+        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
+                R.array.year, android.R.layout.simple_spinner_item);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(adapter1);
+
+        // Spinner for selecting quarter
+        Spinner spinner2 = (Spinner) addClassesView.findViewById(R.id.selectQuarter);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.quarter, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(adapter2);
+
+        // Edit text field for subject
+        EditText editSubject = (EditText)addClassesView.findViewById(R.id.editSubject);
+
+        // Edit text field for course number
+        EditText editCourseNumber = (EditText)addClassesView.findViewById(R.id.editCourseNumber);
+
+        builder.setCancelable(false)
+                .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String subject = editSubject.getText().toString();
+                        String courseNumber = editCourseNumber.getText().toString();
+
+                        // TODO: Save info to database
+
+                        dialogInterface.cancel();
+                        repeatAddClasses();
+                    }
+                })
+                .setNegativeButton("Done", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String subject = editSubject.getText().toString();
+                        String courseNumber = editCourseNumber.getText().toString();
+
+                        // TODO: Save info to database
+
+                        dialogInterface.cancel();
+                    }
+                });
+        AlertDialog addClasses = builder.create();
+        addClasses.setTitle("Add Classes");
+        addClasses.show();
 
         //This method should set first time setup to true when it is finished.
     }
 
-
-    public void StartStopButton(View view){
+    public void StartStopButton(View view) {
         //Add check if setup complete
 
         Button startStop = findViewById(R.id.StartStopBttn);
@@ -221,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
             //Blue color code
             mockSwitch.setBackgroundColor(0xff0099cc);
         }
-        if(current.equals("LIST")){
+        if (current.equals("LIST")) {
             //LIST STUDENT MODE
             //For demo mode maybe when user clicks list it should update mocked users
             mockSwitch.setText("MOCK");

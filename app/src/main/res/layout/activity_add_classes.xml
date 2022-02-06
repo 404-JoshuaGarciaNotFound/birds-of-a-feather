@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/ACText1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please enter one class you've taken before"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/ACText2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Year"
+        android:textSize="14sp" />
+
+    <Spinner
+        android:id="@+id/selectYear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/ACText3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Quarter"
+        android:textSize="14sp" />
+
+    <Spinner
+        android:id="@+id/selectQuarter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/editSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Subject (e.g. CSE)" />
+
+    <EditText
+        android:id="@+id/editCourseNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="Course Number (e.g. 110)" />
+</LinearLayout>
