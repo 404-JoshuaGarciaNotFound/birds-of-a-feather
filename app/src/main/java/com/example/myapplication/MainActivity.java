@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     // parse input for create new student instance
                     // input is in form: {name,,,}\n{url,,,}\n{course1}\n{course2}\n...
                     String[] parsedUserInfo = mockUserInfo.split("\n");
-                    int idOfNewStudent = 5; // FIXME: need count method to increase id (or perhaps UUID)
+                    int idOfNewStudent = db.studentDao().count() + 1;
                     String nameOfNewStudent = parsedUserInfo[0]
                             .substring(0,
                                     parsedUserInfo[0].length() - 3); // drop ,,,
