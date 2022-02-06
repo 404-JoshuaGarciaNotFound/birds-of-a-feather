@@ -17,6 +17,8 @@ import android.widget.Spinner;
 
 import com.example.myapplication.student.database.AppDatabaseCourses;
 import com.example.myapplication.student.database.AppDatabaseStudent;
+import com.example.myapplication.student.database.Course;
+import com.example.myapplication.student.database.CourseDao;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         if(setup != true) {
             //Calls alert popup!
             firstTimeSetup();
+            Log.d("myTag", "This is my message"); //Test
         }
         //DEMO MODE UI stuff,
         EditText DemoMock = findViewById(R.id.DemomockUserInput);
@@ -202,6 +205,13 @@ public class MainActivity extends AppCompatActivity {
 
                 if (exit) {
                     // TODO: save info to database
+                    String courseCode = subject+courseNumber;
+                    int courseId = dbCourse.courseDao().count() + 1;
+                    String courseYear = String.valueOf(yearInd);
+                    String courseQuarter = String.valueOf(quarterInd);
+                    Course addedCourse = new Course(courseId, courseYear, courseQuarter, courseCode);
+                    CourseDao CourseDao = dbCourse.courseDao();
+                    CourseDao.insertCourse(addedCourse);
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -283,6 +293,13 @@ public class MainActivity extends AppCompatActivity {
 
                 if (exit) {
                     // TODO: save info to database
+                    String courseCode = subject+courseNumber;
+                    int courseId = dbCourse.courseDao().count() + 1;
+                    String courseYear = String.valueOf(yearInd);
+                    String courseQuarter = String.valueOf(quarterInd);
+                    Course addedCourse = new Course(courseId, courseYear, courseQuarter, courseCode);
+                    CourseDao CourseDao = dbCourse.courseDao();
+                    CourseDao.insertCourse(addedCourse);
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
