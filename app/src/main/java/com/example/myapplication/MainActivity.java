@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     //This variable should be saved to database.
-    private boolean setup = false;
+    private boolean setup = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     // parse input for create new student instance
                     // input is in form: {name,,,}\n{url,,,}\n{course1}\n{course2}\n...
                     String[] parsedUserInfo = mockUserInfo.split("\n");
-                    int idOfNewStudent = 300; // FIXME: need count method to increase id (or perhaps UUID)
+                    int idOfNewStudent = 5; // FIXME: need count method to increase id (or perhaps UUID)
                     String nameOfNewStudent = parsedUserInfo[0]
                             .substring(0,
                                     parsedUserInfo[0].length() - 3); // drop ,,,
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                             .substring(0,
                                     parsedUserInfo[1].length() - 3); // drop ,,,
                     StringBuilder coursesOfNewStudent = new StringBuilder();
-                    for (int i = 2; i < parsedUserInfo.length; i++) {
+                    for (int i = 1; i < parsedUserInfo.length; i++) {
                         coursesOfNewStudent.append(parsedUserInfo[i]);
                         if (i != parsedUserInfo.length - 1) {
                             coursesOfNewStudent.append(" ");
@@ -159,7 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
                     StudentDao studentDao = db.studentDao();
                     studentDao.insertStudent(toAddStudent);
+                    DemoMock.setText("");
                 }
+
             });
             //Blue color code
             mockSwitch.setBackgroundColor(0xff0099cc);
