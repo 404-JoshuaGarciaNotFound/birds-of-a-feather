@@ -7,18 +7,18 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 @Database(entities = {Student.class}, version = 1)
-public abstract class AppDatabase extends RoomDatabase {
-    private static AppDatabase singletonInstance;
+public abstract class AppDatabaseStudent extends RoomDatabase {
+    private static AppDatabaseStudent singletonInstanceStudent;
 
-    public static AppDatabase singleton (Context context) {
-        if  (singletonInstance == null) {
-            singletonInstance = Room.databaseBuilder(context, AppDatabase.class, "students.db")
+    public static AppDatabaseStudent singleton (Context context) {
+        if  (singletonInstanceStudent == null) {
+            singletonInstanceStudent = Room.databaseBuilder(context, AppDatabaseStudent.class, "students.db")
                     .createFromAsset("students.db")
                     .allowMainThreadQueries()
                     .build();
         }
 
-        return singletonInstance;
+        return singletonInstanceStudent;
     }
 
     public abstract StudentDao studentDao();

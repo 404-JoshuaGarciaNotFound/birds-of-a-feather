@@ -12,16 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.myapplication.student.database.AppDatabase;
+import com.example.myapplication.student.database.AppDatabaseStudent;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 
@@ -164,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void switchMocktoList(View view) {
-        AppDatabase db = AppDatabase.singleton(this);
+        AppDatabaseStudent db = AppDatabaseStudent.singleton(this);
         RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
         RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);

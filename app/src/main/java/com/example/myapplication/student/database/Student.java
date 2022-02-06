@@ -21,6 +21,16 @@ public class Student {
     @ColumnInfo(name = "courses")
     private String courses;
 
+    public Student() {
+    }
+
+    public Student(int id, String headShotURL, String name, String courses) {
+        this.id = id;
+        this.headShotURL = headShotURL;
+        this.name = name;
+        this.courses = courses;
+    }
+
     public int getId() {
         return id;
     }
@@ -50,16 +60,6 @@ public class Student {
     }
 
     public void setCourses(String courses) {
-        this.courses = courses;
-    }
-
-    public Student() {
-    }
-
-    public Student(int id, String headShotURL, String name, String courses) {
-        this.id = id;
-        this.headShotURL = headShotURL;
-        this.name = name;
         this.courses = courses;
     }
 }
