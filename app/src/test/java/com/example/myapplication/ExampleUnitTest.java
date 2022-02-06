@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -36,6 +39,13 @@ public class ExampleUnitTest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
+    private AppDatabaseCourses dbCourse;
+
+    @Before
+    public void setUp() {
+        dbCourse = AppDatabaseCourses.singleton(getApplicationContext());
+    }
+
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
@@ -43,10 +53,6 @@ public class ExampleUnitTest {
 
     @Test
     public void test_addClasses() {
-        AppDatabaseCourses dbCourse;
-
-        dbCourse = AppDatabaseCourses.singleton(getApplicationContext());
-
         CourseDao courseDao = dbCourse.courseDao();
         courseDao.insertCourse(
                 new Course(
@@ -56,18 +62,21 @@ public class ExampleUnitTest {
                         "110"
                 ));
 
-        List<Course> actual = courseDao.getAllCourses();
+        Course actual = (Course) courseDao.getAllCourses().toArray()[0];
 
-        List<Course> expected = new ArrayList<>();
-        expected.add(
-                new Course(
+        ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
+
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+
+        Course expected = new Course(
                         1,
                         String.valueOf("2020"),
                         String.valueOf("FA"),
                         "110"
-                        ));
-
-        assertArrayEquals(expected.toArray(), actual.toArray());
+                        );
+        assertTrue(actual.equals(expected));
+        });
     }
-    
 }

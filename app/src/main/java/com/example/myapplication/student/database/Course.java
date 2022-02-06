@@ -60,4 +60,9 @@ public class Course {
         this.month = month;
         this.courseCode = courseCode;
     }
+
+    public boolean equals(Course other) {
+        return (this.getId() == other.getId() && this.year.equals(other.year)
+                && this.month.equals(other.month) && this.courseCode.equals(other.courseCode));
+    }
 }
