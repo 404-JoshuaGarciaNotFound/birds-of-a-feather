@@ -21,4 +21,7 @@ public interface StudentDao {
 
     @Query("SELECT COUNT(*) FROM students")
     int count();
+
+    @Query("DELETE FROM students")
+    public void clear();
 }

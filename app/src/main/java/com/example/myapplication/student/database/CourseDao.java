@@ -13,4 +13,10 @@ public interface CourseDao {
 
     @Insert
     public void insertCourse(Course course);
+
+    @Query("SELECT COUNT(*) FROM courses")
+    int count();
+
+    @Query("DELETE FROM courses")
+    public void clear();
 }
