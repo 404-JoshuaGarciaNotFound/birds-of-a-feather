@@ -2,4 +2,19 @@
     <string name="app_name">BoF</string>
     <string name="bofs">BoFs</string>
     <string name="start">START</string>
+    <string-array name="year">
+    <item>2022</item>
+    <item>2021</item>
+    <item>2020</item>
+    <item>2019</item>
+    <item>2018</item>
+    </string-array>
+    <string-array name="quarter">
+        <item>FA</item>
+        <item>WI</item>
+        <item>SP</item>
+        <item>SS1</item>
+        <item>SS2</item>
+        <item>SSS</item>
+    </string-array>
 </resources>
