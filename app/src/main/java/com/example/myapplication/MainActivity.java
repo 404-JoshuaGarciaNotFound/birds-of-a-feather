@@ -17,6 +17,8 @@ import android.widget.Spinner;
 
 import com.example.myapplication.student.database.AppDatabaseCourses;
 import com.example.myapplication.student.database.AppDatabaseStudent;
+import com.example.myapplication.student.database.Course;
+import com.example.myapplication.student.database.CourseDao;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
@@ -134,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void firstTimeAddClasses() {
+        dbCourse = AppDatabaseCourses.singleton(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View addClassesView = inflater.inflate(R.layout.activity_first_time_add_classes, null);
@@ -192,7 +195,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    // TODO: save info to database
+                    String courseCode = subject + courseNumber;
+                    CourseDao courseDao = dbCourse.courseDao();
+                    courseDao.insertCourse(
+                            new Course(
+                                    courseDao.count() + 1,
+                                    String.valueOf(yearInd),
+                                    String.valueOf(quarterInd),
+                                    courseCode
+                            ));
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -201,6 +212,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void repeatAddClasses(int previousYearInd, int previousQuarterInd, String previousSubject, String previousCourseNumber) {
+        dbCourse = AppDatabaseCourses.singleton(this);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View addClassesView = inflater.inflate(R.layout.activity_repeat_add_classes, null);
@@ -273,7 +286,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    // TODO: save info to database
+                    String courseCode = subject + courseNumber;
+                    CourseDao courseDao = dbCourse.courseDao();
+                    courseDao.insertCourse(
+                            new Course(
+                                    courseDao.count() + 1,
+                                    String.valueOf(yearInd),
+                                    String.valueOf(quarterInd),
+                                    courseCode
+                            ));
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -397,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         dbStudent.studentDao().clear();
-        dbCourse.courseDao().clear();
+        //dbCourse.courseDao().clear();
     }
 
 }
