@@ -67,6 +67,13 @@ public class Course {
         this.courseCode = other.getCourseCode();
     }
 
+    public Course(Course other) {
+        this.id = other.getId();
+        this.year = other.getYear();
+        this.month = other.getMonth();
+        this.courseCode = other.getCourseCode();
+    }
+
     public boolean equals(Course other) {
         return (this.getId() == other.getId() && this.year.equals(other.year)
                 && this.month.equals(other.month) && this.courseCode.equals(other.courseCode));

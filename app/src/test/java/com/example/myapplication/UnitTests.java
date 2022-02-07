@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,12 +11,15 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -36,8 +40,8 @@ import java.util.List;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class ExampleUnitTest {
-
+public class UnitTests {
+    //First test for single course
     private boolean CourseArrayEquals(Course[] c1, Course[] c2) {
         if (c1.length != c2.length)
             return false;
@@ -51,14 +55,17 @@ public class ExampleUnitTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenarioRule = new ActivityScenarioRule<>(MainActivity.class);
+    public AppDatabaseCourses dbCourse;
 
-    private AppDatabaseCourses dbCourse;
 
     @Before
     public void setUp() {
         dbCourse = AppDatabaseCourses.singleton(getApplicationContext());
     }
-
+    @After
+    public void resetTest(){
+        dbCourse.close();
+    }
     @Test
     public void test_addOneClass() {
         CourseDao courseDao = dbCourse.courseDao();
@@ -72,9 +79,7 @@ public class ExampleUnitTest {
 
         // TypeCast crucial
         Course actual = (Course) courseDao.getAllCourses().toArray()[0];
-
         ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
-
         scenario.moveToState(Lifecycle.State.CREATED);
 
         scenario.onActivity(activity -> {
@@ -87,11 +92,22 @@ public class ExampleUnitTest {
             );
             assertTrue(actual.equals(expected));
         });
+        courseDao.clear();
     }
 
+    private CourseDao courseDaoa;
+    public AppDatabaseCourses dbCourses;
+    @Before
+    //Note this method (restart) was obtained from the android developer page
+    //https://developer.android.com/training/data-storage/room/testing-db
+    public void restart(){
+        Context context = ApplicationProvider.getApplicationContext();
+        dbCourses = Room.inMemoryDatabaseBuilder(context, AppDatabaseCourses.class).allowMainThreadQueries().build();
+        courseDaoa = dbCourses.courseDao();
+
+    }
     @Test
     public void test_addMultipleClass() {
-        CourseDao courseDao = dbCourse.courseDao();
 
         Course[] courses = {
                 new Course(
@@ -121,14 +137,13 @@ public class ExampleUnitTest {
         };
 
         for (Course c : courses) {
-            courseDao.insertCourse(new Course(c)); // creates a copies
+            courseDaoa.insertCourse(new Course(c)); // creates a copies
         }
-
         // TypeCast and manual array population crucial
         Course[] actual = new Course[courses.length];
 
         for (int i = 0; i < courses.length; i++) {
-            actual[i] = (Course) courseDao.getAllCourses().toArray()[i];
+            actual[i] = (Course) courseDaoa.getAllCourses().toArray()[i];
         }
 
         ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
@@ -138,5 +153,6 @@ public class ExampleUnitTest {
         scenario.onActivity(activity -> {
             assertTrue(CourseArrayEquals(actual, courses));
         });
+
     }
 }
