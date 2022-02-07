@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -139,4 +140,6 @@ public class UnitTests {
             assertTrue(CourseArrayEquals(actual, courses));
         });
     }
+
+
 }
