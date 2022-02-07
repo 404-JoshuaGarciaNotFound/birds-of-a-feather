@@ -47,11 +47,6 @@ public class UnitTests {
     }
 
     @Test
-    public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
-    }
-
-    @Test
     public void test_addClasses() {
         CourseDao courseDao = dbCourse.courseDao();
         courseDao.insertCourse(
