@@ -417,7 +417,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onDestroy() {
         super.onDestroy();
-        dbStudent.studentDao().clear();
+        if(dbStudent != null)
+            dbStudent.studentDao().clear();
         //dbCourse.courseDao().clear();
     }
 
