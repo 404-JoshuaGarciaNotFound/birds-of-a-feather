@@ -37,7 +37,7 @@ import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class UnitTests {
-
+    //First test for single course
     private boolean CourseArrayEquals(Course[] c1, Course[] c2) {
         if (c1.length != c2.length)
             return false;
