@@ -25,6 +25,7 @@ import com.example.myapplication.student.database.Course;
 import com.example.myapplication.student.database.CourseDao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -36,6 +37,18 @@ import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class UnitTests {
+
+    private boolean CourseArrayEquals(Course[] c1, Course[] c2) {
+        if (c1.length != c2.length)
+            return false;
+
+        for (int i = 0; i < c1.length; i++) {
+            if (!c1[i].equals(c2[i]))
+                return false;
+        }
+        return true;
+    }
+
     @Rule
     public ActivityScenarioRule<MainActivity> scenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
@@ -47,7 +60,7 @@ public class UnitTests {
     }
 
     @Test
-    public void test_addClasses() {
+    public void test_addOneClass() {
         CourseDao courseDao = dbCourse.courseDao();
         courseDao.insertCourse(
                 new Course(
@@ -66,13 +79,64 @@ public class UnitTests {
 
         scenario.onActivity(activity -> {
 
-        Course expected = new Course(
+            Course expected = new Course(
+                    1,
+                    String.valueOf("2020"),
+                    String.valueOf("FA"),
+                    "110"
+            );
+            assertTrue(actual.equals(expected));
+        });
+    }
+
+    @Test
+    public void test_addMultipleClass() {
+        CourseDao courseDao = dbCourse.courseDao();
+
+        Course[] courses = {
+                new Course(
                         1,
                         String.valueOf("2020"),
                         String.valueOf("FA"),
-                        "110"
-                        );
-        assertTrue(actual.equals(expected));
+                        "CSE 110"
+                ),
+                new Course(
+                        2,
+                        String.valueOf("2021"),
+                        String.valueOf("WI"),
+                        "CSE 101"
+                ),
+                new Course(
+                        3,
+                        String.valueOf("2022"),
+                        String.valueOf("SP"),
+                        "ECE 109"
+                ),
+                new Course(
+                        4,
+                        String.valueOf("2020"),
+                        String.valueOf("FA"),
+                        "CSE 100"
+                )
+        };
+
+        for (Course c : courses) {
+            courseDao.insertCourse(new Course(c)); // creates a copies
+        }
+
+        // TypeCast and manual array population crucial
+        Course[] actual = new Course[courses.length];
+
+        for (int i = 0; i < courses.length; i++) {
+            actual[i] = (Course) courseDao.getAllCourses().toArray()[i];
+        }
+
+        ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
+
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            assertTrue(CourseArrayEquals(actual, courses));
         });
     }
 }
