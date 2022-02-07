@@ -114,14 +114,10 @@ public class MainActivity extends AppCompatActivity {
         submitted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v3) {
-
                 final EditText URLy = (EditText) FTSetup2.findViewById(R.id.personURL);
                 String headshotURL = URLy.getText().toString();
                 //Require users to type name no blanks name should be saved to database
                 if(!headshotURL.equals("")){
-
-
-
                     //Save name to database
                     FTSetup2.dismiss();
                     firstTimeAddClasses();
