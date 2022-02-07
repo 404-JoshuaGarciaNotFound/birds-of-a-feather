@@ -35,7 +35,7 @@ import java.util.List;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class ExampleUnitTest {
+public class UnitTests {
     @Rule
     public ActivityScenarioRule<MainActivity> scenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
