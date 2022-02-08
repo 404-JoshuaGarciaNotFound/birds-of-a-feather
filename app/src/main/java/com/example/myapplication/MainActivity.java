@@ -1,11 +1,13 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -175,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
                 String subject = editSubject.getText().toString().trim();
                 String courseNumber = editCourseNumber.getText().toString().trim();
 
+                Log.d("course str format", String.valueOf(yearInd));
+
                 // To get string of year and quarter use the following two lines
                 // String year = getResources().getStringArray(R.array.year)[yearInd];
                 // String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
@@ -194,20 +198,33 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    String courseCode = subject + "," + courseNumber;
-                    CourseDao courseDao = dbCourse.courseDao();
-                    courseDao.insertCourse(
-                            new Course(
-                                    courseDao.count() + 1,
-                                    String.valueOf(yearInd),
-                                    String.valueOf(quarterInd),
-                                    courseCode
-                            ));
+                    addCourse(yearInd, quarterInd, subject, courseNumber);
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
             }
         });
+    }
+
+    /**
+     * This method add courses to the course database.
+     * These courses are courses of the current user
+     * (the one student who is using the app, in contrast to those who are searched by the bluetooth
+     * @param yearInd
+     * @param quarterInd
+     * @param subject
+     * @param courseNumber
+     */
+    private void addCourse(int yearInd, int quarterInd, String subject, String courseNumber) {
+        String courseCode = subject + "," + courseNumber;
+        CourseDao courseDao = dbCourse.courseDao();
+        courseDao.insertCourse(
+                new Course(
+                        courseDao.count() + 1,
+                        String.valueOf(yearInd),
+                        String.valueOf(quarterInd),
+                        courseCode
+                ));
     }
 
     public void repeatAddClasses(int previousYearInd, int previousQuarterInd, String previousSubject, String previousCourseNumber) {
@@ -285,15 +302,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    String courseCode = subject + courseNumber;
-                    CourseDao courseDao = dbCourse.courseDao();
-                    courseDao.insertCourse(
-                            new Course(
-                                    courseDao.count() + 1,
-                                    String.valueOf(yearInd),
-                                    String.valueOf(quarterInd),
-                                    courseCode
-                            ));
+                    addCourse(yearInd, quarterInd, subject, courseNumber);
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -357,33 +366,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v2) {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String mockUserInfo = newUser.getText().toString();
-                    Log.d("Mock User info: ", mockUserInfo);
-
-                    // FIXME: missing type checking. try regex
-                    // parse input for create new student instance
-                    // input is in form: {name,,,}\n{url,,,}\n{course1}\n{course2}\n...
-                    String[] parsedUserInfo = mockUserInfo.split("\n");
-                    int idOfNewStudent = dbStudent.studentDao().count() + 1;
-                    String nameOfNewStudent = parsedUserInfo[0]
-                            .substring(0,
-                                    parsedUserInfo[0].length() - 3); // drop ,,,
-                    String headShotURLOfNewStudent = parsedUserInfo[1]
-                            .substring(0,
-                                    parsedUserInfo[1].length() - 3); // drop ,,,
-                    StringBuilder coursesOfNewStudent = new StringBuilder();
-                    for (int i = 1; i < parsedUserInfo.length; i++) {
-                        coursesOfNewStudent.append(parsedUserInfo[i]);
-                        if (i != parsedUserInfo.length - 1) {
-                            coursesOfNewStudent.append(" ");
-                        }
-                    }
-                    Student toAddStudent = new Student(
-                            idOfNewStudent, nameOfNewStudent, headShotURLOfNewStudent,
-                            coursesOfNewStudent.toString()
-                    );
-
-                    StudentDao studentDao = dbStudent.studentDao();
-                    studentDao.insertStudent(toAddStudent);
+                    populateUserInfo(mockUserInfo);
                     DemoMock.setText("");
                 }
 
@@ -405,40 +388,104 @@ public class MainActivity extends AppCompatActivity {
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
 
-            // get user's taken courses, used for matching students later
-            CourseDao courseDao = dbCourse.courseDao();
-            List<Course> coursesOfUserList = courseDao.getAllCourses();
-            Set<String> coursesOfUserSet = new HashSet<>(); // convert the list to set to simplify comparison
-            for (Course course :
-                    coursesOfUserList) {
-                StringBuilder courseStr = new StringBuilder();
-                courseStr.append(course.getYear());
-                courseStr.append(",");
-                courseStr.append(course.getQuarter().toUpperCase());
-                courseStr.append(",");
-                courseStr.append(course.getCourseCode());
-
-                coursesOfUserSet.add(courseStr.toString());
-            }
-
-            // get list of students from database, set recycler view according to the list
-            StudentDao studentDao = dbStudent.studentDao();
-            List<Student> listOfStudent = studentDao.getAll();
-
-            // check whether the students' course match the user's
-            // if so, add the user to the students to display
-            List<Student> studentsWithMatchedCourses = new ArrayList<>();
-            for (Student student:
-                 listOfStudent) {
-                if (coursesOfUserSet.contains(student.getCourses())) {
-                    studentsWithMatchedCourses.add(student);
-                }
-            }
-
-            RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-            StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(studentsWithMatchedCourses);
-            listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+            showListOfStudents();
         }
+    }
+
+    /**
+     * This method handles the click event for the button list
+     * It shows a list of students who has taken the same course with the app's user
+     */
+    private void showListOfStudents() {
+        Set<String> coursesOfUserSet = getCoursesListFromStr();
+
+        // get list of students from database, set recycler view according to the list
+        StudentDao studentDao = dbStudent.studentDao();
+        List<Student> listOfStudent = studentDao.getAll();
+
+        // check whether the students' course match the user's
+        // if so, add the user to the students to display
+        List<Student> studentsWithMatchedCourses = new ArrayList<>();
+        for (Student student:
+             listOfStudent) {
+            if (coursesOfUserSet.contains(student.getCourses())) {
+                studentsWithMatchedCourses.add(student);
+            }
+        }
+
+        RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
+        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(studentsWithMatchedCourses);
+        listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+    }
+
+    /**
+     * This method is a helper method that gets a set of courses from the course string
+     * i.e.
+         * each student searched by the bluetooth has a string representing all courses they taken
+             * As in: year1,quarter1,subject1,number1 year2,quarter2,subject2,number2 etc.
+         * These strings are stored in the course.db database
+     *
+         * We want to split these strings by white space so we can check if the app's user's list of
+         * courses contains courses one or more courses from these strings
+     *
+     * @return a set containing all courses taken by the app's user
+     */
+    @NonNull
+    private Set<String> getCoursesListFromStr() {
+        CourseDao courseDao = dbCourse.courseDao();
+        List<Course> coursesOfUserList = courseDao.getAllCourses();
+
+        // convert the list to set to check if a course exist quicker
+        Set<String> coursesOfUserSet = new HashSet<>();
+
+        // for comparison purpose, create a str in format : year,quarter,subject,number
+        for (Course course :
+                coursesOfUserList) {
+            StringBuilder courseStr = new StringBuilder();
+            courseStr.append(course.getYear());
+            courseStr.append(",");
+            courseStr.append(course.getQuarter().toUpperCase());
+            courseStr.append(",");
+            courseStr.append(course.getCourseCode());
+//            Log.d("course str format", courseStr.toString());
+            coursesOfUserSet.add(courseStr.toString());
+        }
+
+        return coursesOfUserSet;
+    }
+
+    /**
+     * This method is the click event for the enter button.
+     * It will take in a string of format:
+         * Bill,,,
+         * https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,
+         * 2021,FA,CSE,210
+         * 2022,WI,CSE,110
+         * 2022,SP,CSE,110
+     * , populate the mock students (the students who is, in the future, detected by the bluetooth)
+     * information with the given name, url, course1, course2,...
+     * @param mockUserInfo the input string consisting of the mock user's info
+     */
+    private void populateUserInfo(String mockUserInfo) {
+        // FIXME: missing type checking. try regex
+        // parse input for create new student instance
+        // input is in form: {name,,,}\n{url,,,}\n{course1}\n{course2}\n...
+        String[] splitInfo = mockUserInfo.split("\n");
+        int id = dbStudent.studentDao().count() + 1;
+        String name = splitInfo[0]
+                .substring(0, splitInfo[0].length() - 3); // drop ,,,
+        String url = splitInfo[1]
+                .substring(0, splitInfo[1].length() - 3); // drop ,,,
+        StringBuilder courses = new StringBuilder();
+        for (int i = 1; i < splitInfo.length; i++) {
+            courses.append(splitInfo[i]);
+            if (i != splitInfo.length - 1) courses.append(" ");
+        }
+        Student toAddStudent = new Student(id, name, url, courses.toString());
+
+        // add the student to the database
+        StudentDao studentDao = dbStudent.studentDao();
+        studentDao.insertStudent(toAddStudent);
     }
 
     public void onDestroy() {
