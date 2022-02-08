@@ -2,6 +2,9 @@
     <string name="app_name">BoF</string>
     <string name="bofs">BoFs</string>
     <string name="start">START</string>
+    <string name="input_mock_user">Input Mock User</string>
+    <string name="enter">Enter</string>
+    <string name="mock">MOCK</string>
     <string-array name="year">
     <item>2022</item>
     <item>2021</item>

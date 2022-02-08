@@ -26,7 +26,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -191,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    String courseCode = subject + courseNumber;
+                    String courseCode = subject + "," + courseNumber;
                     CourseDao courseDao = dbCourse.courseDao();
                     courseDao.insertCourse(
                             new Course(
@@ -402,11 +405,38 @@ public class MainActivity extends AppCompatActivity {
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
 
+            // get user's taken courses, used for matching students later
+            CourseDao courseDao = dbCourse.courseDao();
+            List<Course> coursesOfUserList = courseDao.getAllCourses();
+            Set<String> coursesOfUserSet = new HashSet<>(); // convert the list to set to simplify comparison
+            for (Course course :
+                    coursesOfUserList) {
+                StringBuilder courseStr = new StringBuilder();
+                courseStr.append(course.getYear());
+                courseStr.append(",");
+                courseStr.append(course.getQuarter().toUpperCase());
+                courseStr.append(",");
+                courseStr.append(course.getCourseCode());
+
+                coursesOfUserSet.add(courseStr.toString());
+            }
+
             // get list of students from database, set recycler view according to the list
             StudentDao studentDao = dbStudent.studentDao();
             List<Student> listOfStudent = studentDao.getAll();
+
+            // check whether the students' course match the user's
+            // if so, add the user to the students to display
+            List<Student> studentsWithMatchedCourses = new ArrayList<>();
+            for (Student student:
+                 listOfStudent) {
+                if (coursesOfUserSet.contains(student.getCourses())) {
+                    studentsWithMatchedCourses.add(student);
+                }
+            }
+
             RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-            StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudent);
+            StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(studentsWithMatchedCourses);
             listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
         }
     }

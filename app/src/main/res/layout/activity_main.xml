@@ -35,10 +35,11 @@
     <Button
         android:id="@+id/StartStopBttn"
         android:layout_width="89dp"
-        android:layout_height="39dp"
+        android:layout_height="48dp"
         android:backgroundTint="@android:color/holo_green_light"
         android:onClick="StartStopButton"
         android:text="@string/start"
+        android:textColor="#0D47A1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.093"
@@ -49,10 +50,11 @@
     <Button
         android:id="@+id/nearByMockScreen"
         android:layout_width="89dp"
-        android:layout_height="39dp"
+        android:layout_height="48dp"
         android:backgroundTint="@android:color/holo_green_light"
         android:onClick="switchMocktoList"
-        android:text="MOCK"
+        android:text="@string/mock"
+        android:textColor="#0D47A1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.897"
@@ -77,10 +79,12 @@
         android:layout_marginTop="162dp"
         android:ems="10"
         android:gravity="bottom|start"
-        android:hint="Input Mock User"
+        android:hint="@string/input_mock_user"
         android:inputType="textMultiLine"
+        android:textColorHint="#757575"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/SubmitMockUser"
@@ -88,7 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="158dp"
         android:layout_marginTop="441dp"
-        android:text="Enter"
+        android:text="@string/enter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

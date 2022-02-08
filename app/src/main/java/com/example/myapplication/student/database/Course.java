@@ -13,8 +13,8 @@ public class Course {
     @ColumnInfo(name = "year")
     private String year;
 
-    @ColumnInfo(name = "month")
-    private String month;
+    @ColumnInfo(name = "quarter")
+    private String quarter;
 
     @ColumnInfo(name = "course_code")
     private String courseCode;
@@ -35,12 +35,12 @@ public class Course {
         this.year = year;
     }
 
-    public String getMonth() {
-        return month;
+    public String getQuarter() {
+        return quarter;
     }
 
-    public void setMonth(String month) {
-        this.month = month;
+    public void setQuarter(String quarter) {
+        this.quarter = quarter;
     }
 
     public String getCourseCode() {
@@ -54,22 +54,22 @@ public class Course {
     public Course() {
     }
 
-    public Course(int id, String year, String month, String courseCode) {
+    public Course(int id, String year, String quarter, String courseCode) {
         this.id = id;
         this.year = year;
-        this.month = month;
+        this.quarter = quarter;
         this.courseCode = courseCode;
     }
+
     public Course(Course other) {
         this.id = other.getId();
         this.year = other.getYear();
-        this.month = other.getMonth();
+        this.quarter = other.getQuarter();
         this.courseCode = other.getCourseCode();
     }
 
-
     public boolean equals(Course other) {
         return (this.getId() == other.getId() && this.year.equals(other.year)
-                && this.month.equals(other.month) && this.courseCode.equals(other.courseCode));
+                && this.quarter.equals(other.quarter) && this.courseCode.equals(other.courseCode));
     }
 }
