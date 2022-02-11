@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     FTSetup2.dismiss();
                     firstTimeAddClasses();
                 }
-                Log.d("URL that was typed in ", headshotURL);
+                Log.d("URL was typed in ", headshotURL);
 
 
             }
@@ -266,8 +266,10 @@ public class MainActivity extends AppCompatActivity {
                 String courseNumber = editCourseNumber.getText().toString().trim();
 
                 // To get string of year and quarter use the following two lines
-                // String year = getResources().getStringArray(R.array.year)[yearInd];
-                // String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
+//                 String year = getResources().getStringArray(R.array.year)[yearInd];
+//                 String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
+//
+//                 Log.d(year, quarter);
 
                 // Course number can also be converted to int when saving to db
 
