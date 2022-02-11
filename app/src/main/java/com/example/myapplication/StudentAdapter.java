@@ -70,10 +70,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
             this.student = student;
             Log.d("name", student.getName());
-            this.personName.setText(student.getHeadShotURL());
-            this.personIcon.setImageBitmap(getBitmapFromURL(student.getName()));
-
-
+            this.personIcon.setImageBitmap(getBitmapFromURL(student.getHeadShotURL()));
+            this.personName.setText(student.getName());
+            this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
         }
     }
 }
