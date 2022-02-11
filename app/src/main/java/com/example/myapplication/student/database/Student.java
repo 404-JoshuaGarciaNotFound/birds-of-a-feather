@@ -21,14 +21,18 @@ public class Student {
     @ColumnInfo(name = "courses")
     private String courses;
 
+    @ColumnInfo(name = "num_shared_courses")
+    private int numSharedCourses;
+
     public Student() {
     }
 
-    public Student(int id, String headShotURL, String name, String courses) {
+    public Student(int id, String headShotURL, String name, String courses, int numSharedCourses) {
         this.id = id;
         this.headShotURL = headShotURL;
         this.name = name;
         this.courses = courses;
+        this.numSharedCourses = numSharedCourses;
     }
 
     public int getId() {
@@ -61,5 +65,13 @@ public class Student {
 
     public void setCourses(String courses) {
         this.courses = courses;
+    }
+
+    public int getNumSharedCourses() {
+        return numSharedCourses;
+    }
+
+    public void setNumSharedCourses(int numSharedCourses) {
+        this.numSharedCourses = numSharedCourses;
     }
 }

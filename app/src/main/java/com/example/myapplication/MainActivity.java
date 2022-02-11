@@ -1,11 +1,11 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,39 +22,41 @@ import com.example.myapplication.student.database.CourseDao;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity {
-    //This variable should be saved to database.
+
     private boolean setup = false;
+
+    // database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
+    private StudentDao studentDao;
+    private CourseDao courseDao;
+
+    // thread pool
+    private ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*
-        //This method doesnt work yet.
-        try {
-            File dbFile = new File("app/src/main/assets/students.db");
-            if (dbFile.exists()) {
-                dbFile.delete();
-            }
-            dbFile.createNewFile();
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-        */
+
+        // initialize database-relevant
+        dbStudent = AppDatabaseStudent.singleton(this);
+        dbCourse = AppDatabaseCourses.singleton(this);
+        studentDao = dbStudent.studentDao();
+        courseDao = dbCourse.courseDao();
 
         //here we add a check to see if first time setup is done.
-        if(setup != true) {
+        if(!setup) {
             //Calls alert popup!
             firstTimeSetup();
-            Log.d("myTag", "This is my message"); //Test
         }
         //DEMO MODE UI stuff,
         EditText DemoMock = findViewById(R.id.DemomockUserInput);
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         //ImageView imgView =(ImageView)findViewById(R.id.imageView);
         //imgView.setImageBitmap(getBitmapFromURL(URLY));
 
+//        studentDao.clear();
+//        courseDao.clear();
     }
 
     public void firstTimeSetup() {
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         // layout activity_first_time_setup.xml
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup, null));
-        builder.setCancelable(false);
+        //builder.setCancelable(false);
         AlertDialog FTSetup = builder.create();
         FTSetup.setTitle("First Time Setup");
         //Note this alert can be dismissed if someone clicks out. Have to find a way to prevent that
@@ -94,8 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 String userName = name.getText().toString();
                 //Require users to type name no blanks name should be saved to database
                 if(!userName.equals("")){
-
-
 
                     FTSetup.dismiss();
                     //Save name to userTextFile in assets. Not sure how to get the file stream going
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup_geturl, null));
-        builder.setCancelable(false);
+        //builder.setCancelable(false);
         AlertDialog FTSetup2 = builder.create();
         FTSetup2.setTitle("First Time Setup");
         FTSetup2.show();
@@ -126,19 +128,17 @@ public class MainActivity extends AppCompatActivity {
         submitted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v3) {
-
                 final EditText URLy = (EditText) FTSetup2.findViewById(R.id.personURL);
                 String headshotURL = URLy.getText().toString();
                 //Require users to type name no blanks name should be saved to database
                 if(!headshotURL.equals("")){
-
-
-
                     //Save name to database
                     FTSetup2.dismiss();
                     firstTimeAddClasses();
+                } else {
+                    URLy.setError("URL cannot be empty!");
                 }
-                Log.d("URL was typed in ", headshotURL);
+                Log.d("URL that was typed in ", headshotURL);
 
 
             }
@@ -186,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
                 String courseNumber = editCourseNumber.getText().toString().trim();
 
                 // To get string of year and quarter use the following two lines
-                // String year = getResources().getStringArray(R.array.year)[yearInd];
-                // String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
+                 String year = getResources().getStringArray(R.array.year)[yearInd];
+                 String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
 
                 // Course number can also be converted to int when saving to db
 
@@ -204,16 +204,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (exit) {
-                    // TODO: save info to database
-//                    String courseCode = subject + courseNumber;
-//                    CourseDao courseDao = dbCourse.courseDao();
-//                    courseDao.insertCourse(
-//                            new Course(
-//                                    courseDao.count() + 1,
-//                                    String.valueOf(yearInd),
-//                                    String.valueOf(quarterInd),
-//                                    courseCode
-//                            ));
+//                    Log.d("str format: ", year + " " + quarter + " " + subject + " " + courseNumber);
+                    addCourse(year, quarter, subject, courseNumber);
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -222,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void repeatAddClasses(int previousYearInd, int previousQuarterInd, String previousSubject, String previousCourseNumber) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View addClassesView = inflater.inflate(R.layout.activity_repeat_add_classes, null);
@@ -266,10 +259,8 @@ public class MainActivity extends AppCompatActivity {
                 String courseNumber = editCourseNumber.getText().toString().trim();
 
                 // To get string of year and quarter use the following two lines
-//                 String year = getResources().getStringArray(R.array.year)[yearInd];
-//                 String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
-//
-//                 Log.d(year, quarter);
+                // String year = getResources().getStringArray(R.array.year)[yearInd];
+                // String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
 
                 // Course number can also be converted to int when saving to db
 
@@ -295,17 +286,11 @@ public class MainActivity extends AppCompatActivity {
                     exit = false;
                 }
 
+                String year = getResources().getStringArray(R.array.year)[yearInd];
+                String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
                 if (exit) {
-                    // TODO: save info to database
-//                    String courseCode = subject + courseNumber;
-//                    CourseDao courseDao = dbCourse.courseDao();
-//                    courseDao.insertCourse(
-//                            new Course(
-//                                    courseDao.count() + 1,
-//                                    String.valueOf(yearInd),
-//                                    String.valueOf(quarterInd),
-//                                    courseCode
-//                            ));
+//                    Log.d("str format: ", year + " " + quarter + " " + subject + " " + courseNumber);
+                    addCourse(year, quarter, subject, courseNumber);
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
                 }
@@ -346,7 +331,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void switchMocktoList(View view) {
-        dbStudent = AppDatabaseStudent.singleton(this);
         RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
         RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
@@ -369,33 +353,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v2) {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String mockUserInfo = newUser.getText().toString();
-                    Log.d("Mock User info: ", mockUserInfo);
-
-                    // FIXME: missing type checking. try regex
-                    // parse input for create new student instance
-                    // input is in form: {name,,,}\n{url,,,}\n{course1}\n{course2}\n...
-                    String[] parsedUserInfo = mockUserInfo.split("\n");
-                    int idOfNewStudent = dbStudent.studentDao().count() + 1;
-                    String nameOfNewStudent = parsedUserInfo[0]
-                            .substring(0,
-                                    parsedUserInfo[0].length() - 3); // drop ,,,
-                    String headShotURLOfNewStudent = parsedUserInfo[1]
-                            .substring(0,
-                                    parsedUserInfo[1].length() - 3); // drop ,,,
-                    StringBuilder coursesOfNewStudent = new StringBuilder();
-                    for (int i = 1; i < parsedUserInfo.length; i++) {
-                        coursesOfNewStudent.append(parsedUserInfo[i]);
-                        if (i != parsedUserInfo.length - 1) {
-                            coursesOfNewStudent.append(" ");
-                        }
-                    }
-                    Student toAddStudent = new Student(
-                            idOfNewStudent, nameOfNewStudent, headShotURLOfNewStudent,
-                            coursesOfNewStudent.toString()
-                    );
-
-                    StudentDao studentDao = dbStudent.studentDao();
-                    studentDao.insertStudent(toAddStudent);
+                    addStudent(mockUserInfo);
                     DemoMock.setText("");
                 }
 
@@ -417,19 +375,125 @@ public class MainActivity extends AppCompatActivity {
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
 
-            // get list of students from database, set recycler view according to the list
-            StudentDao studentDao = dbStudent.studentDao();
-            List<Student> listOfStudent = studentDao.getAll();
-            RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-            StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudent);
-            listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+            executorService.submit(this::onClickList);
         }
     }
 
-    public void onDestroy() {
+    /**
+     * This method handles the click event for the button list
+     * It shows a list of students who has taken the same course with the app's user
+     */
+    private void onClickList() {
+        // get user's taken courses
+        List<String> listOfUserCourses = formatUserCourses();
+
+        // get list of students
+        List<Student> listOfStudents = studentDao.getAll();
+
+        // check whether the students' course match the user's
+        // if so, add the user to the students to display
+        List<Student> studentsToDisplay = new ArrayList<>();
+        for (Student student: listOfStudents) {
+            int numSharedCourses = 0;
+            for (String courseStr : listOfUserCourses) {
+                if (student.getCourses().contains(courseStr)) {
+                    // the str of courses of a student contains a substring representing one of the
+                    // user's taken courses, the student is a match.
+                    numSharedCourses++;
+                }
+            }
+            if (numSharedCourses != 0) {
+                student.setNumSharedCourses(numSharedCourses);
+                studentsToDisplay.add(student);
+            }
+        }
+
+        RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
+        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(studentsToDisplay);
+        listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+    }
+
+    /**
+     * This method is a helper method that format the user courses
+     * i.e.
+         * the user's courses are stored in a database where each column represents an attribute
+         * of that course
+     *
+         * We want to format each course into a string "year,quarter,course_code"
+     *
+     * @return a list of the formatted strings
+     */
+    @NonNull
+    private List<String> formatUserCourses() {
+        List<Course> listOfUserCourses = courseDao.getAllCourses();
+        List<String> listOfFormattedCourses = new ArrayList<>();
+
+        // for comparison purpose, create a str in format : year,quarter,subject,number
+        for (Course course :
+                listOfUserCourses) {
+            StringBuilder courseStr = new StringBuilder();
+            courseStr.append(course.getYear());
+            courseStr.append(",");
+            courseStr.append(course.getQuarter().toUpperCase());
+            courseStr.append(",");
+            courseStr.append(course.getCourseCode());
+
+            listOfFormattedCourses.add(courseStr.toString());
+        }
+
+        return listOfFormattedCourses;
+    }
+
+    /**
+     * This method is the click event for the enter button.
+     * It will take in a string of format:
+         * {name},,,
+         * {url},,,
+         * 2021,FA,CSE,210
+         * 2022,WI,CSE,110
+         * 2022,SP,CSE,110
+     * , populate the mock students (the students who is, in the future, detected by the bluetooth)
+     * information with the given name, url, course1, course2,...
+     * @param mockUserInfo the input string consisting of the mock user's info
+     */
+    private void addStudent(String mockUserInfo) {
+        String[] splitInfo = mockUserInfo.split("\n");
+        int id = studentDao.count() + 1;
+        String name = splitInfo[0]
+                .substring(0, splitInfo[0].length() - 3); // drop ,,,
+        String url = splitInfo[1]
+                .substring(0, splitInfo[1].length() - 3); // drop ,,,
+        StringBuilder courses = new StringBuilder();
+        for (int i = 2; i < splitInfo.length; i++) {
+            courses.append(splitInfo[i]);
+            if (i != splitInfo.length - 1) courses.append(" ");
+        }
+        Student toAddStudent = new Student(id, url, name, courses.toString(), 0);
+
+        // add the student to the database
+        studentDao.insertStudent(toAddStudent);
+    }
+
+    /**
+     * This method add courses to the course database.
+     * These courses are courses of the current user
+     * (the one student who is using the app, in contrast to those who are searched by the bluetooth
+     * @param year
+     * @param quarter
+     * @param subject
+     * @param courseNumber
+     */
+    private void addCourse(String year, String quarter, String subject, String courseNumber) {
+        String courseCode = subject + "," + courseNumber;
+        courseDao.insertCourse(
+                new Course(courseDao.count() + 1, year, quarter, courseCode));
+    }
+
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
-        dbStudent.studentDao().clear();
-        dbCourse.courseDao().clear();
+        studentDao.clear();
+        courseDao.clear();
     }
 
 }
