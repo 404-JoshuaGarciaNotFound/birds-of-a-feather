@@ -24,22 +24,30 @@ import com.example.myapplication.student.database.StudentDao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity {
-    //This variable should be saved to database.
+
     private boolean setup = false;
+
+    // database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
     private StudentDao studentDao;
     private CourseDao courseDao;
 
+    // thread pool
+    private ExecutorService executorService = Executors.newFixedThreadPool(3);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // initialize database-relevant
         dbStudent = AppDatabaseStudent.singleton(this);
         dbCourse = AppDatabaseCourses.singleton(this);
         studentDao = dbStudent.studentDao();
@@ -367,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
 
-            onClickList();
+            executorService.submit(this::onClickList);
         }
     }
 
@@ -481,11 +489,11 @@ public class MainActivity extends AppCompatActivity {
                 new Course(courseDao.count() + 1, year, quarter, courseCode));
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        studentDao.clear();
-//        courseDao.clear();
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        studentDao.clear();
+        courseDao.clear();
+    }
 
 }
