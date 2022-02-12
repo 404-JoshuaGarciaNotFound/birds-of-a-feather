@@ -71,11 +71,6 @@ public class MainActivity extends AppCompatActivity {
             }
             if(dbCourse != null){
                 dbCourse.courseDao().clear();
-                //Log.d("notEmpty", "goodTogo");
-                //List<Course> b = dbCourse.courseDao().getAllCourses();
-                //Extract string for year
-                // String ba = getResources().getStringArray(R.array.year)[Integer.parseInt(b.get(0).getYear())];
-                //  Log.d("Course", ba);
             }
         }
 
@@ -110,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         // layout activity_first_time_setup.xml
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup, null));
-        //builder.setCancelable(false);
+        builder.setCancelable(false);
         AlertDialog FTSetup = builder.create();
         FTSetup.setTitle("First Time Setup");
         //Note this alert can be dismissed if someone clicks out. Have to find a way to prevent that
@@ -149,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup_geturl, null));
-        //builder.setCancelable(false);
+        builder.setCancelable(false);
         AlertDialog FTSetup2 = builder.create();
         FTSetup2.setTitle("First Time Setup");
         FTSetup2.show();
@@ -522,8 +517,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        studentDao.clear();
-        courseDao.clear();
+        dbStudent.close();
     }
 
 }
