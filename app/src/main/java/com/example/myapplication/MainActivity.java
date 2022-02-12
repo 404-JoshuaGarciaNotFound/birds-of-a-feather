@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
 
         // check for first time setup
-        if(userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
+        if(!userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
             firstTimeSetup();
         }
 
