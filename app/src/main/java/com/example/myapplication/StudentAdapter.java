@@ -52,7 +52,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private Student student;
         private final TextView personName;
         private final ImageView personIcon;
@@ -62,6 +62,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             this.personName = itemView.findViewById(R.id.student_firstname);
             this.personIcon = itemView.findViewById(R.id.student_headshot);
             this.personMatchClasses = itemView.findViewById(R.id.number_matches);
+            itemView.setOnClickListener(this);
         }
 
         public void setStudent(Student student) {
@@ -73,6 +74,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             this.personIcon.setImageBitmap(getBitmapFromURL(student.getHeadShotURL()));
             this.personName.setText(student.getName());
             this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
+        }
+
+        @Override
+        public void onClick(View view) {
+            Context context = view.getContext();
+            Intent intent = new Intent(context, StudentDetailActivity.class);
+            intent.putExtra("student_id", this.student.getId());
+            context.startActivity(intent);
         }
 
 

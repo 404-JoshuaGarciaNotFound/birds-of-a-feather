@@ -24,7 +24,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/student_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="47dp"
@@ -43,15 +43,15 @@
 
     <ImageView
         android:id="@+id/student_headshot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="112sp"
+        android:layout_height="112sp"
         android:contentDescription="@string/studentheadshot"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.169"
+        app:layout_constraintHorizontal_bias="0.14"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.15"
+        app:layout_constraintVertical_bias="0.163"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -67,4 +67,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.348" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/course_list"
+        android:layout_width="329dp"
+        android:layout_height="383dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.847" />
 </androidx.constraintlayout.widget.ConstraintLayout>
