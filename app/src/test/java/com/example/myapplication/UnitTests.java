@@ -12,25 +12,17 @@ import static org.junit.Assert.*;
 
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.example.myapplication.student.database.AppDatabaseCourses;
-import com.example.myapplication.student.database.Course;
-import com.example.myapplication.student.database.CourseDao;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.example.myapplication.student.db.AppDatabaseCourses;
+import com.example.myapplication.student.db.Course;
+import com.example.myapplication.student.db.CourseDao;
 
 
 /**

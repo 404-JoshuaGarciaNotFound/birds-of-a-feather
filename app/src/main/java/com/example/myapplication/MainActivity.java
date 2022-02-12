@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,18 +16,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.example.myapplication.student.database.AppDatabaseCourses;
-import com.example.myapplication.student.database.AppDatabaseStudent;
-import com.example.myapplication.student.database.AppDatabaseUserInfo;
-import com.example.myapplication.student.database.Course;
-import com.example.myapplication.student.database.CourseDao;
-import com.example.myapplication.student.database.Student;
-import com.example.myapplication.student.database.StudentDao;
-import com.example.myapplication.student.database.UserInfo;
+import com.example.myapplication.student.db.AppDatabaseCourses;
+import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.Course;
+import com.example.myapplication.student.db.CourseDao;
+import com.example.myapplication.student.db.Student;
+import com.example.myapplication.student.db.StudentDao;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -35,15 +34,23 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean setupComplete = false;
 
+    // keys for Shared Preference
+    private final String IS_FIRST_TIME_SETUP_COMPLETE = "isFirstTimeSetUpComplete";
+    private final String USER_NAME = "user_name";
+    private final String HEAD_SHOT_URL = "head_shot_url";
+    private final String USER_COURSE_ = "user_course_";
+
     // database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
-    private AppDatabaseUserInfo dbUserInfo;
     private StudentDao studentDao;
     private CourseDao courseDao;
 
+    // SharedPreference that store user info
+    private SharedPreferences userInfo;
+
     // thread pool
-    private ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,48 +63,19 @@ public class MainActivity extends AppCompatActivity {
         studentDao = dbStudent.studentDao();
         courseDao = dbCourse.courseDao();
 
-        //here we add a check to see if first time setup is done.
-        if(dbUserInfo != null){
-            setupComplete = true;
-        }
-        //Turn this on to clear database of first time set up for name and URL and courses (mainly for debug)
-        dbUserInfo = AppDatabaseUserInfo.singleton(this);
-        dbCourse = AppDatabaseCourses.singleton(this);
+        // initialize the shared preference that store user info
+        userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
 
-        boolean debugy = false;
-        if(debugy == true){
-            if(dbUserInfo != null) {
-                dbUserInfo.userInfoDao().clear();
-            }
-            if(dbCourse != null){
-                dbCourse.courseDao().clear();
-            }
-        }
-
-        //here we add a check to see if first time setup is done.
-        if(!setupComplete) {
-            //Calls alert popup!
+        // check for first time setup
+        if(userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
             firstTimeSetup();
         }
+
         //DEMO MODE UI stuff,
         EditText DemoMock = findViewById(R.id.DemomockUserInput);
         DemoMock.setVisibility(View.INVISIBLE);
         Button mockEnter = findViewById(R.id.SubmitMockUser);
         mockEnter.setVisibility(View.INVISIBLE);
-
-
-
-
-        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        //StrictMode.setThreadPolicy(policy);
-
-        //Load images example Use this for opening image.
-        //String URLY = "https://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0";
-        //ImageView imgView =(ImageView)findViewById(R.id.imageView);
-        //imgView.setImageBitmap(getBitmapFromURL(URLY));
-
-//        studentDao.clear();
-//        courseDao.clear();
     }
 
     public void firstTimeSetup() {
@@ -112,35 +90,35 @@ public class MainActivity extends AppCompatActivity {
         FTSetup.show();
         //Collects name.
         Button submitted = (Button) FTSetup.findViewById(R.id.SubmitFirstName);
-        submitted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v8) {
-                final EditText name = (EditText) FTSetup.findViewById(R.id.personName);
-                String userName = name.getText().toString();
-                //Require users to type name no blanks name should be saved to database
-                if(!userName.equals("")){
+        submitted.setOnClickListener(v8 -> {
+            final EditText name = (EditText) FTSetup.findViewById(R.id.personName);
+            String userName = name.getText().toString();
+            //Require users to type name no blanks name should be saved to database
+            if(!userName.equals("")){
 
-                    FTSetup.dismiss();
-                    //Save name to userTextFile in assets. Not sure how to get the file stream going
-                    SetURL(userName);
+                FTSetup.dismiss();
+                //Save name to userTextFile in assets. Not sure how to get the file stream going
+                SetURL(userName);
 
-                } else {
-                    name.setError("Name cannot be empty!");
-                }
-                Log.d("Name that was typed in ", userName);
-
+            } else {
+                name.setError("Name cannot be empty!");
             }
+            Log.d("Name that was typed in ", userName);
+
+            // store user name to the SharedPreference
+            SharedPreferences.Editor userInfoEditor = userInfo.edit();
+            userInfoEditor.putString(USER_NAME, userName);
+            userInfoEditor.apply();
         });
 
-        //Next step add classes
-        //Call add classes interface
-        //Once First time setup is done set setup boolean to true.
+        // avoid second time set-up
+        SharedPreferences.Editor userInfoEditor = userInfo.edit();
 
+        userInfoEditor.putBoolean(IS_FIRST_TIME_SETUP_COMPLETE, true);
+        userInfoEditor.apply();
     }
 
     public void SetURL(String Uname) {
-        dbUserInfo = AppDatabaseUserInfo.singleton(this);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup_geturl, null));
@@ -149,25 +127,23 @@ public class MainActivity extends AppCompatActivity {
         FTSetup2.setTitle("First Time Setup");
         FTSetup2.show();
         Button submitted = (Button) FTSetup2.findViewById(R.id.SubmitURL);
-        submitted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v3) {
-                final EditText URLy = (EditText) FTSetup2.findViewById(R.id.personURL);
-                String headshotURL = URLy.getText().toString();
-                //Require users to type name no blanks name should be saved to database
-                if(!headshotURL.equals("")){
-                    //Save name to database
-                    dbUserInfo.userInfoDao().insertUser(new UserInfo(0, Uname, headshotURL));
-                    Log.d("UAddedSuccessful ", String.valueOf(dbUserInfo.userInfoDao().count()));
-                    FTSetup2.dismiss();
-                    firstTimeAddClasses();
-                } else {
-                    URLy.setError("URL cannot be empty!");
-                }
-                Log.d("URL that was typed in ", headshotURL);
-
-
+        submitted.setOnClickListener(v3 -> {
+            final EditText URLy = (EditText) FTSetup2.findViewById(R.id.personURL);
+            String headshotURL = URLy.getText().toString();
+            //Require users to type name no blanks name should be saved to database
+            if(!headshotURL.equals("")){
+                FTSetup2.dismiss();
+                firstTimeAddClasses();
+            } else {
+                URLy.setError("URL cannot be empty!");
             }
+            Log.d("URL that was typed in ", headshotURL);
+
+            // store user head shot url to the
+            // shared preference
+            SharedPreferences.Editor userInfoEditor = userInfo.edit();
+            userInfoEditor.putString(HEAD_SHOT_URL, headshotURL);
+            userInfoEditor.apply();
         });
     }
 
@@ -315,7 +291,6 @@ public class MainActivity extends AppCompatActivity {
                 String year = getResources().getStringArray(R.array.year)[yearInd];
                 String quarter = getResources().getStringArray(R.array.quarter)[quarterInd];
                 if (exit) {
-//                    Log.d("str format: ", year + " " + quarter + " " + subject + " " + courseNumber);
                     addCourse(year, quarter, subject, courseNumber);
                     addClasses.cancel();
                     repeatAddClasses(yearInd, quarterInd, subject, courseNumber);
@@ -406,7 +381,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method handles the click event for the button list
-     * It shows a list of students who has taken the same course with the app's user
+     * It shows a list of students who has taken the same course with the app's user, sorted by the
+     * number of classes the student shared with the user
      */
     private void onClickList() {
         // get user's taken courses
@@ -417,7 +393,6 @@ public class MainActivity extends AppCompatActivity {
 
         // check whether the students' course match the user's
         // if so, add the user to the students to display
-        List<Student> studentsToDisplay = new ArrayList<>();
         for (Student student: listOfStudents) {
             int numSharedCourses = 0;
             for (String courseStr : listOfUserCourses) {
@@ -427,14 +402,12 @@ public class MainActivity extends AppCompatActivity {
                     numSharedCourses++;
                 }
             }
-            if (numSharedCourses != 0) {
-                student.setNumSharedCourses(numSharedCourses);
-                studentsToDisplay.add(student);
-            }
+            student.setNumSharedCourses(numSharedCourses);
         }
+        listOfStudents.sort(Comparator.comparingInt(Student::getNumSharedCourses));
 
         RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(studentsToDisplay);
+        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudents);
         listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
     }
 
@@ -454,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
         List<String> listOfFormattedCourses = new ArrayList<>();
 
         // for comparison purpose, create a str in format : year,quarter,subject,number
+        int count = 0; // used to maintain the key for Shared Preference
         for (Course course :
                 listOfUserCourses) {
             StringBuilder courseStr = new StringBuilder();
@@ -464,6 +438,11 @@ public class MainActivity extends AppCompatActivity {
             courseStr.append(course.getCourseCode());
 
             listOfFormattedCourses.add(courseStr.toString());
+
+            SharedPreferences.Editor userInfoEditor = userInfo.edit();
+            userInfoEditor.putString(USER_COURSE_ + count, courseStr.toString());
+            userInfoEditor.apply();
+            count++;
         }
 
         return listOfFormattedCourses;

@@ -2,8 +2,6 @@ package com.example.myapplication;
 
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,9 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.student.database.Student;
-
-import org.w3c.dom.Text;
+import com.example.myapplication.student.db.Student;
 
 import java.util.List;
 
