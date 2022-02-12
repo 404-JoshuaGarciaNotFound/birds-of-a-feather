@@ -17,10 +17,12 @@ import android.widget.Spinner;
 
 import com.example.myapplication.student.database.AppDatabaseCourses;
 import com.example.myapplication.student.database.AppDatabaseStudent;
+import com.example.myapplication.student.database.AppDatabaseUserInfo;
 import com.example.myapplication.student.database.Course;
 import com.example.myapplication.student.database.CourseDao;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
+import com.example.myapplication.student.database.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +33,12 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private boolean setup = false;
+    private boolean setupComplete = false;
 
     // database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
+    private AppDatabaseUserInfo dbUserInfo;
     private StudentDao studentDao;
     private CourseDao courseDao;
 
@@ -54,7 +57,30 @@ public class MainActivity extends AppCompatActivity {
         courseDao = dbCourse.courseDao();
 
         //here we add a check to see if first time setup is done.
-        if(!setup) {
+        if(dbUserInfo != null){
+            setupComplete = true;
+        }
+        //Turn this on to clear database of first time set up for name and URL and courses (mainly for debug)
+        dbUserInfo = AppDatabaseUserInfo.singleton(this);
+        dbCourse = AppDatabaseCourses.singleton(this);
+
+        boolean debugy = false;
+        if(debugy == true){
+            if(dbUserInfo != null) {
+                dbUserInfo.userInfoDao().clear();
+            }
+            if(dbCourse != null){
+                dbCourse.courseDao().clear();
+                //Log.d("notEmpty", "goodTogo");
+                //List<Course> b = dbCourse.courseDao().getAllCourses();
+                //Extract string for year
+                // String ba = getResources().getStringArray(R.array.year)[Integer.parseInt(b.get(0).getYear())];
+                //  Log.d("Course", ba);
+            }
+        }
+
+        //here we add a check to see if first time setup is done.
+        if(!setupComplete) {
             //Calls alert popup!
             firstTimeSetup();
         }
@@ -101,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
 
                     FTSetup.dismiss();
                     //Save name to userTextFile in assets. Not sure how to get the file stream going
-                    SetURL();
+                    SetURL(userName);
+
                 } else {
                     name.setError("Name cannot be empty!");
                 }
@@ -116,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void SetURL() {
+    public void SetURL(String Uname) {
+        dbUserInfo = AppDatabaseUserInfo.singleton(this);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.activity_first_time_setup_geturl, null));
@@ -133,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 //Require users to type name no blanks name should be saved to database
                 if(!headshotURL.equals("")){
                     //Save name to database
+                    dbUserInfo.userInfoDao().insertUser(new UserInfo(0, Uname, headshotURL));
+                    Log.d("UAddedSuccessful ", String.valueOf(dbUserInfo.userInfoDao().count()));
                     FTSetup2.dismiss();
                     firstTimeAddClasses();
                 } else {
@@ -302,8 +333,7 @@ public class MainActivity extends AppCompatActivity {
         doneAddingClasses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Set first time setup to true when adding classes is finished
-                setup = true;
+
                 addClasses.cancel();
             }
         });

@@ -47,6 +47,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
     public static Bitmap getBitmapFromURL(String src) {
         try {
+
             //Log.e("src",src);
             URL url = new URL(src);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
