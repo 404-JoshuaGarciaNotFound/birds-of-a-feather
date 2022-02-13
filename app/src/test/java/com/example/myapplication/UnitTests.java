@@ -100,7 +100,6 @@ public class UnitTests {
         Context context = ApplicationProvider.getApplicationContext();
         dbCourses = Room.inMemoryDatabaseBuilder(context, AppDatabaseCourses.class).allowMainThreadQueries().build();
         courseDaoa = dbCourses.courseDao();
-
     }
     @After
     public void resetTest2(){
@@ -166,7 +165,6 @@ public class UnitTests {
         Context context = ApplicationProvider.getApplicationContext();
         dbStudent = Room.inMemoryDatabaseBuilder(context, AppDatabaseStudent.class).allowMainThreadQueries().build();
         studentDaoa = dbStudent.studentDao();
-
     }
     @After
     public void ResetTest2(){
