@@ -204,7 +204,6 @@ public class UnitTests {
 
     @Test
     public void TestFindSharedCoursesEmpty(){
-
         Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,128", 0);
         Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
@@ -212,12 +211,51 @@ public class UnitTests {
 
         String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
         ArrayList<Course> courseList = new ArrayList<>();
-        Course course = new Course(128, "2022", "FA", "CSE");
+        Course course = new Course(128, "2022", "FA", "CSE 128");
         courseList.add(course);
         List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
 
         assertEquals(sharedCourses.size(),0);
     }
+
+    @Test
+    public void TestFindOneSharedCourse(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course = new Course(127, "2022", "FA", "CSE,127");
+        courseList.add(course);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        assertEquals(sharedCourses.size(),1);
+    }
+
+    @Test
+    public void TestFindSharedCourseName(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course = new Course(127, "2022", "FA", "CSE,127");
+        courseList.add(course);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        Course retrievedCourse = sharedCourses.get(0);
+
+        assertEquals(retrievedCourse.getId(),127);
+        assertTrue(retrievedCourse.getYear().equals("2022"));
+        assertTrue(retrievedCourse.getQuarter().equals("FA"));
+        assertTrue(retrievedCourse.getCourseCode().equals("CSE,127"));
+    }
+
+
 
 
 }
