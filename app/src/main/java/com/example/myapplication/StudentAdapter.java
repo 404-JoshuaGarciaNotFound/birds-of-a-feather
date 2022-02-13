@@ -2,6 +2,8 @@ package com.example.myapplication;
 
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.os.StrictMode;

@@ -12,12 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.student.database.AppDatabaseCourses;
-import com.example.myapplication.student.database.AppDatabaseStudent;
-import com.example.myapplication.student.database.Course;
-import com.example.myapplication.student.database.CourseDao;
-import com.example.myapplication.student.database.Student;
-import com.example.myapplication.student.database.StudentDao;
+
+import com.example.myapplication.student.db.AppDatabaseCourses;
+import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.Course;
+import com.example.myapplication.student.db.CourseDao;
+import com.example.myapplication.student.db.Student;
+import com.example.myapplication.student.db.StudentDao;
 
 import java.util.ArrayList;
 import java.util.Collections;

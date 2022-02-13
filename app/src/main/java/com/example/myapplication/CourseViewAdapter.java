@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.student.database.Course;
+import com.example.myapplication.student.db.Course;
 
 import java.util.List;
 
