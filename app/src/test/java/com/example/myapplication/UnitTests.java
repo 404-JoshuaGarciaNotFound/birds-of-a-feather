@@ -28,6 +28,9 @@ import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -198,6 +201,23 @@ public class UnitTests {
     }
     //Should add a url test to make sure bitmap function works
     //Should add a test on making sure the list is in the correct order.
+
+    @Test
+    public void TestFindSharedCoursesEmpty(){
+
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,128", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course = new Course(128, "2022", "FA", "CSE");
+        courseList.add(course);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        assertEquals(sharedCourses.size(),0);
+    }
 
 
 }
