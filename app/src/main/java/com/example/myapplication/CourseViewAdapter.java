@@ -12,10 +12,14 @@ import com.example.myapplication.student.database.Course;
 
 import java.util.List;
 
+
+//ViewAdapter that list the shared courses in StudentDetailActivity
 public class CourseViewAdapter extends RecyclerView.Adapter<CourseViewAdapter.ViewHolder>{
 
     private final List<Course> listOfCourse;
 
+
+    //Connect with course_row layout
     @NonNull
     @Override
     public CourseViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -49,11 +53,13 @@ public class CourseViewAdapter extends RecyclerView.Adapter<CourseViewAdapter.Vi
         private final TextView courseDetail;
 
 
+        //connect with layou
         public ViewHolder(View itemView) {
             super(itemView);
             this.courseDetail = itemView.findViewById(R.id.course_detail);
         }
 
+        //Set course format on ui
         public void setCourse(Course course){
             this.course = course;
             String[] courseCodeInfo = course.getCourseCode().split(",");
