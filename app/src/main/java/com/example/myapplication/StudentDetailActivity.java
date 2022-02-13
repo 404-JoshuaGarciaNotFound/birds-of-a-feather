@@ -94,7 +94,6 @@ public class StudentDetailActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.d("Courses", listOfCourse.get(0).getCourseCode());
         return listOfCourse;
 
     }
