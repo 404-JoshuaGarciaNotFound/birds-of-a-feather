@@ -255,6 +255,53 @@ public class UnitTests {
         assertTrue(retrievedCourse.getCourseCode().equals("CSE,127"));
     }
 
+    @Test
+    public void TestFindMultiSharedCourse(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course0 = new Course(127, "2022", "FA", "CSE,127");
+        Course course1 = new Course(110, "2022", "WI", "CSE,110");
+        courseList.add(course0);
+        courseList.add(course1);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        assertEquals(sharedCourses.size(),2);
+    }
+
+    @Test
+    public void TestFindMultiSharedCourseName(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course0 = new Course(127, "2022", "FA", "CSE,127");
+        Course course1 = new Course(110, "2022", "WI", "CSE,110");
+        courseList.add(course0);
+        courseList.add(course1);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        Course retrievedCourse0 = sharedCourses.get(0);
+        Course retrievedCourse1 = sharedCourses.get(1);
+
+        assertEquals(retrievedCourse0.getId(),127);
+        assertTrue(retrievedCourse0.getYear().equals("2022"));
+        assertTrue(retrievedCourse0.getQuarter().equals("FA"));
+        assertTrue(retrievedCourse0.getCourseCode().equals("CSE,127"));
+
+        assertEquals(retrievedCourse1.getId(),110);
+        assertTrue(retrievedCourse1.getYear().equals("2022"));
+        assertTrue(retrievedCourse1.getQuarter().equals("WI"));
+        assertTrue(retrievedCourse1.getCourseCode().equals("CSE,110"));
+    }
+
 
 
 
