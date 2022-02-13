@@ -19,6 +19,7 @@ import com.example.myapplication.student.database.CourseDao;
 import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDetailActivity extends AppCompatActivity {
@@ -48,7 +49,23 @@ public class StudentDetailActivity extends AppCompatActivity {
         int studentId = intent.getIntExtra("student_id", 0);
         dbStudent = AppDatabaseStudent.singleton(this);
         student = dbStudent.studentDao().getStudentByID(studentId);
-        List<Course> listOfCourse = dbCourse.courseDao().getAllCourses();
+
+        List<Course> myCourses = dbCourse.courseDao().getAllCourses();
+//        Log.d("myYear", listOfCourse.get(0).getYear());
+//        Log.d("myQuarter", listOfCourse.get(0).getQuarter());
+//        Log.d("myCourse", listOfCourse.get(0).getCourseCode());
+        String otherCourses = student.getCourses();
+        Log.d("Student Course", otherCourses);
+        List<Course> listOfCourse = findSharedCourse(otherCourses, myCourses);
+
+
+//        //Test
+//        String testCourse = student.getCourses();
+//        Log.d("Student Course", testCourse);
+//        String[] arrayOfCourses = testCourse.split(" ");
+//        for (String singleCourse : arrayOfCourses) {
+//            Log.d("Course One", singleCourse);
+//        }
 
         ImageView studentHeadShot = findViewById(R.id.student_headshot);
         TextView studentName = findViewById(R.id.student_name);
@@ -60,5 +77,27 @@ public class StudentDetailActivity extends AppCompatActivity {
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
         coursesViewAdapter = new CourseViewAdapter(listOfCourse);
         coursesRecyclerView.setAdapter(coursesViewAdapter);
+    }
+
+    //TODO: Need a function to find out shared course for display
+    public List<Course> findSharedCourse(String otherCourses, List<Course> myCourses){
+        String[] arrayofCourses = otherCourses.split(" ");
+        List<Course> listOfCourse = new ArrayList<>();
+        for (Course mySingleCourse : myCourses){
+            for (String otherSingleCourse : arrayofCourses){
+                String[] otherCourseInfo = otherSingleCourse.split(",");
+                String otherYear = otherCourseInfo[0];
+                String otherQuarter = otherCourseInfo[1];
+                String otherCourse = otherCourseInfo[2] + "," + otherCourseInfo[3];
+                if (mySingleCourse.getYear().equals(otherYear) &&
+                        mySingleCourse.getQuarter().equals(otherQuarter) &&
+                        mySingleCourse.getCourseCode().equals(otherCourse)){
+                    listOfCourse.add(mySingleCourse);
+                }
+            }
+        }
+        Log.d("Courses", listOfCourse.get(0).getCourseCode());
+        return listOfCourse;
+
     }
 }
