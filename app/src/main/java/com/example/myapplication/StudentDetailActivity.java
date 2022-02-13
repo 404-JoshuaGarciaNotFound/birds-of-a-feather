@@ -20,6 +20,7 @@ import com.example.myapplication.student.database.Student;
 import com.example.myapplication.student.database.StudentDao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StudentDetailActivity extends AppCompatActivity {
@@ -57,8 +58,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         String otherCourses = student.getCourses();
         Log.d("Student Course", otherCourses);
         List<Course> listOfCourse = findSharedCourse(otherCourses, myCourses);
-
-
+        Collections.sort(listOfCourse);
 //        //Test
 //        String testCourse = student.getCourses();
 //        Log.d("Student Course", testCourse);

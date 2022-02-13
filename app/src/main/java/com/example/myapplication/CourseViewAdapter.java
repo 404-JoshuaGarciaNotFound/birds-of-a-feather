@@ -56,7 +56,8 @@ public class CourseViewAdapter extends RecyclerView.Adapter<CourseViewAdapter.Vi
 
         public void setCourse(Course course){
             this.course = course;
-            String courseInfo = course.getYear() + " " + course.getQuarter() + " " + course.getCourseCode();
+            String[] courseCodeInfo = course.getCourseCode().split(",");
+            String courseInfo = course.getYear() + " " + course.getQuarter() + " " + courseCodeInfo[0] + " " + courseCodeInfo[1];
             this.courseDetail.setText(courseInfo);
         }
     }

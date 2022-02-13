@@ -9,6 +9,7 @@
     <string name="studentheadshot">studentHeadshot</string>
     <string name="course_taking">Course Taking</string>
     <string name="courses">courses</string>
+    <string name="common_courses">Common Courses</string>
     <string-array name="year">
     <item>2022</item>
     <item>2021</item>
