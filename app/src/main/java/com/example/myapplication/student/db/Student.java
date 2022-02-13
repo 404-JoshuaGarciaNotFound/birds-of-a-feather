@@ -1,10 +1,8 @@
-package com.example.myapplication.student.database;
+package com.example.myapplication.student.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import java.util.List;
 
 @Entity(tableName = "students")
 public class Student {
