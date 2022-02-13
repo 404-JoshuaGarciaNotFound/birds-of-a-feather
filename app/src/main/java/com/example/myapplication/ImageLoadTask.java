@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
@@ -22,9 +24,12 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
         this.imageView = imageView;
     }
 
+
     @Override
     protected Bitmap doInBackground(Void... params) {
+
         try {
+
             URL urlConnection = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) urlConnection
                     .openConnection();
@@ -32,6 +37,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
             connection.connect();
             InputStream input = connection.getInputStream();
             Bitmap myBitmap = BitmapFactory.decodeStream(input);
+
             return myBitmap;
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +51,9 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
         imageView.setImageBitmap(result);
     }
 
+
     public static Bitmap getBitmapFromURL(String src) {
+
         try {
 
             //Log.e("src",src);

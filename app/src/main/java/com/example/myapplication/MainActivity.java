@@ -49,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
     // SharedPreference that store user info
     private SharedPreferences userInfo;
 
-    // thread pool
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +77,12 @@ public class MainActivity extends AppCompatActivity {
         mockEnter.setVisibility(View.INVISIBLE);
     }
 
+    /*Google auth code here. Since it is difficult to test and run on an emulator we have left it
+    commented out but the code is functional on a physical android device.
+
+
+    */
+    //This method opens an alert window that records the preferred name of the user.
     public void firstTimeSetup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -344,6 +349,8 @@ public class MainActivity extends AppCompatActivity {
             mockSwitch.setText("LIST");
             RecyclerView studentList = findViewById(R.id.list_of_students);
             studentList.setVisibility(View.INVISIBLE);
+
+
             EditText DemoMock = findViewById(R.id.DemomockUserInput);
             DemoMock.setVisibility(View.VISIBLE);
             Button mockEnter = findViewById(R.id.SubmitMockUser);
@@ -375,7 +382,10 @@ public class MainActivity extends AppCompatActivity {
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
 
-            executorService.submit(this::onClickList);
+
+            onClickList();
+
+            //executorService.submit(this::onClickList);
         }
     }
 
@@ -404,11 +414,16 @@ public class MainActivity extends AppCompatActivity {
             }
             student.setNumSharedCourses(numSharedCourses);
         }
-        listOfStudents.sort(Comparator.comparingInt(Student::getNumSharedCourses));
+        listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
 
         RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
         StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudents);
-        listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+            }
+        });
     }
 
     /**
@@ -472,6 +487,8 @@ public class MainActivity extends AppCompatActivity {
             courses.append(splitInfo[i]);
             if (i != splitInfo.length - 1) courses.append(" ");
         }
+        Log.d("courses", courses.toString());
+
         Student toAddStudent = new Student(id, url, name, courses.toString(), 0);
 
         // add the student to the database
