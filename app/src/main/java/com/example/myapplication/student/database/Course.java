@@ -73,13 +73,14 @@ public class Course implements Comparable<Course> {
                 && this.quarter.equals(other.quarter) && this.courseCode.equals(other.courseCode));
     }
 
+    // CompareTo is implemented in order to sort courses by chronological order in detail info
     @Override
     public int compareTo(Course otherCourse) {
-        if (this.getYear().compareTo(otherCourse.getYear()) > 0) {
+        if (this.getYear().compareTo(otherCourse.getYear()) > 0) { // Compare year first
             return -1;
         } else if (this.getYear().compareTo(otherCourse.getYear()) < 0) {
             return 1;
-        } else {
+        } else { // If years are the same then compare quarter
             String thisQuarter = this.getQuarter();
             String otherQuarter = otherCourse.getQuarter();
 
@@ -87,7 +88,7 @@ public class Course implements Comparable<Course> {
                 return -1;
             } else if (getQuarterInd(thisQuarter) < getQuarterInd(otherQuarter)) {
                 return 1;
-            } else {
+            } else { // If quarters are the same then compare course code
                 if (this.getCourseCode().compareTo(otherCourse.getCourseCode()) > 0) {
                     return -1;
                 } else if (this.getCourseCode().compareTo(otherCourse.getCourseCode()) < 0) {
@@ -99,6 +100,8 @@ public class Course implements Comparable<Course> {
         }
     }
 
+    // This is a helper function to get the integer representation of string quarter. The specific
+    // representation is inside switch.
     public static int getQuarterInd(String quarter) {
         int quarterInd;
         switch (quarter) {

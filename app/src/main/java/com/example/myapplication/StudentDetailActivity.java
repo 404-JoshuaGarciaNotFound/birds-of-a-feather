@@ -25,12 +25,14 @@ import java.util.List;
 
 public class StudentDetailActivity extends AppCompatActivity {
 
+    //Database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
     private Student student;
     private StudentDao studentDao;
     private CourseDao courseDao;
 
+    //RecylerView Variables
     private RecyclerView coursesRecyclerView;
     private RecyclerView.LayoutManager coursesLayoutManager;
     private CourseViewAdapter coursesViewAdapter;
@@ -41,6 +43,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student_detail_info);
         Log.d("student_detail_info", "onCreate: start ");
 
+        //Set up database
         dbStudent = AppDatabaseStudent.singleton(this);
         dbCourse = AppDatabaseCourses.singleton(this);
         studentDao = dbStudent.studentDao();
@@ -51,27 +54,21 @@ public class StudentDetailActivity extends AppCompatActivity {
         dbStudent = AppDatabaseStudent.singleton(this);
         student = dbStudent.studentDao().getStudentByID(studentId);
 
+        //Get Course list from both students and find shared course
         List<Course> myCourses = dbCourse.courseDao().getAllCourses();
-//        Log.d("myYear", listOfCourse.get(0).getYear());
-//        Log.d("myQuarter", listOfCourse.get(0).getQuarter());
-//        Log.d("myCourse", listOfCourse.get(0).getCourseCode());
         String otherCourses = student.getCourses();
         Log.d("Student Course", otherCourses);
         List<Course> listOfCourse = findSharedCourse(otherCourses, myCourses);
+        //Sort chronologically
         Collections.sort(listOfCourse);
-//        //Test
-//        String testCourse = student.getCourses();
-//        Log.d("Student Course", testCourse);
-//        String[] arrayOfCourses = testCourse.split(" ");
-//        for (String singleCourse : arrayOfCourses) {
-//            Log.d("Course One", singleCourse);
-//        }
 
+        //Set activity page
         ImageView studentHeadShot = findViewById(R.id.student_headshot);
         TextView studentName = findViewById(R.id.student_name);
         studentName.setText(student.getName());
         studentHeadShot.setImageBitmap(getBitmapFromURL(student.getHeadShotURL()));
 
+        //Set CourseViewAdapter and bind to recylerView
         coursesRecyclerView = findViewById(R.id.course_list);
         coursesLayoutManager = new LinearLayoutManager(this);
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
@@ -79,7 +76,8 @@ public class StudentDetailActivity extends AppCompatActivity {
         coursesRecyclerView.setAdapter(coursesViewAdapter);
     }
 
-    //TODO: Need a function to find out shared course for display
+    //Function to find sharedCourse
+    //@param CourseList from both students
     public List<Course> findSharedCourse(String otherCourses, List<Course> myCourses){
         String[] arrayofCourses = otherCourses.split(" ");
         List<Course> listOfCourse = new ArrayList<>();
