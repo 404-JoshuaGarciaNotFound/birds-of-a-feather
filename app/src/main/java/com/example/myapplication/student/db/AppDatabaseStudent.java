@@ -1,4 +1,4 @@
-package com.example.myapplication.student.database;
+package com.example.myapplication.student.db;
 
 import android.content.Context;
 

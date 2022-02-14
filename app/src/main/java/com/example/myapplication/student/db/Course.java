@@ -1,4 +1,4 @@
-package com.example.myapplication.student.database;
+package com.example.myapplication.student.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -16,6 +16,7 @@ public class Course implements Comparable<Course> {
     @ColumnInfo(name = "quarter")
     private String quarter;
 
+    // "CSE 127" <- expected format of course code
     @ColumnInfo(name = "course_code")
     private String courseCode;
 

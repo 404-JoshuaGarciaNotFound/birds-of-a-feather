@@ -4,6 +4,8 @@ import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +17,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.student.database.Student;
-
-import org.w3c.dom.Text;
+import com.example.myapplication.student.db.Student;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHolder> {
 
@@ -65,13 +67,30 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             itemView.setOnClickListener(this);
         }
 
+
         public void setStudent(Student student) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
 
             this.student = student;
-            Log.d("name", student.getName());
-            this.personIcon.setImageBitmap(getBitmapFromURL(student.getHeadShotURL()));
+            Log.d("name of student being processed ", student.getName());
+
+            //This thread is for processing image connection in the background.
+            ImageView im = itemView.findViewById(R.id.student_headshot);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Bitmap imageToDisplay = getBitmapFromURL(student.getHeadShotURL());
+                    im.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            im.setImageBitmap(imageToDisplay);
+                        }
+                    });
+                }
+            }).start();
+
+
             this.personName.setText(student.getName());
             this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
         }

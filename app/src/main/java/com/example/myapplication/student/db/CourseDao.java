@@ -1,4 +1,4 @@
-package com.example.myapplication.student.database;
+package com.example.myapplication.student.db;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -9,14 +9,14 @@ import java.util.List;
 @Dao
 public interface CourseDao {
     @Query("SELECT * FROM courses")
-    public List<Course> getAllCourses();
+    List<Course> getAllCourses();
 
     @Insert
-    public void insertCourse(Course course);
+    void insertCourse(Course course);
 
     @Query("SELECT COUNT(*) FROM courses")
     int count();
 
     @Query("DELETE FROM courses")
-    public void clear();
+    void clear();
 }
