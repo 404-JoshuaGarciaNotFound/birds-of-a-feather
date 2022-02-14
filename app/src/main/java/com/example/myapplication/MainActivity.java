@@ -56,6 +56,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        // Configure sign-in to request the user's ID, email address, and basic
+//        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestEmail()
+//                .build();
+//
+//        // Build a GoogleSignInClient with the options specified by gso.
+//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+//
+//        // Check for existing Google Sign In account, if the user is already signed in
+//        // the GoogleSignInAccount will be non-null.
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//
+//        // Set the dimensions of the sign-in button.
+//        SignInButton signInButton = findViewById(R.id.sign_in_button);
+//        signInButton.setSize(SignInButton.SIZE_STANDARD);
+//
+//        signInButton.setOnClickListener(view -> signIn());
+
         // initialize database-relevant
         dbStudent = AppDatabaseStudent.singleton(this);
         dbCourse = AppDatabaseCourses.singleton(this);
@@ -79,6 +98,38 @@ public class MainActivity extends AppCompatActivity {
 
     /*Google auth code here. Since it is difficult to test and run on an emulator we have left it
     commented out but the code is functional on a physical android device.
+
+//    private void signIn() {
+//        Toast.makeText(this, "in signIn", Toast.LENGTH_SHORT).show();
+//
+//        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//        startActivityForResult(signInIntent, RC_SIGN_IN);
+//    }
+
+//    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+//        try {
+//            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+//
+//            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+//            if (acct != null) {
+//                String personName = acct.getDisplayName();
+//                String personGivenName = acct.getGivenName();
+//                String personFamilyName = acct.getFamilyName();
+//                String personEmail = acct.getEmail();
+//                String personId = acct.getId();
+//                Uri personPhoto = acct.getPhotoUrl();
+//
+//                // TODO: Change
+//                Toast.makeText(this, "User name:" + personName, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            // Signed in successfully, show authenticated UI.
+//        } catch (ApiException e) {
+//            // The ApiException status code indicates the detailed failure reason.
+//            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+//            Log.d("Message", e.toString());
+//        }
+//    }
 
 
     */
