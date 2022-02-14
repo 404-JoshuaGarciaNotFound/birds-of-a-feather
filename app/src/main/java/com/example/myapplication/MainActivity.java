@@ -409,10 +409,14 @@ public class MainActivity extends AppCompatActivity {
             mockEnter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v2) {
+
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String mockUserInfo = newUser.getText().toString();
-                    addStudent(mockUserInfo);
-                    DemoMock.setText("");
+                    if(!mockUserInfo.equals("")) {
+
+                        addStudent(mockUserInfo);
+                        DemoMock.setText("");
+                    }
                 }
 
             });

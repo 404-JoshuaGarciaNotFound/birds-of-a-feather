@@ -4,59 +4,44 @@ package com.example.myapplication;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
+import com.example.myapplication.student.db.StudentDao;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class FirstTimeSetupUITest {
-
-    /*
-    this test is for testing the first time setup Ui and making sure it saves the appropriate user information
-
-             !!! WARNING: MAKE SURE TO UNINSTALL THE APP BEFORE RUNNING THIS TEST !!!
-        ***Robo electric has some issue that will crash this test if we do not uninstall***
-
-     */
-
+public class MainActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void firstTimeSetupUITest() {
-
+    public void mainActivityTest() {
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.personName),
                         childAtPosition(
@@ -85,7 +70,7 @@ public class FirstTimeSetupUITest {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText2.perform(replaceText("WWW.GOOGLE.COM"), closeSoftKeyboard());
+        appCompatEditText2.perform(replaceText("www.google.com"), closeSoftKeyboard());
 
         ViewInteraction materialButton2 = onView(
                 allOf(withId(R.id.SubmitURL), withText("Submit"),
@@ -115,7 +100,7 @@ public class FirstTimeSetupUITest {
                                         0),
                                 6),
                         isDisplayed()));
-        appCompatEditText4.perform(replaceText("110"), closeSoftKeyboard());
+        appCompatEditText4.perform(replaceText("100"), closeSoftKeyboard());
 
         ViewInteraction materialButton3 = onView(
                 allOf(withId(R.id.enterCourseInfo), withText("Enter"),
@@ -127,7 +112,37 @@ public class FirstTimeSetupUITest {
                         isDisplayed()));
         materialButton3.perform(click());
 
+        ViewInteraction appCompatEditText5 = onView(
+                allOf(withId(R.id.editCourseNumber), withText("100"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                6),
+                        isDisplayed()));
+        appCompatEditText5.perform(replaceText("110"));
+
+        ViewInteraction appCompatEditText6 = onView(
+                allOf(withId(R.id.editCourseNumber), withText("110"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                6),
+                        isDisplayed()));
+        appCompatEditText6.perform(closeSoftKeyboard());
+
         ViewInteraction materialButton4 = onView(
+                allOf(withId(R.id.enterCourseInfo), withText("Enter"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                7),
+                        isDisplayed()));
+        materialButton4.perform(click());
+
+        ViewInteraction materialButton5 = onView(
                 allOf(withId(R.id.doneAddingClasses), withText("Done"),
                         childAtPosition(
                                 childAtPosition(
@@ -135,24 +150,73 @@ public class FirstTimeSetupUITest {
                                         0),
                                 8),
                         isDisplayed()));
-        materialButton4.perform(click());
-        materialButton4.perform(closeSoftKeyboard());
+        materialButton5.perform(click());
 
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        SharedPreferences sharedPrefs = context.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        ViewInteraction materialButton6 = onView(
+                allOf(withId(R.id.nearByMockScreen), withText("MOCK"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                3),
+                        isDisplayed()));
+        materialButton6.perform(click());
 
-        //This ensures that the program did save first time setup. Should store true.
-        assertTrue(sharedPrefs.getBoolean("isFirstTimeSetUpComplete", false));
-        //This ensures that the program saved the name
-        assertEquals("Joshua", sharedPrefs.getString("user_name", "no name found"));
-        //This tests that the program saved the correct URL
-        assertEquals("WWW.GOOGLE.COM", sharedPrefs.getString("head_shot_url", "no url found"));
+        ViewInteraction appCompatEditText7 = onView(
+                allOf(withId(R.id.DemomockUserInput),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                5),
+                        isDisplayed()));
+        appCompatEditText7.perform(longClick());
 
+        ViewInteraction appCompatEditText8 = onView(
+                allOf(withId(R.id.DemomockUserInput),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                5),
+                        isDisplayed()));
+        appCompatEditText8.perform(click());
+
+        ViewInteraction appCompatEditText9 = onView(
+                allOf(withId(R.id.DemomockUserInput),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                5),
+                        isDisplayed()));
+        appCompatEditText9.perform(replaceText("Bill,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,\n2022,SP,CSE,127"), closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText10 = onView(
+                allOf(withId(R.id.DemomockUserInput), withText("Bill,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,\n2022,SP,CSE,127"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                5),
+                        isDisplayed()));
+        appCompatEditText10.perform(click());
+
+        ViewInteraction materialButton8 = onView(
+                allOf(withId(R.id.nearByMockScreen), withText("LIST"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                3),
+                        isDisplayed()));
+        materialButton8.perform(click());
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-
-
-
-
 
     private static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {
