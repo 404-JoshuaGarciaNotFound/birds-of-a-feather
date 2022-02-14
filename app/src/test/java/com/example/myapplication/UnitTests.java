@@ -28,6 +28,9 @@ import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -198,6 +201,108 @@ public class UnitTests {
     }
     //Should add a url test to make sure bitmap function works
     //Should add a test on making sure the list is in the correct order.
+
+    @Test
+    public void TestFindSharedCoursesEmpty(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,128", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course = new Course(128, "2022", "FA", "CSE 128");
+        courseList.add(course);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        assertEquals(sharedCourses.size(),0);
+    }
+
+    @Test
+    public void TestFindOneSharedCourse(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course = new Course(127, "2022", "FA", "CSE,127");
+        courseList.add(course);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        assertEquals(sharedCourses.size(),1);
+    }
+
+    @Test
+    public void TestFindSharedCourseName(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course = new Course(127, "2022", "FA", "CSE,127");
+        courseList.add(course);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        Course retrievedCourse = sharedCourses.get(0);
+
+        assertEquals(retrievedCourse.getId(),127);
+        assertTrue(retrievedCourse.getYear().equals("2022"));
+        assertTrue(retrievedCourse.getQuarter().equals("FA"));
+        assertTrue(retrievedCourse.getCourseCode().equals("CSE,127"));
+    }
+
+    @Test
+    public void TestFindMultiSharedCourse(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course0 = new Course(127, "2022", "FA", "CSE,127");
+        Course course1 = new Course(110, "2022", "WI", "CSE,110");
+        courseList.add(course0);
+        courseList.add(course1);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        assertEquals(sharedCourses.size(),2);
+    }
+
+    @Test
+    public void TestFindMultiSharedCourseName(){
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        String otherCourses = "2022,FA,CSE,127 2022,WI,CSE,110";
+        ArrayList<Course> courseList = new ArrayList<>();
+        Course course0 = new Course(127, "2022", "FA", "CSE,127");
+        Course course1 = new Course(110, "2022", "WI", "CSE,110");
+        courseList.add(course0);
+        courseList.add(course1);
+        List<Course> sharedCourses = StudentDetailActivity.findSharedCourse(otherCourses,courseList);
+
+        Course retrievedCourse0 = sharedCourses.get(0);
+        Course retrievedCourse1 = sharedCourses.get(1);
+
+        assertEquals(retrievedCourse0.getId(),127);
+        assertTrue(retrievedCourse0.getYear().equals("2022"));
+        assertTrue(retrievedCourse0.getQuarter().equals("FA"));
+        assertTrue(retrievedCourse0.getCourseCode().equals("CSE,127"));
+
+        assertEquals(retrievedCourse1.getId(),110);
+        assertTrue(retrievedCourse1.getYear().equals("2022"));
+        assertTrue(retrievedCourse1.getQuarter().equals("WI"));
+        assertTrue(retrievedCourse1.getCourseCode().equals("CSE,110"));
+    }
+
+
 
 
 }

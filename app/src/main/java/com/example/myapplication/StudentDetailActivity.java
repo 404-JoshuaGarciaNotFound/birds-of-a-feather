@@ -79,7 +79,7 @@ public class StudentDetailActivity extends AppCompatActivity {
 
     //Function to find sharedCourse
     //@param CourseList from both students
-    public List<Course> findSharedCourse(String otherCourses, List<Course> myCourses){
+    public static List<Course> findSharedCourse(String otherCourses, List<Course> myCourses){
         String[] arrayofCourses = otherCourses.split(" ");
         List<Course> listOfCourse = new ArrayList<>();
         for (Course mySingleCourse : myCourses){
