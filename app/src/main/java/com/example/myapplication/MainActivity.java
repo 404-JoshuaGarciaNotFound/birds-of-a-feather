@@ -5,6 +5,9 @@ import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
 import static com.example.myapplication.SaveSessionToDB.AddDataToDb;
+import static com.example.myapplication.student.db.OptionsMenuControls.buildFavoritesSection;
+import static com.example.myapplication.student.db.OptionsMenuControls.buildListFilters;
+import static com.example.myapplication.student.db.OptionsMenuControls.buildListSession;
 import static com.example.myapplication.student.db.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.student.db.OptionsMenuControls.showMenu;
 
@@ -90,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
         // check for first time setup
 
+        buildListSession(this, getLayoutInflater());
+        buildListFilters(this, getLayoutInflater());
+        buildFavoritesSection(this, getLayoutInflater());
         if(!userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
             Log.d("SETUPLOG", "First time setup not complete... Running now!");
             //Run First time setup
@@ -109,11 +115,12 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton ListSesh = findViewById(R.id.floatingActionButton3);
         FloatingActionButton FilterOptions = findViewById(R.id.floatingActionButton4);
         //This toggles it on or off and opens window
+
         options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!active){
-                    active = showMenu(getResources(), FavoritesTab, ListSesh, FilterOptions);
+                    active = showMenu(getLayoutInflater(), getResources(), FavoritesTab, ListSesh, FilterOptions);
                 }
                 else{
                     active = closeMenu(FavoritesTab, ListSesh, FilterOptions);
