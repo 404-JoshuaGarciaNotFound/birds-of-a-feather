@@ -91,8 +91,14 @@ public class MainActivity extends AppCompatActivity {
         courseDao = dbCourse.courseDao();
         // initialize the shared preference that store user info
         userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
-        // check for first time setup
 
+        // check and ask for bluetooth permission
+        BTPermission btPermission = new BTPermission(MainActivity.this);
+        if (!btPermission.BTPermissionIsGranted()) {
+            btPermission.requestBTPermission();
+        }
+
+        // check for first time setup
         buildListSession(this, getLayoutInflater());
         buildListFilters(this, getLayoutInflater());
         buildFavoritesSection(this, getLayoutInflater());
@@ -296,7 +302,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         dbStudent.close();
     }
-
-
-
 }
