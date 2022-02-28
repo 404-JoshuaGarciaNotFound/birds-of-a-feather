@@ -4,9 +4,18 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/drawable/ic_launcher_background.xml" value="0.403125" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_first_time_add_classes.xml" value="0.14739583333333334" />
         <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_first_time_setup.xml" value="0.33" />
         <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_first_time_setup2.xml" value="0.21875" />
-        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_first_time_setup_geturl.xml" value="0.12689969604863222" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_repeat_add_classes.xml" value="0.14739583333333334" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/activity_student_detail_info.xml" value="0.14739583333333334" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/courses_row.xml" value="0.14739583333333334" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/filteroptions.xml" value="0.33" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/listfavorites.xml" value="0.24791666666666667" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/listsessions.xml" value="0.33" />
+        <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/savesession_uiscreen_prompt.xml" value="0.33" />
         <entry key="..\:/CodeProjects/abirds-of-a-feather-team-30/app/src/main/res/layout/single_student_row.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_repeat_add_classes.xml" value="0.1503623188405797" />

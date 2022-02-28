@@ -64,10 +64,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_of_students"
-        android:layout_width="409dp"
-        android:layout_height="654dp"
+        android:layout_width="376dp"
+        android:layout_height="600dp"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="76dp"
+        android:layout_marginTop="72dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -80,11 +80,11 @@
         android:ems="10"
         android:gravity="bottom|start"
         android:hint="@string/input_mock_user"
+        android:importantForAutofill="no"
         android:inputType="textMultiLine"
         android:textColorHint="#757575"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/SubmitMockUser"
@@ -95,6 +95,54 @@
         android:text="@string/enter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="584dp"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/btn_star" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="584dp"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_input_get" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="584dp"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_search" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/MoreOpts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="584dp"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
