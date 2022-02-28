@@ -1,4 +1,4 @@
-package com.example.myapplication.student.db;
+package com.example.myapplication;
 
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 

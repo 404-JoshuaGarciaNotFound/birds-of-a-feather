@@ -4,44 +4,33 @@ import static com.example.myapplication.AddStudent.addStudent;
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
-import static com.example.myapplication.SaveSessionToDB.AddDataToDb;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildFavoritesSection;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildListFilters;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildListSession;
-import static com.example.myapplication.student.db.OptionsMenuControls.closeMenu;
-import static com.example.myapplication.student.db.OptionsMenuControls.showMenu;
+import static com.example.myapplication.OptionsMenuControls.buildFavoritesSection;
+import static com.example.myapplication.OptionsMenuControls.buildListFilters;
+import static com.example.myapplication.OptionsMenuControls.buildListSession;
+import static com.example.myapplication.OptionsMenuControls.closeMenu;
+import static com.example.myapplication.OptionsMenuControls.showMenu;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
-import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private StudentDao studentDao;
     private CourseDao courseDao;
     // SharedPreference that store user info
-    private SharedPreferences userInfo;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,16 +79,16 @@ public class MainActivity extends AppCompatActivity {
         studentDao = dbStudent.studentDao();
         courseDao = dbCourse.courseDao();
         // initialize the shared preference that store user info
-        userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
         // check for first time setup
 
         buildListSession(this, getLayoutInflater());
         buildListFilters(this, getLayoutInflater());
         buildFavoritesSection(this, getLayoutInflater());
-        if(!userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
+        if(!sharedPreferences.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
             Log.d("SETUPLOG", "First time setup not complete... Running now!");
             //Run First time setup
-            firstTimeSetupName(dbCourse, this, getLayoutInflater(), userInfo);
+            firstTimeSetupName(dbCourse, this, getLayoutInflater(), sharedPreferences);
         }else{
             Log.d("SETUPLOG", "First time setup has been completed... skipping");
         }
@@ -196,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 String SName = seshName.getText().toString();
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
-                    AddDataToDb(SName);
+//                    createSession(SName, sharedPreferences); // FIXME: create session here
                     saveSesh.cancel();
                 }
                 else{
@@ -261,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onClickList() {
         // get user's taken courses
-        List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
+        List<String> listOfUserCourses = formatUserCourses(dbCourse, sharedPreferences);
 
         // get list of students
         List<Student> listOfStudents = studentDao.getAll();
