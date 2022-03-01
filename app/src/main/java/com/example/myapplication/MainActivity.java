@@ -105,24 +105,6 @@ public class MainActivity extends AppCompatActivity {
             btPermission.requestBTPermission();
         }
 
-
-
-        // Set up nearby Message
-        searchingClassmate = new MessageListener() {
-            @Override
-            public void onFound(@NonNull Message message) {
-                Log.d(TAG, "Found message: " + new String(message.getContent()));
-            }
-
-            @Override
-            public void onLost(@NonNull Message message){
-                Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
-            }
-        };
-        String USER_NAME = "user_name";
-        String studentName = userInfo.getString(USER_NAME, "default");
-        mMessage = new Message(studentName.getBytes());
-
         // check for first time setup
         buildListSession(this, getLayoutInflater());
         buildListFilters(this, getLayoutInflater());
@@ -146,6 +128,47 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton ListSesh = findViewById(R.id.floatingActionButton3);
         FloatingActionButton FilterOptions = findViewById(R.id.floatingActionButton4);
         //This toggles it on or off and opens window
+
+        // Set up nearby Message
+        searchingClassmate = new MessageListener() {
+            @Override
+            public void onFound(@NonNull Message message) {
+                Log.d(TAG, "Found message: " + new String(message.getContent()));
+                // Connect to database
+                String studentInfo = new String(message.getContent());
+                String[] arrayOfStudentInfo = studentInfo.split("\n");
+                String studenName = arrayOfStudentInfo[0];
+                String studentHeadShot = arrayOfStudentInfo[1];
+                String studentCourses = arrayOfStudentInfo[2];
+                int studentId = dbStudent.studentDao().count()+1;
+                Student newStudent = new Student(studentId, studenName, studentHeadShot, studentCourses, 0);
+                dbStudent.studentDao().insertStudent(newStudent);
+
+            }
+
+            @Override
+            public void onLost(@NonNull Message message){
+                Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
+                // Delete Student from Database
+//                String studentInfo = new String(message.getContent());
+//                String[] arrayOfStudentInfo = studentInfo.split("\n");
+//                String studentName =
+            }
+
+        };
+        //Format publish message
+        String myName = userInfo.getString("user_name", "default");
+        String myHeadShot = userInfo.getString("head_shot_url", "default");
+        FormatUsersCourseInfo fc = new FormatUsersCourseInfo();
+        List<String> listOfMyCourses = fc.formatUserCourses(dbCourse, userInfo);
+        StringBuilder coursesStr = new StringBuilder();
+        for (String singleCourse : listOfMyCourses){
+            coursesStr.append(singleCourse);
+            coursesStr.append(" ");
+        }
+        String myCourses = coursesStr.toString();
+        String myInfo = myName + "\n" + myHeadShot + "\n" + myCourses;
+        mMessage = new Message(myInfo.getBytes());
 
         options.setOnClickListener(new View.OnClickListener() {
             @Override
