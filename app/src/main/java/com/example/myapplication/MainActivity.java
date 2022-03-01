@@ -104,7 +104,10 @@ public class MainActivity extends AppCompatActivity {
         // check and ask for bluetooth permission
         btPermission = new BTPermission(MainActivity.this);
         if (!btPermission.BTPermissionIsGranted()) {
+            Log.d("BTPERMISSIONLOG", "Bluetooth permission is not granted, ask for permission");
             btPermission.requestBTPermission();
+        } else {
+            Log.d("BTPERMISSIONLOG", "Bluetooth permission already granted");
         }
 
         // Set up nearby Message
@@ -210,8 +213,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d("CurrentState", current);
         if(current.equals("START")) {
             if (!btPermission.BTPermissionIsGranted()) {
+                Log.d("BTPERMISSIONLOG", "Bluetooth permission is not granted, refuse to proceed");
                 btPermission.promptPermissionRequiredMessage();
             } else {
+                Log.d("BTPERMISSIONLOG", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
