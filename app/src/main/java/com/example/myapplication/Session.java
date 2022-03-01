@@ -3,6 +3,8 @@ package com.example.myapplication;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.myapplication.student.db.Course;
+import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 
@@ -30,6 +32,12 @@ public class Session {
         this.sessionContent = new HashSet<>();
     }
 
+    public Session(String sessionName) {
+        Log.d(TAG, "creating session: " + sessionName + " with course: " + sessionCourse);
+        this.sessionName = sessionName;
+        this.sessionContent = new HashSet<>();
+    }
+
     /**
      * Below are getters and setters
      */
@@ -50,11 +58,11 @@ public class Session {
     }
 
     /**
-     * This method populate the session's content
+     * This method populate the session's content with specified filter class
      * the content is made by sequences of student info
      * each sequence (string) is in the form: name url number-of-shared-course course1 course2
      */
-    public void populateSessionContent(StudentDao studentDao) {
+    public void populateSessionContentWithFilter(StudentDao studentDao) {
         List<Student> allStudents = studentDao.getAll();
         Set<String> content = new HashSet<>();
         for (Student student :
@@ -65,6 +73,31 @@ public class Session {
                         + student.getNumSharedCourses() + " "
                         + student.getCourses();
                 content.add(sequence);
+            }
+        }
+    }
+
+    /**
+     * This method populate the session's content
+     * the content is made by sequences of student info
+     * each sequence (string) is in the form: name url number-of-shared-course course1 course2
+     */
+    public void populateSessionContent(StudentDao studentDao, CourseDao courseDao) {
+        List<Student> allStudents = studentDao.getAll();
+        List<Course> allCourses = courseDao.getAllCourses();
+        Set<String> content = new HashSet<>();
+
+        for (Student student :
+                allStudents) {
+            for (Course course :
+                    allCourses) {
+                if (student.getCourses().contains(course.getCourseCode())) {
+                    String sequence = student.getName() + " "
+                            + student.getHeadShotURL() + " "
+                            + student.getNumSharedCourses() + " "
+                            + student.getCourses();
+                    content.add(sequence);
+                }
             }
         }
     }

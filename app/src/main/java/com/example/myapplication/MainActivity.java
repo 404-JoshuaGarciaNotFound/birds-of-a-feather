@@ -186,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
                     // creating session here
-                    Session session = new Session(SName, "CSE 110"); // FIXME: hardcoded-course for now
-                    session.populateSessionContent(studentDao);
+                    Session session = new Session(SName);
+                    session.populateSessionContent(studentDao, courseDao);
                     session.saveSession(sharedPreferences);
                     saveSesh.cancel();
                 }
