@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
@@ -34,6 +35,9 @@ import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
+import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -59,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
     private CourseDao courseDao;
     // SharedPreference that store user info
     private SharedPreferences userInfo;
+    private MessageListener searchingClassmate;
+    private Message mMessage;
+    private static final String TAG = "Turn on Search";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +104,24 @@ public class MainActivity extends AppCompatActivity {
         if (!btPermission.BTPermissionIsGranted()) {
             btPermission.requestBTPermission();
         }
+
+
+
+        // Set up nearby Message
+        searchingClassmate = new MessageListener() {
+            @Override
+            public void onFound(@NonNull Message message) {
+                Log.d(TAG, "Found message: " + new String(message.getContent()));
+            }
+
+            @Override
+            public void onLost(@NonNull Message message){
+                Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
+            }
+        };
+        String USER_NAME = "user_name";
+        String studentName = userInfo.getString(USER_NAME, "default");
+        mMessage = new Message(studentName.getBytes());
 
         // check for first time setup
         buildListSession(this, getLayoutInflater());
@@ -188,10 +213,19 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Nearby Messages Status", "ENABLED");
             //Red color code
             startStop.setBackgroundColor(0xFFFF0000);
+            //Turn on Nearby Message
+            Nearby.getMessagesClient(this).publish(mMessage);
+            Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+            Log.d("publish message", new String(mMessage.getContent()));
+            Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
         }
         if(current.equals("STOP")){
             startStop.setText("START");
             Log.d("Nearby Messages Status", "DISABLED");
+            //Turn off Nearby Message
+            Nearby.getMessagesClient(this).unpublish(mMessage);
+            Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
+            Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
