@@ -10,9 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class BTPermission {
-    private final int BLUETOOTH_SCAN = 0;
-    private final int BLUETOOTH_ADVERTISE = 1;
-    private final int BLUETOOTH_CONNECT = 2;
+    private final int BLUETOOTH_SCAN_ADVERTISE_CONNECT = 0;
 
     Context context;
 
@@ -41,8 +39,14 @@ public class BTPermission {
     }
 
     public void requestBTPermission() {
-        ActivityCompat.requestPermissions((Activity) this.context, new String[]{Manifest.permission.BLUETOOTH_SCAN}, BLUETOOTH_SCAN);
-        ActivityCompat.requestPermissions((Activity) this.context, new String[]{Manifest.permission.BLUETOOTH_ADVERTISE}, BLUETOOTH_ADVERTISE);
-        ActivityCompat.requestPermissions((Activity) this.context, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, BLUETOOTH_CONNECT);
+        ActivityCompat.requestPermissions(
+                (Activity) this.context,
+                new String[]{
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_ADVERTISE,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                },
+                BLUETOOTH_SCAN_ADVERTISE_CONNECT
+        );
     }
 }

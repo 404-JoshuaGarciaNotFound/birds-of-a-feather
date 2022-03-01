@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     private MessageListener searchingClassmate;
     private Message mMessage;
     private static final String TAG = "Turn on Search";
+    // bluetooth permission tracking variable
+    private BTPermission btPermission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,9 +102,12 @@ public class MainActivity extends AppCompatActivity {
         userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
 
         // check and ask for bluetooth permission
-        BTPermission btPermission = new BTPermission(MainActivity.this);
+        btPermission = new BTPermission(MainActivity.this);
         if (!btPermission.BTPermissionIsGranted()) {
+            Log.d("BTPERMISSIONLOG", "Bluetooth permission is not granted, ask for permission");
             btPermission.requestBTPermission();
+        } else {
+            Log.d("BTPERMISSIONLOG", "Bluetooth permission already granted");
         }
 
         // check for first time setup
@@ -232,15 +237,21 @@ public class MainActivity extends AppCompatActivity {
         String current = startStop.getText().toString();
         Log.d("CurrentState", current);
         if(current.equals("START")) {
-            startStop.setText("STOP");
-            Log.d("Nearby Messages Status", "ENABLED");
-            //Red color code
-            startStop.setBackgroundColor(0xFFFF0000);
-            //Turn on Nearby Message
-            Nearby.getMessagesClient(this).publish(mMessage);
-            Nearby.getMessagesClient(this).subscribe(searchingClassmate);
-            Log.d("publish message", new String(mMessage.getContent()));
-            Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
+            if (!btPermission.BTPermissionIsGranted()) {
+                Log.d("BTPERMISSIONLOG", "Bluetooth permission is not granted, refuse to proceed");
+                btPermission.promptPermissionRequiredMessage();
+            } else {
+                Log.d("BTPERMISSIONLOG", "Bluetooth permission granted, allow to proceed");
+                startStop.setText("STOP");
+                Log.d("Nearby Messages Status", "ENABLED");
+                //Red color code
+                startStop.setBackgroundColor(0xFFFF0000);
+                //Turn on Nearby Message
+                Nearby.getMessagesClient(this).publish(mMessage);
+                Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+                Log.d("publish message", new String(mMessage.getContent()));
+                Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
+            }
         }
         if(current.equals("STOP")){
             startStop.setText("START");
