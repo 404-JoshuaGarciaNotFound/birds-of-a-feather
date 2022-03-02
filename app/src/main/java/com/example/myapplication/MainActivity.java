@@ -104,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
         // check and ask for bluetooth permission
         btPermission = new BTPermission(MainActivity.this);
         if (!btPermission.BTPermissionIsGranted()) {
-            Log.d("BTPERMISSIONLOG", "Bluetooth permission is not granted, ask for permission");
+            Log.d("Bluetooth permission", "Bluetooth permission is not granted, ask for permission");
             btPermission.requestBTPermission();
         } else {
-            Log.d("BTPERMISSIONLOG", "Bluetooth permission already granted");
+            Log.d("Bluetooth permission", "Bluetooth permission already granted");
         }
 
         // check for first time setup
@@ -142,13 +142,13 @@ public class MainActivity extends AppCompatActivity {
                 // Connect to database
                 String studentInfo = new String(message.getContent());
                 String[] arrayOfStudentInfo = studentInfo.split("\n");
-                String studenName = arrayOfStudentInfo[0];
+                String studentName = arrayOfStudentInfo[0];
                 String studentHeadShot = arrayOfStudentInfo[1];
                 String studentCourses = arrayOfStudentInfo[2];
                 int studentId = dbStudent.studentDao().count()+1;
-                Student newStudent = new Student(studentId, studenName, studentHeadShot, studentCourses, 0);
+                // TODO: hange num shared course
+                Student newStudent = new Student(studentId, studentName, studentHeadShot, studentCourses, 0);
                 dbStudent.studentDao().insertStudent(newStudent);
-
             }
 
             @Override
@@ -238,10 +238,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d("CurrentState", current);
         if(current.equals("START")) {
             if (!btPermission.BTPermissionIsGranted()) {
-                Log.d("BTPERMISSIONLOG", "Bluetooth permission is not granted, refuse to proceed");
+                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
                 btPermission.promptPermissionRequiredMessage();
             } else {
-                Log.d("BTPERMISSIONLOG", "Bluetooth permission granted, allow to proceed");
+                Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
