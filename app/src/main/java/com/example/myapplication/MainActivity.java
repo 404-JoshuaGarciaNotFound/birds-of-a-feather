@@ -41,6 +41,7 @@ import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -148,9 +149,11 @@ public class MainActivity extends AppCompatActivity {
                 String studentCourses = arrayOfStudentInfo[2];
                 // TODO: change studentId into UUID
                 int studentId = dbStudent.studentDao().count()+1;
-                // TODO: change num shared course
-                Student newStudent = new Student(studentId, studentName, studentHeadShot, studentCourses, 0);
+                Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
                 dbStudent.studentDao().insertStudent(newStudent);
+
+                // Refresh List Student Recycler
+                refreshStudentList();
             }
 
             @Override
@@ -254,13 +257,18 @@ public class MainActivity extends AppCompatActivity {
                 //Turn on Nearby Message
                 Nearby.getMessagesClient(this).publish(mMessage);
                 Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+
                 Log.d("publish message", new String(mMessage.getContent()));
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
 
-                // Set up recylerView of list of students
-                RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
-                studentsRecylerView.setVisibility(View.VISIBLE);
+                // Set up recyclerView of list of students
+                RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
+                RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
+                studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+                studentsRecyclerView.setVisibility(View.VISIBLE);
 
+                // Fake messages to test Nearby Message API
+                FakedMessages.fakedMessages(searchingClassmate);
             }
         }
         if(current.equals("STOP")){
@@ -273,8 +281,8 @@ public class MainActivity extends AppCompatActivity {
             // Turn off recylerView of list of students
             RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
             studentsRecylerView.setVisibility(View.INVISIBLE);
-            // Clean all student db
-            dbStudent.studentDao().clear();
+//            // Clean all student db
+//            dbStudent.studentDao().clear();
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
@@ -339,16 +347,15 @@ public class MainActivity extends AppCompatActivity {
             studentList.setVisibility(View.VISIBLE);
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
-            onClickList();
+            refreshStudentList();
         }
     }
 
     /**
-     * This method handles the click event for the button list
-     * It shows a list of students who has taken the same course with the app's user, sorted by the
+     * This method shows a list of students who has taken the same course with the app's user, sorted by the
      * number of classes the student shared with the user
      */
-    private void onClickList() {
+    private void refreshStudentList() {
         // get user's taken courses
         List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
 
@@ -379,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     //Cleans up program for shut down.
     @Override
     protected void onDestroy() {
