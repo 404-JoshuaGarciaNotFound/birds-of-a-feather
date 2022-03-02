@@ -44,6 +44,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -145,8 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 String studentName = arrayOfStudentInfo[0];
                 String studentHeadShot = arrayOfStudentInfo[1];
                 String studentCourses = arrayOfStudentInfo[2];
+                // TODO: change studentId into UUID
                 int studentId = dbStudent.studentDao().count()+1;
-                // TODO: hange num shared course
+                // TODO: change num shared course
                 Student newStudent = new Student(studentId, studentName, studentHeadShot, studentCourses, 0);
                 dbStudent.studentDao().insertStudent(newStudent);
             }
@@ -154,6 +156,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLost(@NonNull Message message){
                 Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
+
+                // TODO: implement delete by UUID
                 // Delete Student from Database
 //                String studentInfo = new String(message.getContent());
 //                String[] arrayOfStudentInfo = studentInfo.split("\n");
@@ -164,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         //Format publish message
         String myName = userInfo.getString("user_name", "default");
         String myHeadShot = userInfo.getString("head_shot_url", "default");
+        //TODO: Add UUID into message
         FormatUsersCourseInfo fc = new FormatUsersCourseInfo();
         List<String> listOfMyCourses = fc.formatUserCourses(dbCourse, userInfo);
         StringBuilder coursesStr = new StringBuilder();
@@ -251,6 +256,11 @@ public class MainActivity extends AppCompatActivity {
                 Nearby.getMessagesClient(this).subscribe(searchingClassmate);
                 Log.d("publish message", new String(mMessage.getContent()));
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
+
+                // Set up recylerView of list of students
+                RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
+                studentsRecylerView.setVisibility(View.VISIBLE);
+
             }
         }
         if(current.equals("STOP")){
@@ -260,6 +270,11 @@ public class MainActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).unpublish(mMessage);
             Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
             Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
+            // Turn off recylerView of list of students
+            RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
+            studentsRecylerView.setVisibility(View.INVISIBLE);
+            // Clean all student db
+            dbStudent.studentDao().clear();
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
