@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Set;
+
 @Entity(tableName = "students")
 public class Student {
     @PrimaryKey
@@ -32,6 +34,10 @@ public class Student {
         this.courses = courses;
         this.numSharedCourses = numSharedCourses;
     }
+
+    /**
+     * Getters and setters
+     */
 
     public int getId() {
         return id;

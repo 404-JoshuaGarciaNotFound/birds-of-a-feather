@@ -4,34 +4,30 @@ import static com.example.myapplication.AddStudent.addStudent;
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
-import static com.example.myapplication.SaveSessionToDB.AddDataToDb;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildFavoritesSection;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildListFilters;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildListSession;
-import static com.example.myapplication.student.db.OptionsMenuControls.closeMenu;
-import static com.example.myapplication.student.db.OptionsMenuControls.showMenu;
+import static com.example.myapplication.OptionsMenuControls.buildFavoritesSection;
+import static com.example.myapplication.OptionsMenuControls.buildListFilters;
+import static com.example.myapplication.OptionsMenuControls.buildListSession;
+import static com.example.myapplication.OptionsMenuControls.closeMenu;
+import static com.example.myapplication.OptionsMenuControls.showMenu;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+
 import android.widget.Spinner;
 import android.widget.Toast;
 
+
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
-import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
@@ -39,13 +35,9 @@ import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -62,12 +54,14 @@ public class MainActivity extends AppCompatActivity {
     private StudentDao studentDao;
     private CourseDao courseDao;
     // SharedPreference that store user info
+
     private SharedPreferences userInfo;
     private MessageListener searchingClassmate;
     private Message mMessage;
     private static final String TAG = "Turn on Search";
     // bluetooth permission tracking variable
     private BTPermission btPermission;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,7 +234,10 @@ public class MainActivity extends AppCompatActivity {
                 String SName = seshName.getText().toString();
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
-                    AddDataToDb(SName);
+                    // creating session here
+                    Session session = new Session(SName);
+                    session.populateSessionContentWithSameCourse(studentDao, courseDao);
+                    session.saveSession(userInfo);
                     saveSesh.cancel();
                 }
                 else{

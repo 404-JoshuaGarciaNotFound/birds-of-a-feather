@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
@@ -29,7 +30,9 @@ import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -292,16 +295,105 @@ public class UnitTests {
         Course retrievedCourse1 = sharedCourses.get(1);
 
         assertEquals(retrievedCourse0.getId(),127);
-        assertTrue(retrievedCourse0.getYear().equals("2022"));
-        assertTrue(retrievedCourse0.getQuarter().equals("FA"));
-        assertTrue(retrievedCourse0.getCourseCode().equals("CSE,127"));
+        assertEquals("2022", retrievedCourse0.getYear());
+        assertEquals("FA", retrievedCourse0.getQuarter());
+        assertEquals("CSE,127", retrievedCourse0.getCourseCode());
 
         assertEquals(retrievedCourse1.getId(),110);
-        assertTrue(retrievedCourse1.getYear().equals("2022"));
-        assertTrue(retrievedCourse1.getQuarter().equals("WI"));
-        assertTrue(retrievedCourse1.getCourseCode().equals("CSE,110"));
+        assertEquals("2022", retrievedCourse1.getYear());
+        assertEquals("WI", retrievedCourse1.getQuarter());
+        assertEquals("CSE,110", retrievedCourse1.getCourseCode());
+    }
+    //Test save single session
+
+    @Test
+    public void testSingleSavedSession(){
+        /**
+         * Work in progress
+         */
+        SharedPreferences sp;
+        Context context = getApplicationContext();
+        sp = context.getSharedPreferences("userInfo", 0);
+        Session session = new Session("CSE 110");
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+
+        session.populateSessionContent(studentDaoa);
+        session.saveSession(sp);
+        Set<String> set = sp.getStringSet("CSE 110", null);
+        Iterator<String> it = set.iterator();
+        String student1 = it.next();
+        String student2 = it.next();
+        String expected1 = "John smith www.headshoturlLink1.com 1 2022,FA,CSE,127";
+        String expected2 = "Jane Doe www.headshoturlLink2.com 0 2022,FA,CSE,127 2022,WI,CSE,110";
+        assertEquals(expected1, student1);
+        assertEquals(expected2, student2);
     }
 
+    //Test save multiple session
+    @Test
+    public void testMultipleSavedSession(){
+        SharedPreferences sp;
+        Context context = getApplicationContext();
+        sp = context.getSharedPreferences("userInfo", 0);
+        Session session = new Session("CSE 110");
+        Session session2 = new Session("CSE 127");
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student thirdStudent = new Student(2, "www.headshoturlLink3.com", "Jason Foo", "2021,WI,CSE,130 2022,WI,CSE,120", 3);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+        session.populateSessionContent(studentDaoa);
+        studentDaoa.insertStudent(thirdStudent);
+        session2.populateSessionContent(studentDaoa);
+        session.saveSession(sp);
+        session2.saveSession(sp);
+        Set<String> set = sp.getStringSet("CSE 110", null);
+        Set<String> set2 = sp.getStringSet("CSE 127", null);
+        Iterator<String> it = set.iterator();
+        //Gets expected elements from Session 1
+        String student1 = it.next();
+        String student2 = it.next();
+        String expected1 = "John smith www.headshoturlLink1.com 1 2022,FA,CSE,127";
+        String expected2 = "Jane Doe www.headshoturlLink2.com 0 2022,FA,CSE,127 2022,WI,CSE,110";
+        String expected3 = "Jason Foo www.headshoturlLink3.com 3 2021,WI,CSE,130 2022,WI,CSE,120";
+        assertEquals(expected1, student1);
+        assertEquals(expected2, student2);
+        //Gets expected elements from Session 2
+        System.out.println(set2);
+        Iterator<String> it2 = set2.iterator();
+        //Reminder it sorts by number of classes in common
+        String student1Session2 = it2.next();
+        String student2Session2 = it2.next();
+        String student3Session3 = it2.next();
+        assertEquals(expected3, student1Session2);
+        assertEquals(expected1, student2Session2);
+        assertEquals(expected2, student3Session3);
+    }
+    //Test saved correct session name
+    @Test
+    public void testSessionNames(){
+        Session session = new Session("CSE 101");
+        System.out.println("TESTING testSessionNames Result was->" +  session.getSessionName());
+        assertEquals("CSE 101",session.getSessionName());
+    }
+    //Test correct session retrieved
+    @Test
+    public void testIncorrectSession(){
+        Context context = getApplicationContext();
+        SharedPreferences sp = context.getSharedPreferences("userInfo", 0);
+        Session session = new Session("CSE 110");
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        studentDaoa.insertStudent(sampleStudent);
+        session.populateSessionContent(studentDaoa);
+        session.saveSession(sp);
+        Set<String> set = sp.getStringSet("CSE 120", null);
+        //Should be null since cse 120 session does not exist
+        assertNull(set);
+
+    }
 
 
 
