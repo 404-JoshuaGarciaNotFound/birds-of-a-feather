@@ -10,6 +10,7 @@ import static com.example.myapplication.OptionsMenuControls.buildListSession;
 import static com.example.myapplication.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.OptionsMenuControls.showMenu;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
