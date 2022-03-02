@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
@@ -301,7 +302,51 @@ public class UnitTests {
         assertTrue(retrievedCourse1.getQuarter().equals("WI"));
         assertTrue(retrievedCourse1.getCourseCode().equals("CSE,110"));
     }
+    //Test save single session
 
+    @Test
+    public void testSingleSavedSession(){
+        /**
+         * Work in progress
+         */
+        SharedPreferences sp;
+        Context context = getApplicationContext();
+        sp = context.getSharedPreferences("userInfo", 0);
+        Session session = new Session("CSE 110");
+        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        studentDaoa.insertStudent(sampleStudent);
+        studentDaoa.insertStudent(secondStudent);
+        courseDaoa.insertCourse(
+                new Course(
+                        1,
+                        String.valueOf("2022"),
+                        String.valueOf("FA"),
+                        "CSE 127"
+                ));
+        session.populateSessionContent(studentDaoa, courseDaoa);
+        session.saveSession(sp);
+        System.out.println(sp.getStringSet("CSE 110", null));
+
+    }
+
+    //Test save multiple session
+    @Test
+    public void testMultipleSavedSession(){
+
+    }
+    //Test saved correct session name
+    @Test
+    public void testSessionNames(){
+        Session session = new Session("CSE 101");
+        System.out.println("TESTING testSessionNames Result was->" +  session.getSessionName());
+        assertEquals("CSE 101",session.getSessionName());
+    }
+    //Test correct session retrieved
+    @Test
+    public void testRetrieveSavedSession(){
+
+    }
 
 
 
