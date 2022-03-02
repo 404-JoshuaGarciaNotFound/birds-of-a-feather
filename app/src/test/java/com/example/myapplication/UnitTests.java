@@ -13,7 +13,6 @@ import static org.junit.Assert.*;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.room.Room;
@@ -324,9 +323,12 @@ public class UnitTests {
                         String.valueOf("FA"),
                         "CSE 127"
                 ));
-        session.populateSessionContent(studentDaoa, courseDaoa);
+        session.populateSessionContent(studentDaoa);
         session.saveSession(sp);
-        System.out.println(sp.getStringSet("CSE 110", null));
+        for (String str :
+                sp.getStringSet("CSE 110", null)) {
+            System.out.println(str);
+        }
 
     }
 

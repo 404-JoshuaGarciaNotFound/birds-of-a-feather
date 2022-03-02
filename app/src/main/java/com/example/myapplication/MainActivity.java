@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!SName.equals("")) {
                     // creating session here
                     Session session = new Session(SName);
-                    session.populateSessionContent(studentDao, courseDao);
+                    session.populateSessionContentWithSameCourse(studentDao, courseDao);
                     session.saveSession(sharedPreferences);
                     saveSesh.cancel();
                 }
