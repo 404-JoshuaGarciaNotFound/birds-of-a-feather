@@ -22,11 +22,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import android.widget.Spinner;
+import android.widget.Toast;
+
+
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
+import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Comparator;
@@ -47,7 +54,14 @@ public class MainActivity extends AppCompatActivity {
     private StudentDao studentDao;
     private CourseDao courseDao;
     // SharedPreference that store user info
-    private SharedPreferences sharedPreferences;
+
+    private SharedPreferences userInfo;
+    private MessageListener searchingClassmate;
+    private Message mMessage;
+    private static final String TAG = "Turn on Search";
+    // bluetooth permission tracking variable
+    private BTPermission btPermission;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,16 +93,38 @@ public class MainActivity extends AppCompatActivity {
         studentDao = dbStudent.studentDao();
         courseDao = dbCourse.courseDao();
         // initialize the shared preference that store user info
-        sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
-        // check for first time setup
+        userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
 
+        // check and ask for bluetooth permission
+        btPermission = new BTPermission(MainActivity.this);
+        if (!btPermission.BTPermissionIsGranted()) {
+            btPermission.requestBTPermission();
+        }
+
+        // Set up nearby Message
+        searchingClassmate = new MessageListener() {
+            @Override
+            public void onFound(@NonNull Message message) {
+                Log.d(TAG, "Found message: " + new String(message.getContent()));
+            }
+
+            @Override
+            public void onLost(@NonNull Message message){
+                Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
+            }
+        };
+        String USER_NAME = "user_name";
+        String studentName = userInfo.getString(USER_NAME, "default");
+        mMessage = new Message(studentName.getBytes());
+
+        // check for first time setup
         buildListSession(this, getLayoutInflater());
         buildListFilters(this, getLayoutInflater());
         buildFavoritesSection(this, getLayoutInflater());
-        if(!sharedPreferences.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
+        if(!userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
             Log.d("SETUPLOG", "First time setup not complete... Running now!");
             //Run First time setup
-            firstTimeSetupName(dbCourse, this, getLayoutInflater(), sharedPreferences);
+            firstTimeSetupName(dbCourse, this, getLayoutInflater(), userInfo);
         }else{
             Log.d("SETUPLOG", "First time setup has been completed... skipping");
         }
@@ -167,14 +203,27 @@ public class MainActivity extends AppCompatActivity {
         String current = startStop.getText().toString();
         Log.d("CurrentState", current);
         if(current.equals("START")) {
-            startStop.setText("STOP");
-            Log.d("Nearby Messages Status", "ENABLED");
-            //Red color code
-            startStop.setBackgroundColor(0xFFFF0000);
+            if (!btPermission.BTPermissionIsGranted()) {
+                btPermission.promptPermissionRequiredMessage();
+            } else {
+                startStop.setText("STOP");
+                Log.d("Nearby Messages Status", "ENABLED");
+                //Red color code
+                startStop.setBackgroundColor(0xFFFF0000);
+                //Turn on Nearby Message
+                Nearby.getMessagesClient(this).publish(mMessage);
+                Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+                Log.d("publish message", new String(mMessage.getContent()));
+                Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
+            }
         }
         if(current.equals("STOP")){
             startStop.setText("START");
             Log.d("Nearby Messages Status", "DISABLED");
+            //Turn off Nearby Message
+            Nearby.getMessagesClient(this).unpublish(mMessage);
+            Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
+            Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
@@ -188,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     // creating session here
                     Session session = new Session(SName);
                     session.populateSessionContentWithSameCourse(studentDao, courseDao);
-                    session.saveSession(sharedPreferences);
+                    session.saveSession(userInfo);
                     saveSesh.cancel();
                 }
                 else{
@@ -253,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onClickList() {
         // get user's taken courses
-        List<String> listOfUserCourses = formatUserCourses(dbCourse, sharedPreferences);
+        List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
 
         // get list of students
         List<Student> listOfStudents = studentDao.getAll();
@@ -288,7 +337,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         dbStudent.close();
     }
-
-
-
 }
