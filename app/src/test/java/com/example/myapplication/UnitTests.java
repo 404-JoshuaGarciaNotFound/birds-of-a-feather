@@ -186,23 +186,23 @@ public class UnitTests {
     @Test
     public void TestAppDatabaseStudent(){
 
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 2);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 2);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
         //First we check if the correct number of students have been added
         assertEquals(2, studentDaoa.count());
         //Next we test if the correct student information was saved for each student
-        assertEquals("John smith", studentDaoa.getStudentByID(0).getName());
-        assertEquals("2022,FA,CSE,127", studentDaoa.getStudentByID(0).getCourses());
-        assertEquals("www.headshoturlLink1.com", studentDaoa.getStudentByID(0).getHeadShotURL());
-        assertEquals(1, studentDaoa.getStudentByID(0).getNumSharedCourses());
+        assertEquals("John smith", studentDaoa.getStudentByID("0").getName());
+        assertEquals("2022,FA,CSE,127", studentDaoa.getStudentByID("0").getCourses());
+        assertEquals("www.headshoturlLink1.com", studentDaoa.getStudentByID("0").getHeadShotURL());
+        assertEquals(1, studentDaoa.getStudentByID("0").getNumSharedCourses());
         //Student 2
-        assertEquals("Jane Doe", studentDaoa.getStudentByID(1).getName());
-        assertEquals("2022,FA,CSE,127 2022,WI,CSE,110", studentDaoa.getStudentByID(1).getCourses());
-        assertEquals("www.headshoturlLink2.com", studentDaoa.getStudentByID(1).getHeadShotURL());
-        assertEquals(2, studentDaoa.getStudentByID(1).getNumSharedCourses());
+        assertEquals("Jane Doe", studentDaoa.getStudentByID("1").getName());
+        assertEquals("2022,FA,CSE,127 2022,WI,CSE,110", studentDaoa.getStudentByID("1").getCourses());
+        assertEquals("www.headshoturlLink2.com", studentDaoa.getStudentByID("1").getHeadShotURL());
+        assertEquals(2, studentDaoa.getStudentByID("1").getNumSharedCourses());
         //Finally we test if our clear function works
         studentDaoa.clear();
         assertEquals(0, studentDaoa.count());
@@ -212,8 +212,8 @@ public class UnitTests {
 
     @Test
     public void TestFindSharedCoursesEmpty(){
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,128", 0);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,128", 0);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
@@ -228,8 +228,8 @@ public class UnitTests {
 
     @Test
     public void TestFindOneSharedCourse(){
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
@@ -244,8 +244,8 @@ public class UnitTests {
 
     @Test
     public void TestFindSharedCourseName(){
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
@@ -265,8 +265,8 @@ public class UnitTests {
 
     @Test
     public void TestFindMultiSharedCourse(){
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
@@ -283,8 +283,8 @@ public class UnitTests {
 
     @Test
     public void TestFindMultiSharedCourseName(){
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 0);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
@@ -320,8 +320,8 @@ public class UnitTests {
         Context context = getApplicationContext();
         sp = context.getSharedPreferences("userInfo", 0);
         Session session = new Session("CSE 110");
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
@@ -345,9 +345,9 @@ public class UnitTests {
         sp = context.getSharedPreferences("userInfo", 0);
         Session session = new Session("CSE 110");
         Session session2 = new Session("CSE 127");
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
-        Student thirdStudent = new Student(2, "www.headshoturlLink3.com", "Jason Foo", "2021,WI,CSE,130 2022,WI,CSE,120", 3);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student thirdStudent = new Student("2", "www.headshoturlLink3.com", "Jason Foo", "2021,WI,CSE,130 2022,WI,CSE,120", 3);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
         session.populateSessionContent(studentDaoa);
@@ -390,7 +390,7 @@ public class UnitTests {
         Context context = getApplicationContext();
         SharedPreferences sp = context.getSharedPreferences("userInfo", 0);
         Session session = new Session("CSE 110");
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
         studentDaoa.insertStudent(sampleStudent);
         session.populateSessionContent(studentDaoa);
         session.saveSession(sp);

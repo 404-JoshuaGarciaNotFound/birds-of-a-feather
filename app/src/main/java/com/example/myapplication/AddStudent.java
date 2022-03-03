@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.myapplication.student.db.AppDatabaseStudent;
 import com.example.myapplication.student.db.Student;
 
+// This class is deprecated for MS2
 public class AddStudent {
     /**
      * This method is the click event for the enter button.
@@ -20,7 +21,8 @@ public class AddStudent {
      */
     public static void addStudent(AppDatabaseStudent DBS, String mockUserInfo) {
         String[] splitInfo = mockUserInfo.split("\n");
-        int id = DBS.studentDao().count() + 1;
+        int id = (DBS.studentDao().count() + 1);
+        String idStr = String.valueOf(id);
         String name = splitInfo[0]
                 .substring(0, splitInfo[0].length() - 3); // drop ,,,
         String url = splitInfo[1]
@@ -32,7 +34,7 @@ public class AddStudent {
         }
         Log.d("courses", courses.toString());
 
-        Student toAddStudent = new Student(id, url, name, courses.toString(), 0);
+        Student toAddStudent = new Student(idStr, url, name, courses.toString(), 0);
 
         // add the student to the database
         DBS.studentDao().insertStudent(toAddStudent);

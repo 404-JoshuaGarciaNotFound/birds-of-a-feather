@@ -53,7 +53,7 @@ public class CourseViewAdapter extends RecyclerView.Adapter<CourseViewAdapter.Vi
         private final TextView courseDetail;
 
 
-        //connect with layou
+        //connect with layout
         public ViewHolder(View itemView) {
             super(itemView);
             this.courseDetail = itemView.findViewById(R.id.course_detail);

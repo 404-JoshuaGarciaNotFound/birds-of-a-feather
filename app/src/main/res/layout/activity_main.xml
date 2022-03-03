@@ -52,7 +52,7 @@
         android:layout_width="89dp"
         android:layout_height="48dp"
         android:backgroundTint="@android:color/holo_green_light"
-        android:onClick="switchMocktoList"
+        android:onClick="mockMessage"
         android:text="@string/mock"
         android:textColor="#0D47A1"
         app:layout_constraintBottom_toBottomOf="parent"
