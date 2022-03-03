@@ -3,12 +3,11 @@ package com.example.myapplication;
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
-import static com.example.myapplication.SaveSessionToDB.AddDataToDb;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildFavoritesSection;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildListFilters;
-import static com.example.myapplication.student.db.OptionsMenuControls.buildListSession;
-import static com.example.myapplication.student.db.OptionsMenuControls.closeMenu;
-import static com.example.myapplication.student.db.OptionsMenuControls.showMenu;
+import static com.example.myapplication.OptionsMenuControls.buildFavoritesSection;
+import static com.example.myapplication.OptionsMenuControls.buildListFilters;
+import static com.example.myapplication.OptionsMenuControls.buildListSession;
+import static com.example.myapplication.OptionsMenuControls.closeMenu;
+import static com.example.myapplication.OptionsMenuControls.showMenu;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -44,11 +43,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.Set;
+import java.util.Calendar;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private final String USER_NAME = "user_name";
     private final String HEAD_SHOT_URL = "head_shot_url";
     private final String USER_COURSE_ = "user_course_";
+    private final String USER_SAVEDSESSIONS= "saved_session";
     // database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
@@ -71,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Turn on Search";
     // bluetooth permission tracking variable
     private BTPermission btPermission;
+    private Date currentTime;
+    private SavingSession savingSession;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!active){
-                    active = showMenu(getLayoutInflater(), getResources(), FavoritesTab, ListSesh, FilterOptions);
+                    active = showMenu(userInfo, getLayoutInflater(), getResources(), FavoritesTab, ListSesh, FilterOptions);
                 }
                 else{
                     active = closeMenu(FavoritesTab, ListSesh, FilterOptions);
@@ -263,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
+                currentTime = Calendar.getInstance().getTime();
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
@@ -304,8 +313,24 @@ public class MainActivity extends AppCompatActivity {
                 String SName = seshName.getText().toString();
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
-                    AddDataToDb(SName);
-                    saveSesh.cancel();
+
+                    SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                    boolean alreadyExists = false;
+                    if(strings == null) {
+                        strings = new HashSet<>(Arrays.asList(SName));
+                    }else{
+                        alreadyExists = strings.contains(SName);
+                    }
+
+                    if(!alreadyExists) {
+                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
+                        savingSession.saveCurrentSession();
+                        saveSesh.cancel();
+                    }
+                    else{
+                        seshName.setError("No duplicate names allowed");
+                    }
                 }
                 else{
                     seshName.setError("Your Session name can not be blank.");
@@ -430,6 +455,8 @@ public class MainActivity extends AppCompatActivity {
     //Cleans up program for shut down.
     @Override
     protected void onDestroy() {
+        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, "");
+        savingSession.saveCurrentSession();
         super.onDestroy();
         dbStudent.close();
     }
