@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import android.widget.Spinner;
 import android.widget.Toast;
 
 
@@ -37,8 +36,13 @@ import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Calendar;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private final String USER_NAME = "user_name";
     private final String HEAD_SHOT_URL = "head_shot_url";
     private final String USER_COURSE_ = "user_course_";
+    private final String USER_SAVEDSESSIONS= "saved_session";
     // database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
@@ -62,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Turn on Search";
     // bluetooth permission tracking variable
     private BTPermission btPermission;
+    private Date currentTime;
+    private SavingSession savingSession;
 
 
     @Override
@@ -146,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!active){
-                    active = showMenu(getLayoutInflater(), getResources(), FavoritesTab, ListSesh, FilterOptions);
+                    active = showMenu(userInfo, getLayoutInflater(), getResources(), FavoritesTab, ListSesh, FilterOptions);
                 }
                 else{
                     active = closeMenu(FavoritesTab, ListSesh, FilterOptions);
@@ -204,10 +211,14 @@ public class MainActivity extends AppCompatActivity {
         String current = startStop.getText().toString();
         Log.d("CurrentState", current);
         if(current.equals("START")) {
-            if (!btPermission.BTPermissionIsGranted()) {
+            /**
+             * Uncomment this TODO: JOSHUA
+            */
+            //if (!btPermission.BTPermissionIsGranted()) {
                 btPermission.promptPermissionRequiredMessage();
-            } else {
+            //} else {
                 startStop.setText("STOP");
+                currentTime = Calendar.getInstance().getTime();
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
@@ -216,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                 Nearby.getMessagesClient(this).subscribe(searchingClassmate);
                 Log.d("publish message", new String(mMessage.getContent()));
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
-            }
+           // }
         }
         if(current.equals("STOP")){
             startStop.setText("START");
@@ -235,11 +246,24 @@ public class MainActivity extends AppCompatActivity {
                 String SName = seshName.getText().toString();
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
-                    // creating session here
-                    Session session = new Session(SName);
-                    session.populateSessionContentWithSameCourse(studentDao, courseDao);
-                    session.saveSession(userInfo);
-                    saveSesh.cancel();
+
+                    SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                    boolean alreadyExists = false;
+                    if(strings == null) {
+                        strings = new HashSet<>(Arrays.asList(SName));
+                    }else{
+                        alreadyExists = strings.contains(SName);
+                    }
+
+                    if(!alreadyExists) {
+                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
+                        savingSession.saveCurrentSession();
+                        saveSesh.cancel();
+                    }
+                    else{
+                        seshName.setError("No duplicate names allowed");
+                    }
                 }
                 else{
                     seshName.setError("Your Session name can not be blank.");
@@ -304,10 +328,8 @@ public class MainActivity extends AppCompatActivity {
     private void onClickList() {
         // get user's taken courses
         List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
-
         // get list of students
         List<Student> listOfStudents = studentDao.getAll();
-
         // check whether the students' course match the user's
         // if so, add the user to the students to display
         for (Student student: listOfStudents) {
@@ -322,7 +344,6 @@ public class MainActivity extends AppCompatActivity {
             student.setNumSharedCourses(numSharedCourses);
         }
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
-
         RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
         StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudents);
         runOnUiThread(new Runnable() {
@@ -332,9 +353,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     //Cleans up program for shut down.
     @Override
     protected void onDestroy() {
+        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, "");
+        savingSession.saveCurrentSession();
         super.onDestroy();
         dbStudent.close();
     }
