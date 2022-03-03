@@ -1,6 +1,5 @@
 package com.example.myapplication.student.db;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,8 +10,7 @@ import java.util.Set;
 public class Student {
     @PrimaryKey
     @ColumnInfo(name = "id")
-    @NonNull
-    private String id;
+    private int id;
 
     @ColumnInfo(name = "head_shot_url")
     private String headShotURL;
@@ -29,7 +27,7 @@ public class Student {
     public Student() {
     }
 
-    public Student(String id, String headShotURL, String name, String courses, int numSharedCourses) {
+    public Student(int id, String headShotURL, String name, String courses, int numSharedCourses) {
         this.id = id;
         this.headShotURL = headShotURL;
         this.name = name;
@@ -37,7 +35,6 @@ public class Student {
         this.numSharedCourses = numSharedCourses;
     }
 
-    public String getId() {
     /**
      * Getters and setters
      */
@@ -46,7 +43,7 @@ public class Student {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

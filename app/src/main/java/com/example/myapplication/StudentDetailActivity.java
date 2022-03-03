@@ -51,7 +51,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         courseDao = dbCourse.courseDao();
 
         Intent intent = getIntent();
-        String studentId = intent.getStringExtra("student_id");
+        int studentId = intent.getIntExtra("student_id", 0);
         dbStudent = AppDatabaseStudent.singleton(this);
         student = dbStudent.studentDao().getStudentByID(studentId);
 
