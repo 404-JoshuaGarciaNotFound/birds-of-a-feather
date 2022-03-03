@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import static com.example.myapplication.AddStudent.addStudent;
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
