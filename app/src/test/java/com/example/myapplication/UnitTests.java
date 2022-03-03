@@ -320,8 +320,8 @@ public class UnitTests {
         Context context = getApplicationContext();
         sp = context.getSharedPreferences("userInfo", 0);
         Session session = new Session("CSE 110");
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
 
@@ -345,9 +345,9 @@ public class UnitTests {
         sp = context.getSharedPreferences("userInfo", 0);
         Session session = new Session("CSE 110");
         Session session2 = new Session("CSE 127");
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
-        Student secondStudent = new Student(1, "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
-        Student thirdStudent = new Student(2, "www.headshoturlLink3.com", "Jason Foo", "2021,WI,CSE,130 2022,WI,CSE,120", 3);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student secondStudent = new Student("1", "www.headshoturlLink2.com", "Jane Doe", "2022,FA,CSE,127 2022,WI,CSE,110", 0);
+        Student thirdStudent = new Student("2", "www.headshoturlLink3.com", "Jason Foo", "2021,WI,CSE,130 2022,WI,CSE,120", 3);
         studentDaoa.insertStudent(sampleStudent);
         studentDaoa.insertStudent(secondStudent);
         session.populateSessionContent(studentDaoa);
@@ -390,7 +390,7 @@ public class UnitTests {
         Context context = getApplicationContext();
         SharedPreferences sp = context.getSharedPreferences("userInfo", 0);
         Session session = new Session("CSE 110");
-        Student sampleStudent = new Student(0, "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
+        Student sampleStudent = new Student("0", "www.headshoturlLink1.com", "John smith", "2022,FA,CSE,127", 1);
         studentDaoa.insertStudent(sampleStudent);
         session.populateSessionContent(studentDaoa);
         session.saveSession(sp);
