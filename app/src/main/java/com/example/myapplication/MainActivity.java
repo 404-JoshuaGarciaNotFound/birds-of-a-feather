@@ -36,11 +36,20 @@ import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+=======
 import java.util.Arrays;
+
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import java.util.Set;
 import java.util.Calendar;
 
@@ -106,24 +115,11 @@ public class MainActivity extends AppCompatActivity {
         // check and ask for bluetooth permission
         btPermission = new BTPermission(MainActivity.this);
         if (!btPermission.BTPermissionIsGranted()) {
+            Log.d("Bluetooth permission", "Bluetooth permission is not granted, ask for permission");
             btPermission.requestBTPermission();
+        } else {
+            Log.d("Bluetooth permission", "Bluetooth permission already granted");
         }
-
-        // Set up nearby Message
-        searchingClassmate = new MessageListener() {
-            @Override
-            public void onFound(@NonNull Message message) {
-                Log.d(TAG, "Found message: " + new String(message.getContent()));
-            }
-
-            @Override
-            public void onLost(@NonNull Message message){
-                Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
-            }
-        };
-        String USER_NAME = "user_name";
-        String studentName = userInfo.getString(USER_NAME, "default");
-        mMessage = new Message(studentName.getBytes());
 
         // check for first time setup
         buildListSession(this, getLayoutInflater());
@@ -148,6 +144,67 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton ListSesh = findViewById(R.id.floatingActionButton3);
         FloatingActionButton FilterOptions = findViewById(R.id.floatingActionButton4);
         //This toggles it on or off and opens window
+
+        // Set up nearby Message
+        searchingClassmate = new MessageListener() {
+            @Override
+            public void onFound(@NonNull Message message) {
+                Log.d(TAG, "Found message: " + new String(message.getContent()));
+                // Connect to database
+                String studentInfo = new String(message.getContent());
+                String[] arrayOfStudentInfo = studentInfo.split("\n");
+                String studentId = arrayOfStudentInfo[0];
+                String studentName = arrayOfStudentInfo[1];
+                String studentHeadShot = arrayOfStudentInfo[2];
+                String studentCourses = arrayOfStudentInfo[3];
+                // TODO: change studentId into UUID
+//                int id = dbStudent.studentDao().count()+1;
+//                String studentId = UUID.randomUUID().toString();;
+                Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
+                dbStudent.studentDao().insertStudent(newStudent);
+                Log.d("Student being added", newStudent.getName());
+
+                // Refresh List Student Recycler
+                refreshStudentList();
+            }
+
+            @Override
+            public void onLost(@NonNull Message message){
+                Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
+
+                // TODO: implement delete by UUID
+                // Delete Student from Database
+                String studentInfo = new String(message.getContent());
+                String[] arrayOfStudentInfo = studentInfo.split("\n");
+                String studentId = arrayOfStudentInfo[0];
+
+                try{
+                    Student lostStudent = dbStudent.studentDao().getStudentByID(studentId);
+                    Log.d("Deleting Student", lostStudent.getName());
+                    dbStudent.studentDao().deleteStudent(lostStudent);
+                }catch (Exception e){
+                    Log.d(studentId, "Student not found");
+                }
+
+                // Refresh List Student Recycler
+                refreshStudentList();
+            }
+
+        };
+        //Format publish message
+        String myId = UUID.randomUUID().toString();
+        String myName = userInfo.getString("user_name", "default");
+        String myHeadShot = userInfo.getString("head_shot_url", "default");
+        FormatUsersCourseInfo fc = new FormatUsersCourseInfo();
+        List<String> listOfMyCourses = fc.formatUserCourses(dbCourse, userInfo);
+        StringBuilder coursesStr = new StringBuilder();
+        for (String singleCourse : listOfMyCourses){
+            coursesStr.append(singleCourse);
+            coursesStr.append(" ");
+        }
+        String myCourses = coursesStr.toString();
+        String myInfo = myId + "\n" + myName + "\n" + myHeadShot + "\n" + myCourses;
+        mMessage = new Message(myInfo.getBytes());
 
         options.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -211,6 +268,11 @@ public class MainActivity extends AppCompatActivity {
         String current = startStop.getText().toString();
         Log.d("CurrentState", current);
         if(current.equals("START")) {
+            if (!btPermission.BTPermissionIsGranted()) {
+                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
+                btPermission.promptPermissionRequiredMessage();
+            } else {
+                Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
             /**
              * Uncomment this TODO: JOSHUA
             */
@@ -225,8 +287,21 @@ public class MainActivity extends AppCompatActivity {
                 //Turn on Nearby Message
                 Nearby.getMessagesClient(this).publish(mMessage);
                 Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+                //Delete database before Searching
+                dbStudent.studentDao().clear();
+
                 Log.d("publish message", new String(mMessage.getContent()));
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
+
+                // Set up recyclerView of list of students
+                RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
+                RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
+                studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+                studentsRecyclerView.setVisibility(View.VISIBLE);
+
+                // Fake messages to test Nearby Message API
+                FakedMessages.fakedMessages(searchingClassmate);
+            }
            // }
         }
         if(current.equals("STOP")){
@@ -236,6 +311,11 @@ public class MainActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).unpublish(mMessage);
             Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
             Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
+//            // Turn off recylerView of list of students
+//            RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
+//            studentsRecylerView.setVisibility(View.INVISIBLE);
+            //Refresh the list after turning off search
+            refreshStudentList();
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
@@ -316,16 +396,15 @@ public class MainActivity extends AppCompatActivity {
             studentList.setVisibility(View.VISIBLE);
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
-            onClickList();
+            refreshStudentList();
         }
     }
 
     /**
-     * This method handles the click event for the button list
-     * It shows a list of students who has taken the same course with the app's user, sorted by the
+     * This method shows a list of students who has taken the same course with the app's user, sorted by the
      * number of classes the student shared with the user
      */
-    private void onClickList() {
+    private void refreshStudentList() {
         // get user's taken courses
         List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
         // get list of students
