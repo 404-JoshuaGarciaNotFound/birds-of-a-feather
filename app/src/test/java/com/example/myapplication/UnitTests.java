@@ -30,6 +30,8 @@ import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -395,6 +397,33 @@ public class UnitTests {
 
     }
 
+    @Test
+    public void testSavingSessionStopSearch(){
+        Context context = getApplicationContext();
+        SharedPreferences userInfo = context.getSharedPreferences("userInfo", 0);;
+        Date currentTime = Calendar.getInstance().getTime();
+        String SName = "testString";
+        String USER_SAVEDSESSIONS= "saved_session";
 
+        SavingSession savingSession = new SavingSession(userInfo, currentTime, studentDaoa, courseDaoa, SName);
+        savingSession.saveCurrentSession();
+        Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
 
+        assertTrue(strings.contains("testString"));
+    }
+
+    @Test
+    public void testSavingSessionCurrentSession(){
+        Context context = getApplicationContext();
+        SharedPreferences userInfo = context.getSharedPreferences("userInfo", 0);;
+        Date currentTime = Calendar.getInstance().getTime();
+        String SName = "";
+        String USER_SAVEDSESSIONS= "saved_session";
+
+        SavingSession savingSession = new SavingSession(userInfo, currentTime, studentDaoa, courseDaoa, SName);
+        savingSession.saveCurrentSession();
+        Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+
+        assertTrue(strings.contains(currentTime.toString()));
+    }
 }
