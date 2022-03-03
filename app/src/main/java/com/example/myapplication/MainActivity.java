@@ -271,6 +271,8 @@ public class MainActivity extends AppCompatActivity {
                 //Turn on Nearby Message
                 Nearby.getMessagesClient(this).publish(mMessage);
                 Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+                //Delete database before Searching
+                dbStudent.studentDao().clear();
 
                 Log.d("publish message", new String(mMessage.getContent()));
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
@@ -292,11 +294,11 @@ public class MainActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).unpublish(mMessage);
             Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
             Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
-            // Turn off recylerView of list of students
-            RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
-            studentsRecylerView.setVisibility(View.INVISIBLE);
-            // Clean all student db
-            dbStudent.studentDao().clear();
+//            // Turn off recylerView of list of students
+//            RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
+//            studentsRecylerView.setVisibility(View.INVISIBLE);
+            //Refresh the list after turning off search
+            refreshStudentList();
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
