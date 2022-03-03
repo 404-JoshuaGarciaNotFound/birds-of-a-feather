@@ -1,7 +1,6 @@
 package com.example.myapplication.student.db;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -13,13 +12,10 @@ public interface StudentDao {
     List<Student> getAll();
 
     @Query("SELECT * FROM students WHERE id=:id")
-    Student getStudentByID(String id);
+    Student getStudentByID(int id);
 
     @Insert
     void insertStudent(Student student);
-
-    @Delete
-    void deleteStudent(Student student);
 
     @Query("SELECT COUNT(*) FROM students")
     int count();
