@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
@@ -34,6 +35,7 @@ import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -181,8 +183,12 @@ public class MainActivity extends AppCompatActivity {
         String myId = UUID.randomUUID().toString();
         String myName = userInfo.getString("user_name", "default");
         String myHeadShot = userInfo.getString("head_shot_url", "default");
-        FormatUsersCourseInfo fc = new FormatUsersCourseInfo();
-        List<String> listOfMyCourses = fc.formatUserCourses(dbCourse, userInfo);
+
+        /********************************FIX THIS BUG!*******************************/
+        //List<String> listOfMyCourses = formatUserCourses(dbCourse, userInfo);
+        List<String> listOfMyCourses = new ArrayList<String>();
+        /****************************************************************************/
+
         StringBuilder coursesStr = new StringBuilder();
         for (String singleCourse : listOfMyCourses){
             coursesStr.append(singleCourse);
