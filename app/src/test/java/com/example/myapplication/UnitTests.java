@@ -70,36 +70,7 @@ public class UnitTests {
     public void resetTest(){
         dbCourse.close();
     }
-    @Test
-    public void test_addOneClass() {
-        CourseDao courseDao = dbCourse.courseDao();
-        courseDao.insertCourse(
-                new Course(
-                        1,
-                        String.valueOf("2020"),
-                        String.valueOf("FA"),
-                        "110"
-                ));
 
-        // TypeCast crucial
-        Course actual = (Course) courseDao.getAllCourses().toArray()[0];
-        ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
-        scenario.moveToState(Lifecycle.State.CREATED);
-        Course expected = new Course(
-                1,
-                String.valueOf("2020"),
-                String.valueOf("FA"),
-                "110"
-        );
-        Course[] actualCourses = new Course[1];
-        actualCourses[0] = actual;
-        Course[] expectedCourses = new Course[1];
-        expectedCourses[0] = expected;
-        scenario.onActivity(activity -> {
-            assertTrue(CourseArrayEquals(actualCourses, expectedCourses));
-        });
-        courseDao.clear();
-    }
 
     private CourseDao courseDaoa;
     public AppDatabaseCourses dbCourses;
@@ -114,6 +85,36 @@ public class UnitTests {
     @After
     public void resetTest2(){
         dbCourse.close();
+    }
+
+    @Test
+    public void test_addOneClass() {
+        courseDaoa.insertCourse(
+                new Course(
+                        1,
+                        String.valueOf("2020"),
+                        String.valueOf("FA"),
+                        "110"
+                ));
+
+        // TypeCast crucial
+        Course actual = (Course) courseDaoa.getAllCourses().toArray()[0];
+
+        Course expected = new Course(
+                1,
+                String.valueOf("2020"),
+                String.valueOf("FA"),
+                "110"
+        );
+        Course[] actualCourses = new Course[1];
+        actualCourses[0] = actual;
+        Course[] expectedCourses = new Course[1];
+        expectedCourses[0] = expected;
+        ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
+        scenario.moveToState(Lifecycle.State.CREATED);
+        scenario.onActivity(activity -> {
+            assertTrue(CourseArrayEquals(actualCourses, expectedCourses));
+        });
     }
 
     @Test
