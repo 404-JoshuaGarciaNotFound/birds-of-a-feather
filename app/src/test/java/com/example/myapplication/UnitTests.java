@@ -85,16 +85,18 @@ public class UnitTests {
         Course actual = (Course) courseDao.getAllCourses().toArray()[0];
         ActivityScenario<MainActivity> scenario = scenarioRule.getScenario();
         scenario.moveToState(Lifecycle.State.CREATED);
-
+        Course expected = new Course(
+                1,
+                String.valueOf("2020"),
+                String.valueOf("FA"),
+                "110"
+        );
+        Course[] actualCourses = new Course[1];
+        actualCourses[0] = actual;
+        Course[] expectedCourses = new Course[1];
+        expectedCourses[0] = expected;
         scenario.onActivity(activity -> {
-
-            Course expected = new Course(
-                    1,
-                    String.valueOf("2020"),
-                    String.valueOf("FA"),
-                    "110"
-            );
-            assertTrue(actual.equals(expected));
+            assertTrue(CourseArrayEquals(actualCourses, expectedCourses));
         });
         courseDao.clear();
     }
