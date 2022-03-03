@@ -144,13 +144,16 @@ public class MainActivity extends AppCompatActivity {
                 // Connect to database
                 String studentInfo = new String(message.getContent());
                 String[] arrayOfStudentInfo = studentInfo.split("\n");
-                String studentName = arrayOfStudentInfo[0];
-                String studentHeadShot = arrayOfStudentInfo[1];
-                String studentCourses = arrayOfStudentInfo[2];
+                String studentId = arrayOfStudentInfo[0];
+                String studentName = arrayOfStudentInfo[1];
+                String studentHeadShot = arrayOfStudentInfo[2];
+                String studentCourses = arrayOfStudentInfo[3];
                 // TODO: change studentId into UUID
-                int studentId = dbStudent.studentDao().count()+1;
+//                int id = dbStudent.studentDao().count()+1;
+//                String studentId = UUID.randomUUID().toString();;
                 Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
                 dbStudent.studentDao().insertStudent(newStudent);
+                Log.d("Student being added", newStudent.getName());
 
                 // Refresh List Student Recycler
                 refreshStudentList();
@@ -162,16 +165,27 @@ public class MainActivity extends AppCompatActivity {
 
                 // TODO: implement delete by UUID
                 // Delete Student from Database
-//                String studentInfo = new String(message.getContent());
-//                String[] arrayOfStudentInfo = studentInfo.split("\n");
-//                String studentName =
+                String studentInfo = new String(message.getContent());
+                String[] arrayOfStudentInfo = studentInfo.split("\n");
+                String studentId = arrayOfStudentInfo[0];
+
+                try{
+                    Student lostStudent = dbStudent.studentDao().getStudentByID(studentId);
+                    Log.d("Deleting Student", lostStudent.getName());
+                    dbStudent.studentDao().deleteStudent(lostStudent);
+                }catch (Exception e){
+                    Log.d(studentId, "Student not found");
+                }
+
+                // Refresh List Student Recycler
+                refreshStudentList();
             }
 
         };
         //Format publish message
+        String myId = UUID.randomUUID().toString();
         String myName = userInfo.getString("user_name", "default");
         String myHeadShot = userInfo.getString("head_shot_url", "default");
-        //TODO: Add UUID into message
         FormatUsersCourseInfo fc = new FormatUsersCourseInfo();
         List<String> listOfMyCourses = fc.formatUserCourses(dbCourse, userInfo);
         StringBuilder coursesStr = new StringBuilder();
@@ -180,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             coursesStr.append(" ");
         }
         String myCourses = coursesStr.toString();
-        String myInfo = myName + "\n" + myHeadShot + "\n" + myCourses;
+        String myInfo = myId + "\n" + myName + "\n" + myHeadShot + "\n" + myCourses;
         mMessage = new Message(myInfo.getBytes());
 
         options.setOnClickListener(new View.OnClickListener() {
@@ -281,8 +295,8 @@ public class MainActivity extends AppCompatActivity {
             // Turn off recylerView of list of students
             RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
             studentsRecylerView.setVisibility(View.INVISIBLE);
-//            // Clean all student db
-//            dbStudent.studentDao().clear();
+            // Clean all student db
+            dbStudent.studentDao().clear();
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
