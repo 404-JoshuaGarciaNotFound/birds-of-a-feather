@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.myapplication.student.db.AppDatabaseStudent;
 import com.example.myapplication.student.db.Student;
 
+// This class is deprecated for MS2
 public class AddStudent {
     /**
      * This method is the click event for the enter button.

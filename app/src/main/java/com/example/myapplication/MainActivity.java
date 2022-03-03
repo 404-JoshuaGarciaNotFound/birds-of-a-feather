@@ -43,6 +43,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -148,9 +150,6 @@ public class MainActivity extends AppCompatActivity {
                 String studentName = arrayOfStudentInfo[1];
                 String studentHeadShot = arrayOfStudentInfo[2];
                 String studentCourses = arrayOfStudentInfo[3];
-                // TODO: change studentId into UUID
-//                int id = dbStudent.studentDao().count()+1;
-//                String studentId = UUID.randomUUID().toString();;
                 Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
                 dbStudent.studentDao().insertStudent(newStudent);
                 Log.d("Student being added", newStudent.getName());
@@ -163,17 +162,16 @@ public class MainActivity extends AppCompatActivity {
             public void onLost(@NonNull Message message){
                 Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
 
-                // TODO: implement delete by UUID
                 // Delete Student from Database
                 String studentInfo = new String(message.getContent());
                 String[] arrayOfStudentInfo = studentInfo.split("\n");
                 String studentId = arrayOfStudentInfo[0];
 
-                try{
+                try {
                     Student lostStudent = dbStudent.studentDao().getStudentByID(studentId);
                     Log.d("Deleting Student", lostStudent.getName());
                     dbStudent.studentDao().deleteStudent(lostStudent);
-                }catch (Exception e){
+                } catch (Exception e){
                     Log.d(studentId, "Student not found");
                 }
 
@@ -182,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         };
+
         //Format publish message
         String myId = UUID.randomUUID().toString();
         String myName = userInfo.getString("user_name", "default");
@@ -282,9 +281,6 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
                 studentsRecyclerView.setLayoutManager(studentsLayoutManager);
                 studentsRecyclerView.setVisibility(View.VISIBLE);
-
-                // Fake messages to test Nearby Message API
-                FakedMessages.fakedMessages(searchingClassmate);
             }
         }
         if(current.equals("STOP")){
@@ -321,8 +317,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //This is for mocking database
-    public void switchMocktoList(View view) {
+    //This is for mocking messages
+    public void mockMessage(View view) {
+        Button startStopBtn = findViewById(R.id.StartStopBttn);
+        if (startStopBtn.getText().equals("START")) { // Only allow mocking during searching
+            Toast.makeText(this, "Can only mock during searching!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
         RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
@@ -331,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
         if(current.equals("MOCK")) {
             //DEMO MOCK USER MODE
             //Sets the recycler view invisible and input text visible for the mock user
-            mockSwitch.setText("LIST");
+            mockSwitch.setText("BACK");
             RecyclerView studentList = findViewById(R.id.list_of_students);
             studentList.setVisibility(View.INVISIBLE);
             EditText DemoMock = findViewById(R.id.DemomockUserInput);
@@ -343,14 +345,31 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v2) {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String mockUserInfo = newUser.getText().toString();
-                    addStudent(dbStudent, mockUserInfo);
+                    String[] splitInfo = mockUserInfo.split("\n");
+                    String idStr = UUID.randomUUID().toString();
+                    String name = splitInfo[0]
+                            .substring(0, splitInfo[0].length() - 3); // drop ,,,
+                    String url = splitInfo[1]
+                            .substring(0, splitInfo[1].length() - 3); // drop ,,,
+                    StringBuilder courses = new StringBuilder();
+                    for (int i = 2; i < splitInfo.length; i++) {
+                        courses.append(splitInfo[i]);
+                        if (i != splitInfo.length - 1) courses.append(" ");
+                    }
+                    String fakedMessageStr = idStr + "\n" +
+                            name + "\n" +
+                            url + "\n" +
+                            courses;
+                    Message fakedMessage = new Message(fakedMessageStr.getBytes(StandardCharsets.UTF_8));
+                    searchingClassmate.onFound((fakedMessage));
+
                     DemoMock.setText("");
                 }
             });
             //Blue color code
             mockSwitch.setBackgroundColor(0xff0099cc);
         }
-        if (current.equals("LIST")) {
+        if (current.equals("BACK")) {
             //LIST STUDENT MODE
             //For demo mode maybe when user clicks list it should update mocked users
             mockSwitch.setText("MOCK");
@@ -359,11 +378,10 @@ public class MainActivity extends AppCompatActivity {
             DemoMock.setVisibility(View.INVISIBLE);
             Button mockEnter = findViewById(R.id.SubmitMockUser);
             mockEnter.setVisibility(View.INVISIBLE);
-            RecyclerView studentList = findViewById(R.id.list_of_students);
-            studentList.setVisibility(View.VISIBLE);
             //Green color code
             mockSwitch.setBackgroundColor(0Xff99cc00);
-            refreshStudentList();
+            RecyclerView studentList = findViewById(R.id.list_of_students);
+            studentList.setVisibility(View.VISIBLE);
         }
     }
 
@@ -380,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
 
         // check whether the students' course match the user's
         // if so, add the user to the students to display
-        for (Student student: listOfStudents) {
+        for (Student student : listOfStudents) {
             int numSharedCourses = 0;
             for (String courseStr : listOfUserCourses) {
                 if (student.getCourses().contains(courseStr)) {
@@ -391,7 +409,14 @@ public class MainActivity extends AppCompatActivity {
             }
             student.setNumSharedCourses(numSharedCourses);
         }
+
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
+
+        for (Student student : listOfStudents) {
+            if (student.getNumSharedCourses() == 0) {
+                listOfStudents.remove(student);
+            }
+        }
 
         RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
         StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudents);
@@ -409,4 +434,51 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         dbStudent.close();
     }
+
+//    // Deprecated in MS2
+//    //This is for mocking database
+//    public void switchMocktoList(View view) {
+//        RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
+//        RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
+//        studentsRecyclerView.setLayoutManager(studentsLayoutManager);
+//        Button mockSwitch = findViewById(R.id.nearByMockScreen);
+//        String current = mockSwitch.getText().toString();
+//        if(current.equals("MOCK")) {
+//            //DEMO MOCK USER MODE
+//            //Sets the recycler view invisible and input text visible for the mock user
+//            mockSwitch.setText("LIST");
+//            RecyclerView studentList = findViewById(R.id.list_of_students);
+//            studentList.setVisibility(View.INVISIBLE);
+//            EditText DemoMock = findViewById(R.id.DemomockUserInput);
+//            DemoMock.setVisibility(View.VISIBLE);
+//            Button mockEnter = findViewById(R.id.SubmitMockUser);
+//            mockEnter.setVisibility(View.VISIBLE);
+//            mockEnter.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v2) {
+//                    EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
+//                    String mockUserInfo = newUser.getText().toString();
+//                    addStudent(dbStudent, mockUserInfo);
+//                    DemoMock.setText("");
+//                }
+//            });
+//            //Blue color code
+//            mockSwitch.setBackgroundColor(0xff0099cc);
+//        }
+//        if (current.equals("LIST")) {
+//            //LIST STUDENT MODE
+//            //For demo mode maybe when user clicks list it should update mocked users
+//            mockSwitch.setText("MOCK");
+//            //Sets the recycler view visible and input text invisible for the mock user
+//            EditText DemoMock = findViewById(R.id.DemomockUserInput);
+//            DemoMock.setVisibility(View.INVISIBLE);
+//            Button mockEnter = findViewById(R.id.SubmitMockUser);
+//            mockEnter.setVisibility(View.INVISIBLE);
+//            RecyclerView studentList = findViewById(R.id.list_of_students);
+//            studentList.setVisibility(View.VISIBLE);
+//            //Green color code
+//            mockSwitch.setBackgroundColor(0Xff99cc00);
+//            refreshStudentList();
+//        }
+//    }
 }
