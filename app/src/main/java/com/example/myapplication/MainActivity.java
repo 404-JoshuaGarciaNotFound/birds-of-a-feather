@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import android.widget.Spinner;
 import android.widget.Toast;
 
 
@@ -38,7 +37,6 @@ import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -70,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     // bluetooth permission tracking variable
     private BTPermission btPermission;
     private Date currentTime;
+    private SavingSession savingSession;
 
 
     @Override
@@ -258,21 +257,13 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     if(!alreadyExists) {
-                        strings.add(SName);
-                        insertSavedSesh.putStringSet(USER_SAVEDSESSIONS, strings);
-                        insertSavedSesh.apply();
-                        Log.d("ListOfSessions", String.valueOf(strings));
-                        // creating session here
-                        Session session = new Session(SName);
-
-                        session.populateSessionContentWithSameCourse(studentDao, courseDao);
-                        session.saveSession(userInfo);
+                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
+                        savingSession.saveCurrentSession();
                         saveSesh.cancel();
                     }
                     else{
                         seshName.setError("No duplicate names allowed");
                     }
-
                 }
                 else{
                     seshName.setError("Your Session name can not be blank.");
@@ -363,30 +354,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void saveCurrentSession() {
-        SharedPreferences.Editor insertSavedSesh = userInfo.edit();
-        String SName = currentTime.toString();
-        Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
-        if(strings == null) {
-            strings = new HashSet<>(Arrays.asList(SName));
-        }
-        strings.add(SName);
-        insertSavedSesh.putStringSet(USER_SAVEDSESSIONS, strings);
-        insertSavedSesh.apply();
-        Log.d("ListOfSessions", String.valueOf(strings));
-        // creating session here
-        Session session = new Session(SName);
-
-        session.populateSessionContentWithSameCourse(studentDao, courseDao);
-        session.saveSession(userInfo);
-
-        Log.d("testingsessionblah", String.valueOf(session.getSessionContent()));
-    }
-
     //Cleans up program for shut down.
     @Override
     protected void onDestroy() {
-        saveCurrentSession();
+        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, "");
+        savingSession.saveCurrentSession();
         super.onDestroy();
         dbStudent.close();
     }
