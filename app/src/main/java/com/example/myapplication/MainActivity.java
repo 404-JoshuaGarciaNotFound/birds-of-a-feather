@@ -40,9 +40,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Calendar;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Turn on Search";
     // bluetooth permission tracking variable
     private BTPermission btPermission;
+    private Date currentTime;
 
 
     @Override
@@ -216,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 btPermission.promptPermissionRequiredMessage();
             //} else {
                 startStop.setText("STOP");
+                currentTime = Calendar.getInstance().getTime();
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
@@ -266,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                         saveSesh.cancel();
                     }
                     else{
-                        seshName.setError("No douplicate names allowed");
+                        seshName.setError("No duplicate names allowed");
                     }
 
                 }
@@ -358,10 +362,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void saveCurrentSession() {
+        SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+        String SName = currentTime.toString();
+        Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+        if(strings == null) {
+            strings = new HashSet<>(Arrays.asList(SName));
+        }
+        strings.add(SName);
+        insertSavedSesh.putStringSet(USER_SAVEDSESSIONS, strings);
+        insertSavedSesh.apply();
+        Log.d("ListOfSessions", String.valueOf(strings));
+        // creating session here
+        Session session = new Session(SName);
+
+        session.populateSessionContentWithSameCourse(studentDao, courseDao);
+        session.saveSession(userInfo);
+
+        Log.d("testingsessionblah", String.valueOf(session.getSessionContent()));
+    }
+
     //Cleans up program for shut down.
     @Override
     protected void onDestroy() {
-
+        saveCurrentSession();
         super.onDestroy();
         dbStudent.close();
     }
