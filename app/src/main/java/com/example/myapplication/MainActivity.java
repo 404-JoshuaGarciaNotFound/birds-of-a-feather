@@ -186,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
 
         /********************************FIX THIS BUG!*******************************/
         /** Whenever methods of courseDao is called, all unit tests after the first one will fail **/
-        //List<String> listOfMyCourses = formatUserCourses(dbCourse, userInfo);
-        List<String> listOfMyCourses = new ArrayList<String>();
+        List<String> listOfMyCourses = formatUserCourses(dbCourse, userInfo);
+        //List<String> listOfMyCourses = new ArrayList<String>();
         /****************************************************************************/
 
         StringBuilder coursesStr = new StringBuilder();

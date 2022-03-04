@@ -8,6 +8,7 @@ import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -86,8 +87,13 @@ public class Session {
      */
     public void populateSessionContentWithSameCourse(StudentDao studentDao, CourseDao courseDao) {
         List<Student> allStudents = studentDao.getAll();
-        List<Course> allCourses = courseDao.getAllCourses();
-
+        List<Course> allCourses;
+        if(courseDao != null) {
+            allCourses = courseDao.getAllCourses();
+        }
+        else{
+            allCourses = new ArrayList<>();
+        }
         for (Student student :
                 allStudents) {
             for (Course course :

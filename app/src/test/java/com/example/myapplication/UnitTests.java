@@ -62,15 +62,6 @@ public class UnitTests {
     public AppDatabaseCourses dbCourse;
     public AppDatabaseStudent dbStudent;
 
-    @Before
-    public void setUp() {
-        dbCourse = AppDatabaseCourses.singleton(getApplicationContext());
-    }
-    @After
-    public void resetTest(){
-        dbCourse.close();
-    }
-
 
     private CourseDao courseDaoa;
     public AppDatabaseCourses dbCourses;
@@ -78,6 +69,7 @@ public class UnitTests {
     //Note this method (restart) was obtained from the android developer page
     //https://developer.android.com/training/data-storage/room/testing-db
     public void restart(){
+        dbCourse = AppDatabaseCourses.singleton(getApplicationContext());
         Context context = ApplicationProvider.getApplicationContext();
         dbCourses = Room.inMemoryDatabaseBuilder(context, AppDatabaseCourses.class).allowMainThreadQueries().build();
         courseDaoa = dbCourses.courseDao();
@@ -99,7 +91,6 @@ public class UnitTests {
 
         // TypeCast crucial
         Course actual = (Course) courseDaoa.getAllCourses().toArray()[0];
-
         Course expected = new Course(
                 1,
                 String.valueOf("2020"),
