@@ -5,7 +5,6 @@ import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
 import static com.example.myapplication.OptionsMenuControls.buildFavoritesSection;
 import static com.example.myapplication.OptionsMenuControls.buildListFilters;
-import static com.example.myapplication.OptionsMenuControls.buildListSession;
 import static com.example.myapplication.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.OptionsMenuControls.showMenu;
 
@@ -15,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // check for first time setup
-        buildListSession(this, getLayoutInflater());
         buildListFilters(this, getLayoutInflater());
         buildFavoritesSection(this, getLayoutInflater());
         if(!userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
@@ -183,12 +182,8 @@ public class MainActivity extends AppCompatActivity {
         String myId = UUID.randomUUID().toString();
         String myName = userInfo.getString("user_name", "default");
         String myHeadShot = userInfo.getString("head_shot_url", "default");
-
-        /********************************FIX THIS BUG!*******************************/
-        /** Whenever methods of courseDao is called, all unit tests after the first one will fail **/
         List<String> listOfMyCourses = formatUserCourses(dbCourse, userInfo);
-        //List<String> listOfMyCourses = new ArrayList<String>();
-        /****************************************************************************/
+
 
         StringBuilder coursesStr = new StringBuilder();
         for (String singleCourse : listOfMyCourses){
@@ -210,7 +205,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        MainActivity contexty = this;
+        ListSesh.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(contexty, SessionScreen.class);
+                //LS = list sessions
+                Set<String> LS = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                intent.putExtra("ListStr", new ArrayList<>(LS));
+                startActivity(intent);
+            }
+        });
     }
+
 
     //TODO: Move this to its own class.
     /*Google auth code here. Since it is difficult to test and run on an emulator we have left it
@@ -309,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
                 String SName = seshName.getText().toString();
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
-
                     SharedPreferences.Editor insertSavedSesh = userInfo.edit();
                     Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
                     boolean alreadyExists = false;
@@ -318,7 +324,6 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         alreadyExists = strings.contains(SName);
                     }
-
                     if(!alreadyExists) {
                         savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
                         savingSession.saveCurrentSession();
@@ -456,6 +461,8 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         dbStudent.close();
     }
+
+
 
 //    // Deprecated in MS2
 //    //This is for mocking database
