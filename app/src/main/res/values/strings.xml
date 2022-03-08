@@ -10,6 +10,8 @@
     <string name="course_taking">Course Taking</string>
     <string name="courses">courses</string>
     <string name="common_courses">Common Courses</string>
+    <string name="press_to_wave">press to wave</string>
+    <string name="go_back">go back</string>
     <string-array name="year">
     <item>2022</item>
     <item>2021</item>

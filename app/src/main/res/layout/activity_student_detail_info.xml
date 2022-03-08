@@ -7,18 +7,16 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/student_info_toolbar"
-        android:layout_width="409dp"
+        android:layout_width="500dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="1dp"
         android:layout_marginBottom="671dp"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.388"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -28,18 +26,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="47dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="280dp"
+        android:layout_marginTop="18dp"
         android:layout_marginBottom="18dp"
         android:text="@string/student_name"
         android:textColor="#8C9EFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/student_info_toolbar"
         app:layout_constraintEnd_toEndOf="@+id/student_info_toolbar"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.138"
         app:layout_constraintStart_toStartOf="@+id/student_info_toolbar"
         app:layout_constraintTop_toTopOf="@+id/student_info_toolbar"
-        app:layout_constraintVertical_bias="0.875" />
+        app:layout_constraintVertical_bias="0.285" />
 
     <ImageView
         android:id="@+id/student_headshot"
@@ -52,6 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.163"
+        tools:ignore="ImageContrastCheck"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -77,4 +75,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.847" />
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/go_back"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:onClick="goBack"
+        app:layout_constraintEnd_toEndOf="@+id/student_info_toolbar"
+        app:layout_constraintHorizontal_bias="0.002"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="?attr/homeAsUpIndicator"
+        tools:tint="@color/white" />
+
+    <ImageButton
+        android:id="@+id/sendWaveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/press_to_wave"
+        android:onClick="sendWave"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.563"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.148"
+        app:srcCompat="@android:drawable/ic_menu_always_landscape_portrait" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

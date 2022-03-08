@@ -1,12 +1,16 @@
 package com.example.myapplication;
 
+import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,6 +23,8 @@ import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +43,9 @@ public class StudentDetailActivity extends AppCompatActivity {
     private RecyclerView coursesRecyclerView;
     private RecyclerView.LayoutManager coursesLayoutManager;
     private CourseViewAdapter coursesViewAdapter;
+
+    //SharePreference
+    private SharedPreferences userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -97,5 +106,44 @@ public class StudentDetailActivity extends AppCompatActivity {
         }
         return listOfCourse;
 
+    }
+
+    // onClick function for sending wave
+    public void sendWave(View view){
+
+        // initialize the shared preference that store user info
+        userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+
+        //Generate wave message
+        String myId = userInfo.getString("user_ID", "default");
+        String myName = userInfo.getString("user_name", "default");
+        String myHeadShot = userInfo.getString("head_shot_url", "default");
+        List<String> listOfMyCourses = formatUserCourses(dbCourse, userInfo);
+        StringBuilder coursesStr = new StringBuilder();
+        for (String singleCourse : listOfMyCourses){
+            coursesStr.append(singleCourse);
+            coursesStr.append(" ");
+        }
+        String myCourses = coursesStr.toString();
+        String otherId = student.getId();
+        String myWave = myId + "\n" +
+                myName + "\n" +
+                myHeadShot + "\n" +
+                myCourses + "\n" +
+                otherId + ",wave";
+        Message waveMessage = new Message(myWave.getBytes());
+        Nearby.getMessagesClient(this).publish(waveMessage);
+
+        //Check waveMessage
+        Log.d("Wave Message", new String(waveMessage.getContent()));
+
+        //Display toast
+        Toast.makeText(this, "Wave send", Toast.LENGTH_SHORT).show();
+
+    }
+
+    // onClick function for backButton
+    public void goBack(View view){
+        finish();
     }
 }
