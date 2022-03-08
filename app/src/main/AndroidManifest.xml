@@ -25,7 +25,11 @@
         <meta-data
             android:name="com.google.android.nearby.messages.API_KEY"
             android:value="AIzaSyCaIbNSSng0HmkVin9LIkmqjIrAchodeD4" />
-
+        <activity
+            android:name=".SessionScreen"
+            android:exported="false"/>
+        <activity android:name=".SessionDetailActivity"
+                    android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -34,6 +38,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <activity android:name=".StudentDetailActivity" />
