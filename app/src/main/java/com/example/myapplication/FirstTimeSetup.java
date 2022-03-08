@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.Course;
 
+import java.util.UUID;
 import java.util.zip.Inflater;
 
 public class FirstTimeSetup {
@@ -26,6 +27,7 @@ public class FirstTimeSetup {
     //This method opens an alert window that records the preferred name of the user.
     public static void firstTimeSetupName(AppDatabaseCourses DB, Context context, LayoutInflater inflater, SharedPreferences userInfo) {
         //This method creates the builder
+        String USER_ID = "user_ID";
         String USER_NAME = "user_name";
         String IS_FIRST_TIME_SETUP_COMPLETE = "isFirstTimeSetUpComplete";
         CreateBuilderAlert.returningVals AD = buildBuilder(context, R.layout.activity_first_time_setup,
@@ -47,6 +49,11 @@ public class FirstTimeSetup {
 
                 // Saves to shared preferences
                 userInfoEditor.putBoolean(IS_FIRST_TIME_SETUP_COMPLETE, true);
+                userInfoEditor.apply();
+
+                //Generate UUID and save to sharedpreference
+                String myUUID = UUID.randomUUID().toString();
+                userInfoEditor.putString(USER_ID, myUUID);
                 userInfoEditor.apply();
 
                 Log.d("Name that was typed in ", userName);

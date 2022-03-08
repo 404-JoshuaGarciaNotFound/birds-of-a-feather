@@ -180,16 +180,10 @@ public class MainActivity extends AppCompatActivity {
         };
 
         //Format publish message
-        String myId = UUID.randomUUID().toString();
+        String myId = userInfo.getString("user_ID", "default");
         String myName = userInfo.getString("user_name", "default");
         String myHeadShot = userInfo.getString("head_shot_url", "default");
-
-        /********************************FIX THIS BUG!*******************************/
-        /** Whenever methods of courseDao is called, all unit tests after the first one will fail **/
         List<String> listOfMyCourses = formatUserCourses(dbCourse, userInfo);
-        //List<String> listOfMyCourses = new ArrayList<String>();
-        /****************************************************************************/
-
         StringBuilder coursesStr = new StringBuilder();
         for (String singleCourse : listOfMyCourses){
             coursesStr.append(singleCourse);
@@ -366,13 +360,14 @@ public class MainActivity extends AppCompatActivity {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String mockUserInfo = newUser.getText().toString();
                     String[] splitInfo = mockUserInfo.split("\n");
-                    String idStr = UUID.randomUUID().toString();
-                    String name = splitInfo[0]
-                            .substring(0, splitInfo[0].length() - 3); // drop ,,,
-                    String url = splitInfo[1]
+                    String idStr = splitInfo[0]
+                            .substring(0, splitInfo[0].length() -3); //drop ,,,
+                    String name = splitInfo[1]
                             .substring(0, splitInfo[1].length() - 3); // drop ,,,
+                    String url = splitInfo[2]
+                            .substring(0, splitInfo[2].length() - 3); // drop ,,,
                     StringBuilder courses = new StringBuilder();
-                    for (int i = 2; i < splitInfo.length; i++) {
+                    for (int i = 3; i < splitInfo.length; i++) {
                         courses.append(splitInfo[i]);
                         if (i != splitInfo.length - 1) courses.append(" ");
                     }
