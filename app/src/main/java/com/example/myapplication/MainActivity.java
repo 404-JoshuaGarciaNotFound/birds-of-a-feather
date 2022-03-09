@@ -299,9 +299,9 @@ public class MainActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).unpublish(mMessage);
             Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
             Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
-//            // Turn off recylerView of list of students
-//            RecyclerView studentsRecylerView = findViewById(R.id.list_of_students);
-//            studentsRecylerView.setVisibility(View.INVISIBLE);
+//            // Turn off recyclerView of list of students
+//            RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
+//            studentsRecyclerView.setVisibility(View.INVISIBLE);
             //Refresh the list after turning off search
             refreshStudentList();
             //Dialogue for saving the session

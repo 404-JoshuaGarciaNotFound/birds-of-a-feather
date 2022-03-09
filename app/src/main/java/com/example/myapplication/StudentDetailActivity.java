@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +48,12 @@ public class StudentDetailActivity extends AppCompatActivity {
     //SharePreference
     private SharedPreferences userInfo;
 
+    //ImageButton
+    private ImageButton waveButton;
+
+    //Message to send when waving
+    private Message waveMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -77,6 +84,8 @@ public class StudentDetailActivity extends AppCompatActivity {
         TextView studentName = findViewById(R.id.student_name);
         studentName.setText(student.getName());
         studentHeadShot.setImageBitmap(getBitmapFromURL(student.getHeadShotURL()));
+        waveButton = findViewById(R.id.sendWaveButton);
+        waveButton.setImageDrawable(getDrawable(R.drawable.ic_wave_empty_hand));
 
         //Set CourseViewAdapter and bind to recylerView
         coursesRecyclerView = findViewById(R.id.course_list);
@@ -109,8 +118,6 @@ public class StudentDetailActivity extends AppCompatActivity {
     }
 
     // onClick function for sending wave
-    // TODO: change button UI to waving hand
-    // TODO: Make button change when wave sent
     public void sendWave(View view){
 
         // initialize the shared preference that store user info
@@ -133,8 +140,11 @@ public class StudentDetailActivity extends AppCompatActivity {
                 myHeadShot + "\n" +
                 myCourses + "\n" +
                 otherId + ",wave";
-        Message waveMessage = new Message(myWave.getBytes());
+        waveMessage = new Message(myWave.getBytes());
         Nearby.getMessagesClient(this).publish(waveMessage);
+
+        //Change icon
+        waveButton.setImageDrawable(getDrawable(R.drawable.ic_wave_hand));
 
         //Check waveMessage
         Log.d("Wave Message", new String(waveMessage.getContent()));
@@ -147,5 +157,8 @@ public class StudentDetailActivity extends AppCompatActivity {
     // onClick function for backButton
     public void goBack(View view){
         finish();
+        if (waveMessage != null){
+            Nearby.getMessagesClient(this).unpublish(waveMessage);
+        }
     }
 }
