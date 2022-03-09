@@ -49,9 +49,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     }
 
     @Override
-    public int getItemCount() {
-        return this.listOfStudent.size();
-    }
+    public int getItemCount() { return this.listOfStudent.size(); }
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

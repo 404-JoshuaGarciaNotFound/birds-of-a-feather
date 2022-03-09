@@ -110,7 +110,7 @@ public class StudentDetailActivity extends AppCompatActivity {
 
     // onClick function for sending wave
     // TODO: change button UI to waving hand
-    // TODO: Make button change when wave sent 
+    // TODO: Make button change when wave sent
     public void sendWave(View view){
 
         // initialize the shared preference that store user info
