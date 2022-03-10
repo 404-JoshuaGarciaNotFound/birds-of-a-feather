@@ -441,6 +441,8 @@ public class MainActivity extends AppCompatActivity {
 
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
 
+        // FIXME: this block of code will cause ConcurrentModificationException
+        //  app will crush when entered mock student does not share any course with the user
         for (Student student : listOfStudents) {
             if (student.getNumSharedCourses() == 0) {
                 listOfStudents.remove(student);
