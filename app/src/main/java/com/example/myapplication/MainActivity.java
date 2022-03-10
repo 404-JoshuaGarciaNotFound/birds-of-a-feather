@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
-import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
@@ -41,7 +40,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 import java.util.Set;
 import java.util.Calendar;
 
@@ -54,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private final String USER_NAME = "user_name";
     private final String HEAD_SHOT_URL = "head_shot_url";
     private final String USER_COURSE_ = "user_course_";
-    private final String USER_SAVEDSESSIONS= "saved_session";
+    private final String USER_SAVED_SESSIONS = "saved_session";
     // database variables
     private AppDatabaseStudent dbStudent;
     private AppDatabaseCourses dbCourse;
@@ -209,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
                 Intent intent = new Intent(contexty, SessionScreen.class);
                 //LS = list sessions
-                Set<String> LS = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                Set<String> LS = userInfo.getStringSet(USER_SAVED_SESSIONS, null);
                 intent.putExtra("ListStr", new ArrayList<>(LS));
                 startActivity(intent);
             }
@@ -315,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
                     SharedPreferences.Editor insertSavedSesh = userInfo.edit();
-                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                    Set<String> strings = userInfo.getStringSet(USER_SAVED_SESSIONS, null);
                     boolean alreadyExists = false;
                     if(strings == null) {
                         strings = new HashSet<>(Arrays.asList(SName));
@@ -323,8 +321,11 @@ public class MainActivity extends AppCompatActivity {
                         alreadyExists = strings.contains(SName);
                     }
                     if(!alreadyExists) {
-                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
-                        savingSession.saveCurrentSession();
+//                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
+//                        savingSession.saveCurrentSession();
+                        Session session = new Session(SName);
+                        session.populateSessionContentWithSameCourse(studentDao, courseDao);
+                        session.saveSession(userInfo);
                         saveSesh.cancel();
                     }
                     else{
@@ -380,6 +381,24 @@ public class MainActivity extends AppCompatActivity {
                         courses.append(splitInfo[i]);
                         if (i != splitInfo.length - 1) courses.append(" ");
                     }
+
+                    // check whether the students' course match the user's
+                    // if so, add the user to the students to display
+                    // FIXME: for those who implement messenger: this block calculate the
+                    //  numSharedCourse before a student is entered into database. So you need to
+                    //  pass this information to the messenger as well to keep database updated.
+                    //  Please delete the identical code in refreshStudentList() because that will
+                    //  cause numSharedCourse to increase multiple times.
+                    int numSharedCourses = 0;
+                    List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
+                    for (String courseStr : listOfUserCourses) {
+                        if (courses.toString().contains(courseStr)) {
+                            // the str of courses of a student contains a substring representing one of the
+                            // user's taken courses, the student is a match.
+                            numSharedCourses++;
+                        }
+                    }
+
                     String fakedMessageStr = idStr + "\n" +
                             name + "\n" +
                             url + "\n" +
@@ -419,20 +438,6 @@ public class MainActivity extends AppCompatActivity {
 
         // get list of students
         List<Student> listOfStudents = studentDao.getAll();
-
-        // check whether the students' course match the user's
-        // if so, add the user to the students to display
-        for (Student student : listOfStudents) {
-            int numSharedCourses = 0;
-            for (String courseStr : listOfUserCourses) {
-                if (student.getCourses().contains(courseStr)) {
-                    // the str of courses of a student contains a substring representing one of the
-                    // user's taken courses, the student is a match.
-                    numSharedCourses++;
-                }
-            }
-            student.setNumSharedCourses(numSharedCourses);
-        }
 
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
 

@@ -23,4 +23,5 @@ public class CreateSpinner {
         spinnySpiner.setAdapter(adapter1);
         return spinnySpiner;
     }
+
 }

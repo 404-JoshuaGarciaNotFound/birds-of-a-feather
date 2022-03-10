@@ -3,13 +3,13 @@ package com.example.myapplication;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,20 +23,14 @@ import java.util.Set;
  */
 public class Session {
 
+    private final String USER_SAVED_SESSIONS = "saved_session";
+
     private String sessionName;
-    private String sessionCourse;
     private Set<String> sessionContent;
     private final String TAG = this.getClass().getName();
 
-    public Session(String sessionName, String sessionCourse) {
-        Log.d(TAG, "creating session: " + sessionName + " with course: " + sessionCourse);
-        this.sessionName = sessionName;
-        this.sessionCourse = sessionCourse;
-        this.sessionContent = new HashSet<>();
-    }
-
     public Session(String sessionName) {
-        Log.d(TAG, "creating session: " + sessionName + " with course: " + sessionCourse);
+        Log.d(TAG, "creating session: " + sessionName);
         this.sessionName = sessionName;
         this.sessionContent = new HashSet<>();
     }
@@ -61,49 +55,23 @@ public class Session {
     }
 
     /**
-     * This method populate the session's content with specified filter class
-     * the content is made by sequences of student info
-     * each sequence (string) is in the form: name url number-of-shared-course course1 course2
-     */
-    public void populateSessionContentWithFilter(StudentDao studentDao) {
-        List<Student> allStudents = studentDao.getAll();
-        Set<String> content = new HashSet<>();
-        for (Student student :
-             allStudents) {
-            if (student.getCourses().contains(this.sessionCourse)) {
-                String sequence = student.getName() + " "
-                        + student.getHeadShotURL() + " "
-                        + student.getNumSharedCourses() + " "
-                        + student.getCourses();
-                sessionContent.add(sequence);
-            }
-        }
-    }
-
-    /**
      * This method populate the session's content with students who share the same courses
      * the content is made by sequences of student info
      * each sequence (string) is in the form: name url number-of-shared-course course1 course2
      */
-    public void populateSessionContentWithSameCourse(StudentDao studentDao, CourseDao courseDao) {
+    public void populateSessionContentWithSameCourse(
+            @NonNull StudentDao studentDao, @NonNull CourseDao courseDao) {
         List<Student> allStudents = studentDao.getAll();
-        List<Course> allCourses;
-        if(courseDao != null) {
-            allCourses = courseDao.getAllCourses();
-        }
-        else{
-            allCourses = new ArrayList<>();
-        }
-        for (Student student :
-                allStudents) {
-            for (Course course :
-                    allCourses) {
+        List<Course> allCourses = courseDao.getAllCourses();
+        for (Student student : allStudents) {
+            for (Course course : allCourses) {
                 if (student.getCourses().contains(course.getCourseCode())) {
                     String sequence = student.getName() + " "
                             + student.getHeadShotURL() + " "
                             + student.getNumSharedCourses() + " "
                             + student.getCourses();
                     sessionContent.add(sequence);
+                    break;
                 }
             }
         }
@@ -155,6 +123,13 @@ public class Session {
     public void saveSession(SharedPreferences sharedPreferences) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(this.sessionName, this.sessionContent);
+
+        Set<String> sessionSet = sharedPreferences.getStringSet(USER_SAVED_SESSIONS, null);
+        if (sessionSet == null) {
+            sessionSet = new HashSet<>();
+        }
+        sessionSet.add(this.sessionName);
+        editor.putStringSet(USER_SAVED_SESSIONS, sessionSet);
         editor.apply();
     }
 }
