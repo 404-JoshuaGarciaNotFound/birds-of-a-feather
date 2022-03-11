@@ -222,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     //TODO: Move this to its own class.
     /*Google auth code here. Since it is difficult to test and run on an emulator we have left it
     commented out but the code is functional on a physical android device.

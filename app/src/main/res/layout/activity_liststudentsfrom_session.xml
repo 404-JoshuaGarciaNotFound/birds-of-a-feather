@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    \
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ListOfStudentsFromSession"
@@ -14,19 +15,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-
     <TextView
         android:id="@+id/seshNamey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/session_name"
-
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/ReturnHomey"
@@ -44,27 +43,22 @@
         android:id="@+id/horizontalLine"
         android:layout_width="411dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="110dp"
-        android:layout_marginBottom="12dp"
         android:background="#999999"
         android:gravity="center_horizontal"
         android:textSize="2sp"
         app:layout_constraintBottom_toTopOf="@+id/ListOfStudentsFromSession"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SmallSp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/changeName"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="42dp"
+        android:layout_height="41dp"
         android:src="@android:drawable/ic_menu_edit"
         app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.775"
+        app:layout_constraintHorizontal_bias="0.842"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,29 +67,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="59dp"
         android:layout_marginEnd="19dp"
-        android:layout_marginBottom="608dp"
+        android:layout_marginBottom="624dp"
         android:text="@string/sort_by_class_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/recency_sort_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/recency_sort_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="19dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="59dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="608dp"
+        android:layout_marginBottom="624dp"
         android:text="@string/sort_by_recency"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/class_size_sort_button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

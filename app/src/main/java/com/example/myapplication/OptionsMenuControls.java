@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -42,6 +43,9 @@ public class OptionsMenuControls {
             @Override
             public void onClick(View view) {
                 ListFilters.show();
+                Button b = ListSesh.findViewById(R.id.class_size_sort_button);
+
+
             }
         });
         return true;
