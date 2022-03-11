@@ -3,7 +3,6 @@ package com.example.myapplication;
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
-import static com.example.myapplication.OptionsMenuControls.buildListFilters;
 import static com.example.myapplication.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.OptionsMenuControls.showMenu;
 
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     public final String HEAD_SHOT_URL = "head_shot_url";
     public final String USER_COURSE_ = "user_course_";
     public final String USER_SAVEDSESSIONS= "saved_session";
-
     public final String USER_FAVORITES = "favorites";
     // database variables
     public AppDatabaseStudent dbStudent;
@@ -110,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Bluetooth permission", "Bluetooth permission already granted");
         }
         // check for first time setup
-        buildListFilters(this, getLayoutInflater());
         if(!userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
             Log.d("SETUPLOG", "First time setup not complete... Running now!");
             //Run First time setup
@@ -185,10 +182,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!active){
-                    active = showMenu(userInfo, getLayoutInflater(), getResources(), FavoritesTab, ListSesh, FilterOptions);
+                    active = showMenu(userInfo,getLayoutInflater(),getResources(), FavoritesTab, ListSesh);
                 }
                 else{
-                    active = closeMenu(FavoritesTab, ListSesh, FilterOptions);
+                    active = closeMenu(FavoritesTab, ListSesh);
                 }
             }
         });
@@ -432,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
             mockSwitch.setBackgroundColor(0Xff99cc00);
             RecyclerView studentList = findViewById(R.id.list_of_students);
             studentList.setVisibility(View.VISIBLE);
+
         }
     }
 

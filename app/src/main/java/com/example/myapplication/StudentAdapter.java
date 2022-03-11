@@ -138,17 +138,19 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
             this.personName.setText(student.getName());
             this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
-            if(sp != null) {
-                //This method updates the star shape if a student is a favorite.
-                Set<String> favoritesList = sp.getStringSet("favorites", null);
-                if (favoritesList != null) {
-                    if (favoritesList.size() != 0) {
-                        if (favoritesList.contains(this.student.getId() + this.student.getName())) {
-                            favoritesStar.setBackgroundResource(R.drawable.ic_star);
-                        }
+
+            //This method updates the star shape if a student is a favorite.
+            Set<String> favoritesList = sp.getStringSet("favorites", null);
+
+            if (favoritesList != null) {
+                if (favoritesList.size() != 0) {
+                    Log.d("a", String.valueOf(favoritesList.contains(this.student.getId() + this.student.getName() + this.student.getHeadShotURL())));
+                    if (favoritesList.contains(this.student.getId() + this.student.getName() + this.student.getHeadShotURL() )) {
+                        favoritesStar.setBackgroundResource(R.drawable.ic_star);
                     }
                 }
             }
+
 
         }
 

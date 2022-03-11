@@ -26,7 +26,6 @@ public class SavingSession {
         this.currentTime = currentTime;
         this.studentDao = studentDao;
         this.courseDao = courseDao;
-
         if(currentTime != null && (SName == "" || SName == null))
             this.SName = currentTime.toString();
         else
@@ -39,14 +38,12 @@ public class SavingSession {
         if(strings == null) {
             strings = new HashSet<>(Arrays.asList(SName));
         }
-
         strings.add(SName);
         insertSavedSesh.putStringSet(USER_SAVEDSESSIONS, strings);
         insertSavedSesh.apply();
         Log.d("ListOfSessions", String.valueOf(strings));
         // creating session here
         Session session = new Session(SName);
-
         session.populateSessionContentWithSameCourse(studentDao, courseDao);
         session.saveSession(userInfo);
     }
