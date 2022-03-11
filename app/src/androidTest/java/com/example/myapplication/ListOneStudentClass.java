@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-class simpletest {
+class ListOneStudentClass {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -44,7 +44,7 @@ class simpletest {
                     "android.permission.BLUETOOTH_CONNECT");
 
     @Test
-    public void simpletest() {
+    public void listOneStudentClass() {
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.personName),
                         childAtPosition(

@@ -114,6 +114,7 @@ public class SessionDetailActivity extends AppCompatActivity {
             studentCourseList = studentCourseList.trim();
             Student student = new Student(studentId, StudentURL, StudentName, studentCourseList, Integer.parseInt(numCourses));
             dbStudent2.studentDao().insertStudent(student);
+            Log.d("Passed student after rename: ", StudentName);
         }
        // Log.d("Values", String.valueOf(Convert.get(0)));
         //Now dbStudent has all of the students parsed
