@@ -44,12 +44,16 @@
         android:id="@+id/horizontalLine"
         android:layout_width="411dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:layout_marginBottom="12dp"
         android:background="#999999"
         android:gravity="center_horizontal"
         android:textSize="2sp"
         app:layout_constraintBottom_toTopOf="@+id/ListOfStudentsFromSession"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SmallSp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -69,23 +73,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="60dp"
         android:layout_marginEnd="19dp"
-        android:layout_marginBottom="624dp"
+        android:layout_marginBottom="608dp"
         android:text="@string/sort_by_class_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/recency_sort_button"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/recency_sort_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="19dp"
+        android:layout_marginTop="60dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="624dp"
+        android:layout_marginBottom="608dp"
         android:text="@string/sort_by_recency"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/class_size_sort_button" />
+        app:layout_constraintStart_toEndOf="@+id/class_size_sort_button"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

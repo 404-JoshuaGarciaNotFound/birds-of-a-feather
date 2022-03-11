@@ -33,7 +33,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     private final SharedPreferences sp;
     public StudentAdapter(SharedPreferences SP, List<Student> listOfStudent) {
         super();
-         this.sp = SP;
+        this.sp = SP;
         this.listOfStudent = listOfStudent;
     }
 
@@ -70,6 +70,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             this.personMatchClasses = itemView.findViewById(R.id.number_matches);
             this.favoritesStar = itemView.findViewById(R.id.favoriteStarDetailsPage);
             //This method is for adding favorite students
+            if(sp != null) {
             favoritesStar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -78,38 +79,37 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                         favoritesStar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                SharedPreferences.Editor insertStudentFav = sp.edit();
-                                Set<String> favoritesList = sp.getStringSet("favorites", null);
-                                if(favoritesList == null){
-                                    Set<String> newSet = new HashSet<String>();
-                                    newSet.add(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
-                                    insertStudentFav.putStringSet("favorites", newSet);
-                                    insertStudentFav.apply();
-                                    favoritesStar.setBackgroundResource(R.drawable.ic_star);
-                                }
-                                else{
-                                    if(!favoritesList.contains(student.getId() + student.getName()+ " " + student.getHeadShotURL())) {
-                                        Log.d("CLICKED", "Inserting student");
-                                        Log.d("List", String.valueOf(favoritesList));
-                                        insertStudentFav.remove("favorites");
-                                        favoritesList.add(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
-                                        insertStudentFav.putStringSet("favorites", favoritesList);
+                                    SharedPreferences.Editor insertStudentFav = sp.edit();
+                                    Set<String> favoritesList = sp.getStringSet("favorites", null);
+                                    if (favoritesList == null) {
+                                        Set<String> newSet = new HashSet<String>();
+                                        newSet.add(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+                                        insertStudentFav.putStringSet("favorites", newSet);
                                         insertStudentFav.apply();
-                                        Log.d("List", String.valueOf(favoritesList));
                                         favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                                    } else {
+                                        if (!favoritesList.contains(student.getId() + student.getName() + " " + student.getHeadShotURL())) {
+                                            Log.d("CLICKED", "Inserting student");
+                                            Log.d("List", String.valueOf(favoritesList));
+                                            insertStudentFav.remove("favorites");
+                                            favoritesList.add(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+                                            insertStudentFav.putStringSet("favorites", favoritesList);
+                                            insertStudentFav.apply();
+                                            Log.d("List", String.valueOf(favoritesList));
+                                            favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                                        } else {
+                                            Log.d("Error", "No douplicates in favorites");
+                                        }
                                     }
-                                    else{
-                                        Log.d("Error", "No douplicates in favorites");
-                                    }
-                                }
-                                Log.d("CLICKED HEHEHE", "Completed");
-
+                                    Log.d("CLICKED HEHEHE", "Completed");
                             }
                         });
                     }
                 }
             });
+            }
             itemView.setOnClickListener(this);
+
         }
 
 
@@ -138,12 +138,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
             this.personName.setText(student.getName());
             this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
-            //This method updates the star shape if a student is a favorite.
-            Set<String> favoritesList = sp.getStringSet("favorites", null);
-            if(favoritesList != null){
-                if(favoritesList.size() != 0) {
-                    if (favoritesList.contains(this.student.getId() + this.student.getName())) {
-                        favoritesStar.setBackgroundResource(R.drawable.ic_star);
+            if(sp != null) {
+                //This method updates the star shape if a student is a favorite.
+                Set<String> favoritesList = sp.getStringSet("favorites", null);
+                if (favoritesList != null) {
+                    if (favoritesList.size() != 0) {
+                        if (favoritesList.contains(this.student.getId() + this.student.getName())) {
+                            favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                        }
                     }
                 }
             }

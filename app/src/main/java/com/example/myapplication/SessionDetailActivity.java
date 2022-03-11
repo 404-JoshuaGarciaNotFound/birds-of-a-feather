@@ -130,7 +130,7 @@ public class SessionDetailActivity extends AppCompatActivity {
         Button classSortButton = findViewById(R.id.class_size_sort_button);
         Button recencySortButton = findViewById(R.id.recency_sort_button);
         List<Course> courseList = dbCourse.courseDao().getAllCourses();
-        FilterUtil filterUtil = new FilterUtil(courseList, LOS, classSortButton, recencySortButton, RV);
+        FilterUtil filterUtil = new FilterUtil(userInfo, courseList, LOS, classSortButton, recencySortButton, RV);
         filterUtil.setupButtons();
 
         FloatingActionButton FABreturn = (FloatingActionButton) findViewById(R.id.ReturnHomey);
