@@ -5,8 +5,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
@@ -29,7 +31,7 @@ import org.junit.runner.RunWith;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class trresty {
+public class simpletest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -42,7 +44,7 @@ public class trresty {
                     "android.permission.BLUETOOTH_CONNECT");
 
     @Test
-    public void trresty() {
+    public void simpletest() {
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.personName),
                         childAtPosition(
@@ -51,7 +53,7 @@ public class trresty {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText.perform(replaceText("Joshuia"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("Guy"), closeSoftKeyboard());
 
         ViewInteraction materialButton = onView(
                 allOf(withId(R.id.SubmitFirstName), withText("Submit"),
@@ -71,7 +73,7 @@ public class trresty {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText2.perform(replaceText("www.hgoohle.com"), closeSoftKeyboard());
+        appCompatEditText2.perform(replaceText("www.google.com"), closeSoftKeyboard());
 
         ViewInteraction materialButton2 = onView(
                 allOf(withId(R.id.SubmitURL), withText("Submit"),
@@ -173,35 +175,12 @@ public class trresty {
                         isDisplayed()));
         materialButton8.perform(click());
 
-        ViewInteraction materialButton9 = onView(
-                allOf(withId(R.id.StartStopBttn), withText("STOP"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                2),
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.number_matches), withText("1"),
+                        withParent(allOf(withId(R.id.frameLayout),
+                                withParent(withId(R.id.list_of_students)))),
                         isDisplayed()));
-        materialButton9.perform(click());
-
-        ViewInteraction appCompatEditText6 = onView(
-                allOf(withId(R.id.editTextTextPersonName2),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText6.perform(replaceText("ASD"), closeSoftKeyboard());
-
-        ViewInteraction materialButton10 = onView(
-                allOf(withId(R.id.saveButtonForSessionName), withText("Save"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        materialButton10.perform(click());
+        textView.check(matches(withText("1")));
     }
 
     private static Matcher<View> childAtPosition(
