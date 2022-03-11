@@ -91,7 +91,6 @@ public class SessionDetailActivity extends AppCompatActivity {
                         }
                     }
                 });
-
             }
         });
 
@@ -105,15 +104,17 @@ public class SessionDetailActivity extends AppCompatActivity {
             String[] words = fullWord.split(" ");
             Log.d("lengthOfCals", String.valueOf(fullWord));
             String studentCourseList = "";
-            String StudentName = words[0];
-            String StudentURL = words[1];
-            String numCourses = words[2];
+            String studentId = words[0];
+            String StudentName = words[1];
+            String StudentURL = words[2];
+            String numCourses = words[3];
             for(int b = 3; b < words.length; b++){
                 studentCourseList = (studentCourseList + " " + words[b]);
             }
             studentCourseList = studentCourseList.trim();
-            Student student = new Student(String.valueOf(i), StudentURL, StudentName, studentCourseList, Integer.parseInt(numCourses));
+            Student student = new Student(studentId, StudentURL, StudentName, studentCourseList, Integer.parseInt(numCourses));
             dbStudent2.studentDao().insertStudent(student);
+            Log.d("Passed student after rename: ", StudentName);
         }
        // Log.d("Values", String.valueOf(Convert.get(0)));
         //Now dbStudent has all of the students parsed
@@ -122,14 +123,14 @@ public class SessionDetailActivity extends AppCompatActivity {
         RV.setLayoutManager(RVLM);
         List<Student> LOS = dbStudent2.studentDao().getAll();
         LOS.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
-        StudentAdapter SA = new StudentAdapter(LOS);
+        StudentAdapter SA = new StudentAdapter(userInfo, LOS);
         RV.setAdapter(SA);
 
         // this block set up filter buttons functionalities
         Button classSortButton = findViewById(R.id.class_size_sort_button);
         Button recencySortButton = findViewById(R.id.recency_sort_button);
         List<Course> courseList = dbCourse.courseDao().getAllCourses();
-        FilterUtil filterUtil = new FilterUtil(courseList, LOS, classSortButton, recencySortButton, RV);
+        FilterUtil filterUtil = new FilterUtil(userInfo, courseList, LOS, classSortButton, recencySortButton, RV);
         filterUtil.setupButtons();
 
         FloatingActionButton FABreturn = (FloatingActionButton) findViewById(R.id.ReturnHomey);

@@ -52,6 +52,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         public void setSession(String s){
             Log.d("CLICKED", s);
             this.SessionName.setText(s);
+
         }
 
         @Override

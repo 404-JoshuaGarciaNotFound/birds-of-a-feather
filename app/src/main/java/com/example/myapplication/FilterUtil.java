@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
 
@@ -28,13 +29,14 @@ public class FilterUtil {
     // data structures
     private List<Course> courseList;
     private List<Student> studentsList;
-
+    private SharedPreferences sp;
     // views
     private Button classSortButton;
     private Button recencySortButton;
     private RecyclerView studentListRCV;
 
-    public FilterUtil(List<Course> courseList, List<Student> studentsList, Button classSortButton, Button recencySortButton, RecyclerView studentListRCV) {
+    public FilterUtil(SharedPreferences SP, List<Course> courseList, List<Student> studentsList, Button classSortButton, Button recencySortButton, RecyclerView studentListRCV) {
+        this.sp = SP;
         this.courseList = courseList;
         this.studentsList = studentsList;
         this.classSortButton = classSortButton;
@@ -106,7 +108,7 @@ public class FilterUtil {
                 return weight1 - weight2;
             }
         });
-        StudentAdapter studentAdapter = new StudentAdapter(studentsList);
+        StudentAdapter studentAdapter = new StudentAdapter(null, studentsList);
         studentListRCV.setAdapter(studentAdapter);
     }
 
@@ -146,7 +148,7 @@ public class FilterUtil {
                 }
             }
         });
-        StudentAdapter studentAdapter = new StudentAdapter(studentsList);
+        StudentAdapter studentAdapter = new StudentAdapter(sp , studentsList);
         studentListRCV.setAdapter(studentAdapter);
     }
 }
