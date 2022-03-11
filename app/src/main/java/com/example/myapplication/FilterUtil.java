@@ -21,6 +21,7 @@ import java.util.stream.Stream;
  */
 public class FilterUtil {
 
+    // These are finite structures that denote weight for class sizes ad recency, for comparison
     private final HashMap<String, Integer> CLASS_SIZE_WEIGHT = new HashMap<>();
     private final HashMap<String, Integer> CLASS_RECENCY_WEIGHT = new HashMap<>();
 
