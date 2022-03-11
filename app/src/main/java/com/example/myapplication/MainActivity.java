@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     public StudentDao studentDao;
     public CourseDao courseDao;
     // SharedPreference that store user info
-    public SharedPreferences userInfo;
+    public static SharedPreferences userInfo;
     public MessageListener searchingClassmate;
     public Message mMessage;
     public static final String TAG = "Turn on Search";
@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 String studentName = arrayOfStudentInfo[1];
                 String studentHeadShot = arrayOfStudentInfo[2];
                 String studentCourses = arrayOfStudentInfo[3];
+
                 Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
                 dbStudent.studentDao().insertStudent(newStudent);
                 Log.d("Student being added", newStudent.getName());
@@ -220,7 +221,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    public static SharedPreferences returnSP(){
+        return userInfo;
+    }
     //TODO: Move this to its own class.
     /*Google auth code here. Since it is difficult to test and run on an emulator we have left it
     commented out but the code is functional on a physical android device.
@@ -456,6 +459,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             student.setNumSharedCourses(numSharedCourses);
+            studentDao.SetSharedCourse(student.getId(), numSharedCourses);
         }
 
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
