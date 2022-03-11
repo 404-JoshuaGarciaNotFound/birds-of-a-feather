@@ -26,6 +26,7 @@ public class SavingSession {
         this.currentTime = currentTime;
         this.studentDao = studentDao;
         this.courseDao = courseDao;
+
         if(currentTime != null && (SName == "" || SName == null))
             this.SName = currentTime.toString();
         else

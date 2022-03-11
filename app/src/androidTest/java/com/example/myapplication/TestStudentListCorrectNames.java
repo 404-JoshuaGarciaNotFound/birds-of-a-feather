@@ -252,6 +252,8 @@ withParent(allOf(withId(R.id.frameLayout),
 withParent(withId(R.id.list_of_students)))),
 isDisplayed()));
         textView3.check(matches(withText("Ted")));
+
+
         }
     
     private static Matcher<View> childAtPosition(

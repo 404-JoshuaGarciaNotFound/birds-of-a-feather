@@ -99,10 +99,11 @@ public class Session {
             for (Course course :
                     allCourses) {
                 if (student.getCourses().contains(course.getCourseCode())) {
-                    String sequence = student.getName() + " "
+                    String sequence = student.getId() + " "
+                            + student.getName() + " "
                             + student.getHeadShotURL() + " "
                             + student.getNumSharedCourses() + " "
-                            + student.getCourses();
+                            + student.getCourses() + " ";
                     sessionContent.add(sequence);
                 }
             }

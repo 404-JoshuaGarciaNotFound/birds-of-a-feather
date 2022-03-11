@@ -103,14 +103,15 @@ public class SessionDetailActivity extends AppCompatActivity {
             String[] words = fullWord.split(" ");
             Log.d("lengthOfCals", String.valueOf(fullWord));
             String studentCourseList = "";
-            String StudentName = words[0];
-            String StudentURL = words[1];
-            String numCourses = words[2];
+            String studentId = words[0];
+            String StudentName = words[1];
+            String StudentURL = words[2];
+            String numCourses = words[3];
             for(int b = 3; b < words.length; b++){
                 studentCourseList = (studentCourseList + " " + words[b]);
             }
             studentCourseList = studentCourseList.trim();
-            Student student = new Student(String.valueOf(i), StudentURL, StudentName, studentCourseList, Integer.parseInt(numCourses));
+            Student student = new Student(studentId, StudentURL, StudentName, studentCourseList, Integer.parseInt(numCourses));
             dbStudent2.studentDao().insertStudent(student);
         }
        // Log.d("Values", String.valueOf(Convert.get(0)));
@@ -120,7 +121,7 @@ public class SessionDetailActivity extends AppCompatActivity {
         RV.setLayoutManager(RVLM);
         List<Student> LOS = dbStudent2.studentDao().getAll();
         LOS.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
-        StudentAdapter SA = new StudentAdapter(LOS);
+        StudentAdapter SA = new StudentAdapter(userInfo, LOS);
         RV.setAdapter(SA);
         FloatingActionButton FABreturn = (FloatingActionButton) findViewById(R.id.ReturnHomey);
         //Finally we have a intent to return to home screen

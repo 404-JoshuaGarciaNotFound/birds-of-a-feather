@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 public class OptionsMenuControls {
-    public static AlertDialog ListFavorites;
     public static AlertDialog ListFilters;
     public static Context contexty;
 
@@ -33,22 +32,11 @@ public class OptionsMenuControls {
         ListFilters = ADc.alertDiag;
         contexty =   context;
     }
-    public static void buildFavoritesSection(Context context, LayoutInflater inflator){
-        CreateBuilderAlert.returningVals ADa = buildBuilder(context, R.layout.listfavorites,
-                inflator , true, "Favorites");
-         ListFavorites  = ADa.alertDiag;
-    }
+
 
     public static Boolean showMenu(SharedPreferences sp, LayoutInflater inflater, Resources res, FloatingActionButton FavoritesTab, FloatingActionButton ListSesh, FloatingActionButton FilterOptions){
         FavoritesTab.animate().translationY(-res.getDimension(R.dimen._55));
-        FavoritesTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ListFavorites.show();
-            }
-        });
         ListSesh.animate().translationY(-res.getDimension(R.dimen._105));
-
         FilterOptions.animate().translationY(-res.getDimension(R.dimen._155));
         FilterOptions.setOnClickListener(new View.OnClickListener() {
             @Override
