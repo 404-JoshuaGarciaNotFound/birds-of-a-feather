@@ -464,23 +464,28 @@ public class MainActivity extends AppCompatActivity {
      * This method helps to refresh the recyclerView in Main Page
      */
     private void refreshStudentList(List<Student> studentList) {
-        RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(userInfo, studentList);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
-                // This block handles sort-by-class-size / recency buttons on main
-                Button classSortButtonMain = findViewById(R.id.class_size_sort_button_main);
-                classSortButtonMain.setVisibility(View.VISIBLE);
-                Button recencySortButtonMain = findViewById(R.id.recency_sort_button_main);
-                recencySortButtonMain.setVisibility(View.VISIBLE);
+        try {
+            RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
+            StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(userInfo, studentList);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+                    // This block handles sort-by-class-size / recency buttons on main
+                    Button classSortButtonMain = findViewById(R.id.class_size_sort_button_main);
+                    classSortButtonMain.setVisibility(View.VISIBLE);
+                    Button recencySortButtonMain = findViewById(R.id.recency_sort_button_main);
+                    recencySortButtonMain.setVisibility(View.VISIBLE);
 
-                List<Course> courseList = dbCourse.courseDao().getAllCourses();
-                //SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
-                //sortUtil.setupButtons();
-            }
-        });
+                    List<Course> courseList = dbCourse.courseDao().getAllCourses();
+                    //SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
+                    //sortUtil.setupButtons();
+                }
+            });
+
+        } catch (Exception e) {
+            Log.d("Error", String.valueOf(e));
+        }
     }
 
 
