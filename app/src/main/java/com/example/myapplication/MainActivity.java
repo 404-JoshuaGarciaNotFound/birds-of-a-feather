@@ -300,11 +300,11 @@ public class MainActivity extends AppCompatActivity {
         String current = startStop.getText().toString();
         Log.d("CurrentState", current);
         if(current.equals("START")) {
-            if (!btPermission.BTPermissionIsGranted()) {
-                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
-                btPermission.promptPermissionRequiredMessage();
-            } else {
-                Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
+//            if (!btPermission.BTPermissionIsGranted()) {
+//                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
+//                btPermission.promptPermissionRequiredMessage();
+//            } else {
+                // Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 currentTime = Calendar.getInstance().getTime();
                 Log.d("Nearby Messages Status", "ENABLED");
@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
                 //Refresh List
                 List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
                 refreshStudentList(studentList);
-            }
+//            }
         }
         if(current.equals("STOP")){
             startStop.setText("START");
