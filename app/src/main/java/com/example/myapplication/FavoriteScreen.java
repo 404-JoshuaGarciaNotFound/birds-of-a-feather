@@ -39,7 +39,7 @@ public class FavoriteScreen extends AppCompatActivity {
             RecyclerView rv = (RecyclerView) findViewById(R.id.List_Of_Favorites);
             RecyclerView.LayoutManager RVLM = new LinearLayoutManager(this);
             rv.setLayoutManager(RVLM);
-            FavoritesSectionAdapter SA = new FavoritesSectionAdapter(returnSP(), keys);
+            FavoritesSectionAdapter SA = new FavoritesSectionAdapter(keys);
             rv.setAdapter(SA);
             rv.setVisibility(View.VISIBLE);
         }

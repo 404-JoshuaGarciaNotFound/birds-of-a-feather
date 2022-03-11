@@ -209,11 +209,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
         FavoritesTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(contexty, FavoriteScreen.class);
                 Set<String> LF = userInfo.getStringSet(USER_FAVORITES, null);
+                Log.d("vals", String.valueOf(LF));
+
                 if(LF != null){
                     intent.putExtra("ListFav", new ArrayList<>(LF));
                     startActivity(intent);
