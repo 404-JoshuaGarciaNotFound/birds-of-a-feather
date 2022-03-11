@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -57,11 +58,16 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         private final TextView personName;
         private final ImageView personIcon;
         private final TextView personMatchClasses;
+        private final ImageButton starButton;
+        private final ImageButton waveButton;
+
         ViewHolder(View itemView) {
             super(itemView);
             this.personName = itemView.findViewById(R.id.student_firstname);
             this.personIcon = itemView.findViewById(R.id.student_headshot);
             this.personMatchClasses = itemView.findViewById(R.id.number_matches);
+            this.starButton = itemView.findViewById(R.id.starButton);
+            this.waveButton = itemView.findViewById(R.id.received_wave_button);
             itemView.setOnClickListener(this);
         }
 
@@ -88,9 +94,15 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                 }
             }).start();
 
-
+            Log.d("isWaveReceived", String.valueOf(student.isWaveReceived()));
             this.personName.setText(student.getName());
             this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
+            if(student.isWaveReceived()){
+                waveButton.setVisibility(View.VISIBLE);
+            }
+            else{
+                waveButton.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override

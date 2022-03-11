@@ -3,6 +3,7 @@ package com.example.myapplication;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -59,6 +60,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_detail_info);
         Log.d("student_detail_info", "onCreate: start ");
+        waveMessage = null;
 
         //Set up database
         dbStudent = AppDatabaseStudent.singleton(this);
@@ -93,6 +95,9 @@ public class StudentDetailActivity extends AppCompatActivity {
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
         coursesViewAdapter = new CourseViewAdapter(listOfCourse);
         coursesRecyclerView.setAdapter(coursesViewAdapter);
+
+        //Change waveReceived to false
+        dbStudent.studentDao().setWaveReceived(studentId, false);
     }
 
     //Function to find sharedCourse
@@ -156,9 +161,10 @@ public class StudentDetailActivity extends AppCompatActivity {
 
     // onClick function for backButton
     public void goBack(View view){
-        finish();
         if (waveMessage != null){
             Nearby.getMessagesClient(this).unpublish(waveMessage);
         }
+        finish();
+
     }
 }

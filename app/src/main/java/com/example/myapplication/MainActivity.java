@@ -144,12 +144,27 @@ public class MainActivity extends AppCompatActivity {
                 String studentInfo = new String(message.getContent());
                 String[] arrayOfStudentInfo = studentInfo.split("\n");
                 String studentId = arrayOfStudentInfo[0];
-                String studentName = arrayOfStudentInfo[1];
-                String studentHeadShot = arrayOfStudentInfo[2];
-                String studentCourses = arrayOfStudentInfo[3];
-                Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
-                dbStudent.studentDao().insertStudent(newStudent);
-                Log.d("Student being added", newStudent.getName());
+                if (dbStudent.studentDao().isInserted(studentId)) {
+                    Log.d(dbStudent.studentDao().getStudentByID(studentId).getName(), "Already in Database");
+                }
+                else {
+                    String studentName = arrayOfStudentInfo[1];
+                    String studentHeadShot = arrayOfStudentInfo[2];
+                    String studentCourses = arrayOfStudentInfo[3];
+                    Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
+                    dbStudent.studentDao().insertStudent(newStudent);
+                    Log.d("Student being added", newStudent.getName());
+                }
+
+                // Display HandView when found wave
+                if (arrayOfStudentInfo.length == 5){
+                    String[] waveInfo = arrayOfStudentInfo[4].split(",");
+                    Log.d("myId", userInfo.getString("user_ID", "default"));
+                    if (waveInfo[0].equals(userInfo.getString("user_ID", "default"))) {
+                        dbStudent.studentDao().setWaveReceived(studentId, true);
+                        Log.d("Wave sent from", dbStudent.studentDao().getStudentByID(studentId).getName());
+                    }
+                }
 
                 // Refresh List Student Recycler
                 refreshStudentList();
@@ -364,26 +379,36 @@ public class MainActivity extends AppCompatActivity {
             Button mockEnter = findViewById(R.id.SubmitMockUser);
             mockEnter.setVisibility(View.VISIBLE);
             mockEnter.setOnClickListener(new View.OnClickListener() {
+                // TODO: mock format change
                 @Override
                 public void onClick(View v2) {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
                     String mockUserInfo = newUser.getText().toString();
                     String[] splitInfo = mockUserInfo.split("\n");
                     String idStr = splitInfo[0]
-                            .substring(0, splitInfo[0].length() -3); //drop ,,,
+                            .substring(0, splitInfo[0].length() - 4); //drop ,,,,
                     String name = splitInfo[1]
-                            .substring(0, splitInfo[1].length() - 3); // drop ,,,
+                            .substring(0, splitInfo[1].length() - 4); // drop ,,,,
                     String url = splitInfo[2]
-                            .substring(0, splitInfo[2].length() - 3); // drop ,,,
+                            .substring(0, splitInfo[2].length() - 4); // drop ,,,,
                     StringBuilder courses = new StringBuilder();
+                    StringBuilder waveInfo = new StringBuilder();
                     for (int i = 3; i < splitInfo.length; i++) {
-                        courses.append(splitInfo[i]);
-                        if (i != splitInfo.length - 1) courses.append(" ");
+                        String[] checkWave = splitInfo[i].split(",");
+                        if (checkWave[1].equals("wave")){
+                            waveInfo.append(checkWave[0] + ",wave");
+                        }
+                        else {
+                            courses.append(splitInfo[i]);
+                            courses.append(" ");
+                        }
                     }
+                    courses.deleteCharAt(courses.length() - 1);
                     String fakedMessageStr = idStr + "\n" +
                             name + "\n" +
                             url + "\n" +
-                            courses;
+                            courses + "\n" +
+                            waveInfo;
                     Message fakedMessage = new Message(fakedMessageStr.getBytes(StandardCharsets.UTF_8));
                     searchingClassmate.onFound((fakedMessage));
 
@@ -413,6 +438,7 @@ public class MainActivity extends AppCompatActivity {
      * This method shows a list of students who has taken the same course with the app's user, sorted by the
      * number of classes the student shared with the user
      */
+    // TODO: Adjust this function for display
     private void refreshStudentList() {
         // get user's taken courses
         List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);

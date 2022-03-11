@@ -26,6 +26,9 @@ public class Student {
     @ColumnInfo(name = "num_shared_courses")
     private int numSharedCourses;
 
+    @ColumnInfo(name = "wave_received")
+    private boolean waveReceived;
+
     public Student() {
     }
 
@@ -35,6 +38,16 @@ public class Student {
         this.name = name;
         this.courses = courses;
         this.numSharedCourses = numSharedCourses;
+        this.waveReceived = false;
+    }
+
+    public Student(String id, String headShotURL, String name, String courses, int numSharedCourses, boolean waveReceived){
+        this.id = id;
+        this.headShotURL = headShotURL;
+        this.name = name;
+        this.courses = courses;
+        this.numSharedCourses = numSharedCourses;
+        this.waveReceived = true;
     }
 
     public String getId() {
@@ -75,5 +88,13 @@ public class Student {
 
     public void setNumSharedCourses(int numSharedCourses) {
         this.numSharedCourses = numSharedCourses;
+    }
+
+    public void setWaveReceived(boolean waveReceived) {
+        this.waveReceived = waveReceived;
+    }
+
+    public boolean isWaveReceived() {
+        return waveReceived;
     }
 }

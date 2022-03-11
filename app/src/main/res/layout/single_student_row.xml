@@ -50,7 +50,7 @@
         app:layout_constraintVertical_bias="0.542" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/starButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
@@ -63,7 +63,7 @@
         app:srcCompat="@drawable/ic_star_empty" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/received_wave_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
