@@ -55,6 +55,9 @@ public class StudentDetailActivity extends AppCompatActivity {
     //Message to send when waving
     private Message waveMessage;
 
+    //Student Info
+    private String studentId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -69,7 +72,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         courseDao = dbCourse.courseDao();
 
         Intent intent = getIntent();
-        String studentId = intent.getStringExtra("student_id");
+        studentId = intent.getStringExtra("student_id");
         dbStudent = AppDatabaseStudent.singleton(this);
         student = dbStudent.studentDao().getStudentByID(studentId);
 
@@ -96,8 +99,6 @@ public class StudentDetailActivity extends AppCompatActivity {
         coursesViewAdapter = new CourseViewAdapter(listOfCourse);
         coursesRecyclerView.setAdapter(coursesViewAdapter);
 
-        //Change waveReceived to false
-        dbStudent.studentDao().setWaveReceived(studentId, false);
     }
 
     //Function to find sharedCourse
@@ -161,6 +162,8 @@ public class StudentDetailActivity extends AppCompatActivity {
 
     // onClick function for backButton
     public void goBack(View view){
+        //Change waveReceived to false
+        dbStudent.studentDao().setWaveReceived(studentId, false);
         if (waveMessage != null){
             Nearby.getMessagesClient(this).unpublish(waveMessage);
         }

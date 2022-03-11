@@ -96,7 +96,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
             Log.d("isWaveReceived", String.valueOf(student.isWaveReceived()));
             this.personName.setText(student.getName());
-            this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
+            String matchClassesText = "Number of Shared Courses: " + String.valueOf(student.getNumSharedCourses());
+            this.personMatchClasses.setText(matchClassesText);
             if(student.isWaveReceived()){
                 waveButton.setVisibility(View.VISIBLE);
             }

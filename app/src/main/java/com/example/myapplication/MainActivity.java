@@ -7,6 +7,7 @@ import static com.example.myapplication.OptionsMenuControls.buildFavoritesSectio
 import static com.example.myapplication.OptionsMenuControls.buildListFilters;
 import static com.example.myapplication.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.OptionsMenuControls.showMenu;
+import static com.example.myapplication.ArrangeStudentList.arrangeStudentList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -162,11 +163,13 @@ public class MainActivity extends AppCompatActivity {
                     if (waveInfo[0].equals(userInfo.getString("user_ID", "default"))) {
                         dbStudent.studentDao().setWaveReceived(studentId, true);
                         Log.d("Wave sent from", dbStudent.studentDao().getStudentByID(studentId).getName());
+                        Toast.makeText(MainActivity.this, "Wave Received from " + studentDao.getStudentByID(studentId).getName(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 // Refresh List Student Recycler
-                refreshStudentList();
+                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+                refreshStudentList(studentList);
             }
 
             @Override
@@ -187,7 +190,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Refresh List Student Recycler
-                refreshStudentList();
+                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+                refreshStudentList(studentList);
             }
 
         };
@@ -228,6 +232,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+        refreshStudentList(studentList);
     }
 
 
@@ -293,8 +304,10 @@ public class MainActivity extends AppCompatActivity {
                 //Turn on Nearby Message
                 Nearby.getMessagesClient(this).publish(mMessage);
                 Nearby.getMessagesClient(this).subscribe(searchingClassmate);
-                //Delete database before Searching
-                dbStudent.studentDao().clear();
+//                //Delete database before Searching
+//                dbStudent.studentDao().clear();
+                // Clear Database for a new search
+                studentDao.clear();
 
                 Log.d("publish message", new String(mMessage.getContent()));
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
@@ -304,6 +317,10 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
                 studentsRecyclerView.setLayoutManager(studentsLayoutManager);
                 studentsRecyclerView.setVisibility(View.VISIBLE);
+
+                //Refresh List
+                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+                refreshStudentList(studentList);
             }
         }
         if(current.equals("STOP")){
@@ -313,11 +330,10 @@ public class MainActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).unpublish(mMessage);
             Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
             Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
-//            // Turn off recyclerView of list of students
-//            RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
-//            studentsRecyclerView.setVisibility(View.INVISIBLE);
             //Refresh the list after turning off search
-            refreshStudentList();
+            List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+            refreshStudentList(studentList);
+
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
@@ -381,7 +397,6 @@ public class MainActivity extends AppCompatActivity {
             Button mockEnter = findViewById(R.id.SubmitMockUser);
             mockEnter.setVisibility(View.VISIBLE);
             mockEnter.setOnClickListener(new View.OnClickListener() {
-                // TODO: mock format change
                 @Override
                 public void onClick(View v2) {
                     EditText newUser = (EditText) findViewById(R.id.DemomockUserInput);
@@ -438,47 +453,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * This method shows a list of students who has taken the same course with the app's user, sorted by the
-     * number of classes the student shared with the user
+     * This method helps to refresh the recyclerView in Main Page
      */
-    // TODO: Adjust this function for display
-    private void refreshStudentList() {
-        // get user's taken courses
-        List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
-
-        // get list of students
-        List<Student> listOfStudents = studentDao.getAll();
-
-        // check whether the students' course match the user's
-        // if so, add the user to the students to display
-        // FIXME: for those who implement messenger: this block calculate the
-        //  numSharedCourse before a student is entered into database. So you need to
-        //  pass this information to the messenger as well to keep database updated.
-        //  Please delete the identical code in refreshStudentList() because that will
-        //  cause numSharedCourse to increase multiple times.
-        for (Student student : listOfStudents) {
-            int numSharedCourses = 0;
-            for (String courseStr : listOfUserCourses) {
-                if (student.getCourses().contains(courseStr)) {
-                    // the str of courses of a student contains a substring representing one of the
-                    // user's taken courses, the student is a match.
-                    numSharedCourses++;
-                }
-            }
-            student.setNumSharedCourses(numSharedCourses);
-        }
-
-        listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
-
-        for (Iterator<Student> it = listOfStudents.iterator(); it.hasNext();) {
-            Student student = it.next();
-            if (student.getNumSharedCourses() == 0) {
-                it.remove();
-            }
-        }
-
+    private void refreshStudentList(List<Student> studentList) {
         RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudents);
+        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(studentList);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
