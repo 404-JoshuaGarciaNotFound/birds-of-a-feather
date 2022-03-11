@@ -407,22 +407,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     courses.deleteCharAt(courses.length() - 1);
 
-                    // check whether the students' course match the user's
-                    // if so, add the user to the students to display
-                    // FIXME: for those who implement messenger: this block calculate the
-                    //  numSharedCourse before a student is entered into database. So you need to
-                    //  pass this information to the messenger as well to keep database updated.
-                    //  Please delete the identical code in refreshStudentList() because that will
-                    //  cause numSharedCourse to increase multiple times.
-                    int numSharedCourses = 0;
-                    List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
-                    for (String courseStr : listOfUserCourses) {
-                        if (courses.toString().contains(courseStr)) {
-                            // the str of courses of a student contains a substring representing one of the
-                            // user's taken courses, the student is a match.
-                            numSharedCourses++;
-                        }
-                    }
                     String fakedMessageStr = idStr + "\n" +
                             name + "\n" +
                             url + "\n" +
@@ -464,6 +448,25 @@ public class MainActivity extends AppCompatActivity {
 
         // get list of students
         List<Student> listOfStudents = studentDao.getAll();
+
+        // check whether the students' course match the user's
+        // if so, add the user to the students to display
+        // FIXME: for those who implement messenger: this block calculate the
+        //  numSharedCourse before a student is entered into database. So you need to
+        //  pass this information to the messenger as well to keep database updated.
+        //  Please delete the identical code in refreshStudentList() because that will
+        //  cause numSharedCourse to increase multiple times.
+        for (Student student : listOfStudents) {
+            int numSharedCourses = 0;
+            for (String courseStr : listOfUserCourses) {
+                if (student.getCourses().contains(courseStr)) {
+                    // the str of courses of a student contains a substring representing one of the
+                    // user's taken courses, the student is a match.
+                    numSharedCourses++;
+                }
+            }
+            student.setNumSharedCourses(numSharedCourses);
+        }
 
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
 
