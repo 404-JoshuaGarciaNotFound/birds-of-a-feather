@@ -195,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
                 Intent intent = new Intent(contexty, SessionScreen.class);
                 //LS = list sessions
-                //Check if there are sessions
                 Set<String> LS = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
                 if(LS != null) {
                     intent.putExtra("ListStr", new ArrayList<>(LS));
