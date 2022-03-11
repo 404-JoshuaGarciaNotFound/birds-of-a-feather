@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -115,10 +116,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                                                 } else {
                                                     favoritesStar.setBackgroundResource(R.drawable.ic_star);
                                                     favoritesStar.setTag("ON");
+                                                    Toast.makeText(favoritesStar.getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+
                                                 }
                                             }else {
                                                 favoritesStar.setBackgroundResource(R.drawable.ic_star);
                                                 favoritesStar.setTag("ON");
+                                                Toast.makeText(favoritesStar.getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+
                                             }
                                         } else {
                                             Log.d("Error", "No douplicates in favorites");
@@ -168,11 +173,12 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
             if (favoritesList != null) {
                 if (favoritesList.size() != 0) {
-                    Log.d("A", String.valueOf(favoritesList));
-                    Log.d("a", String.valueOf(favoritesList.contains(this.student.getId() + " " + this.student.getName() + " " + this.student.getHeadShotURL())));
+                    Log.d("Data", String.valueOf(favoritesList));
+                    Log.d("Data", String.valueOf(favoritesList.contains(this.student.getId() + " " + this.student.getName() + " " + this.student.getHeadShotURL())));
                     if (favoritesList.contains(this.student.getId() + " " + this.student.getName() + " " + this.student.getHeadShotURL() )) {
                             favoritesStar.setBackgroundResource(R.drawable.ic_star);
                             favoritesStar.setTag("ON");
+
                     }
                 }
             }

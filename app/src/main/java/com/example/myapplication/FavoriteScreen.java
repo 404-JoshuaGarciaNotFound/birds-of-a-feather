@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import static com.example.myapplication.MainActivity.returnSP;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +30,8 @@ public class FavoriteScreen extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
         Bundle extras = getIntent().getExtras();
         ArrayList<String> keys = extras.getStringArrayList("ListFav");
         if(keys.size() != 0) {
@@ -34,7 +39,7 @@ public class FavoriteScreen extends AppCompatActivity {
             RecyclerView rv = (RecyclerView) findViewById(R.id.List_Of_Favorites);
             RecyclerView.LayoutManager RVLM = new LinearLayoutManager(this);
             rv.setLayoutManager(RVLM);
-            FavoritesSectionAdapter SA = new FavoritesSectionAdapter(keys);
+            FavoritesSectionAdapter SA = new FavoritesSectionAdapter(returnSP(), keys);
             rv.setAdapter(SA);
             rv.setVisibility(View.VISIBLE);
         }
