@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Calendar;
@@ -441,11 +442,10 @@ public class MainActivity extends AppCompatActivity {
 
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
 
-        // FIXME: this block of code will cause ConcurrentModificationException
-        //  app will crush when entered mock student does not share any course with the user
-        for (Student student : listOfStudents) {
+        for (Iterator<Student> it = listOfStudents.iterator(); it.hasNext();) {
+            Student student = it.next();
             if (student.getNumSharedCourses() == 0) {
-                listOfStudents.remove(student);
+                it.remove();
             }
         }
 

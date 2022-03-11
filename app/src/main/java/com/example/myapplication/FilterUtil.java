@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 public class FilterUtil {
 
     private final HashMap<String, Integer> CLASS_SIZE_WEIGHT = new HashMap<>();
+    private final HashMap<String, Integer> CLASS_RECENCY_WEIGHT = new HashMap<>();
 
     // data structures
     private List<Course> courseList;
@@ -45,6 +46,13 @@ public class FilterUtil {
         CLASS_SIZE_WEIGHT.put("Large", 3);
         CLASS_SIZE_WEIGHT.put("Huge", 4);
         CLASS_SIZE_WEIGHT.put("Gigantic", 5);
+
+        CLASS_RECENCY_WEIGHT.put("SP", 0);
+        CLASS_RECENCY_WEIGHT.put("SS1", 1);
+        CLASS_RECENCY_WEIGHT.put("SS2", 2);
+        CLASS_RECENCY_WEIGHT.put("SS3", 3);
+        CLASS_RECENCY_WEIGHT.put("FA", 4);
+        CLASS_RECENCY_WEIGHT.put("WI", 5);
     }
 
     public FilterUtil() {
@@ -90,8 +98,9 @@ public class FilterUtil {
             @Override
             public int compare(Student student1, Student student2) {
                 Course sharedCourse1 = matchedCourses.get(student1);
-                Course sharedCourse2 = matchedCourses.get(student2);
                 int weight1 = CLASS_SIZE_WEIGHT.get(sharedCourse1.getCourseSize());
+
+                Course sharedCourse2 = matchedCourses.get(student2);
                 int weight2 = CLASS_SIZE_WEIGHT.get(sharedCourse2.getCourseSize());
                 return weight1 - weight2;
             }
@@ -104,6 +113,39 @@ public class FilterUtil {
      * private helper method that implement the actual on click event for sort by recency button
      */
     private void onRecencyClick() {
+        // use this structure to store pairs: {student - student and user's share course}
+        // populate the structure to use a single .sort() method to sort the entire list according to recency of share course
+        HashMap<Student, Course> matchedCourses = new HashMap<>();
+        for (Student student :
+                studentsList) {
+            for (Course course :
+                    courseList) {
+                if (student.getCourses().contains(course.getCourseCode())) {
+                    matchedCourses.put(student, course);
+                }
+            }
+        }
 
+        // invoke .sort()
+        studentsList.sort(new Comparator<Student>() {
+            @Override
+            public int compare(Student student1, Student student2) {
+                Course sharedCourse1 = matchedCourses.get(student1);
+                Integer course1Year = Integer.valueOf(sharedCourse1.getYear());
+
+                Course sharedCourse2 = matchedCourses.get(student2);
+                Integer course2Year = Integer.valueOf(sharedCourse2.getYear());
+
+                if (!course1Year.equals(course2Year)) {
+                    return course1Year - course2Year;
+                } else {
+                    int weight1 = CLASS_RECENCY_WEIGHT.get(sharedCourse1.getQuarter());
+                    int weight2 = CLASS_RECENCY_WEIGHT.get(sharedCourse2.getQuarter());
+                    return weight1 - weight2;
+                }
+            }
+        });
+        StudentAdapter studentAdapter = new StudentAdapter(studentsList);
+        studentListRCV.setAdapter(studentAdapter);
     }
 }
