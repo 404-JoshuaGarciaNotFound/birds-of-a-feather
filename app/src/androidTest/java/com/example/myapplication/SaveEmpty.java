@@ -5,6 +5,7 @@ import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 import androidx.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +36,20 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class TestStudentListSharedClasses {
+public class SaveEmpty {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    @Rule
+    public GrantPermissionRule mGrantPermissionRule =
+            GrantPermissionRule.grant(
+                    "android.permission.BLUETOOTH_ADVERTISE",
+"android.permission.BLUETOOTH_SCAN",
+"android.permission.BLUETOOTH_CONNECT");
+
     @Test
-    public void testStudentListSharedClasses() {
+    public void saveEmpty() {
         ViewInteraction appCompatEditText = onView(
 allOf(withId(R.id.personName),
 childAtPosition(
@@ -82,30 +90,13 @@ withId(R.id.custom),
 isDisplayed()));
         materialButton2.perform(click());
         
-        ViewInteraction appCompatSpinner = onView(
-allOf(withId(R.id.selectQuarter),
-childAtPosition(
-childAtPosition(
-withId(R.id.custom),
-0),
-4),
-isDisplayed()));
-        appCompatSpinner.perform(click());
-        
-        DataInteraction appCompatCheckedTextView = onData(anything())
-.inAdapterView(childAtPosition(
-withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
-0))
-.atPosition(2);
-        appCompatCheckedTextView.perform(click());
-        
         ViewInteraction appCompatEditText3 = onView(
 allOf(withId(R.id.editSubject),
 childAtPosition(
 childAtPosition(
 withId(R.id.custom),
 0),
-5),
+7),
 isDisplayed()));
         appCompatEditText3.perform(replaceText("CSE"), closeSoftKeyboard());
         
@@ -115,9 +106,9 @@ childAtPosition(
 childAtPosition(
 withId(R.id.custom),
 0),
-6),
+8),
 isDisplayed()));
-        appCompatEditText4.perform(replaceText("127"), closeSoftKeyboard());
+        appCompatEditText4.perform(replaceText("110"), closeSoftKeyboard());
         
         ViewInteraction materialButton3 = onView(
 allOf(withId(R.id.enterCourseInfo), withText("Enter"),
@@ -125,133 +116,96 @@ childAtPosition(
 childAtPosition(
 withId(R.id.custom),
 0),
-7),
+9),
 isDisplayed()));
         materialButton3.perform(click());
         
-        ViewInteraction appCompatSpinner2 = onView(
-allOf(withId(R.id.selectQuarter),
-childAtPosition(
-childAtPosition(
-withId(R.id.custom),
-0),
-4),
-isDisplayed()));
-        appCompatSpinner2.perform(click());
-        
-        DataInteraction appCompatCheckedTextView2 = onData(anything())
-.inAdapterView(childAtPosition(
-withClassName(is("android.widget.PopupWindow$PopupBackgroundView")),
-0))
-.atPosition(1);
-        appCompatCheckedTextView2.perform(click());
-        
-        ViewInteraction appCompatEditText5 = onView(
-allOf(withId(R.id.editCourseNumber), withText("127"),
-childAtPosition(
-childAtPosition(
-withId(R.id.custom),
-0),
-6),
-isDisplayed()));
-        appCompatEditText5.perform(replaceText("110"));
-        
-        ViewInteraction appCompatEditText6 = onView(
-allOf(withId(R.id.editCourseNumber), withText("110"),
-childAtPosition(
-childAtPosition(
-withId(R.id.custom),
-0),
-6),
-isDisplayed()));
-        appCompatEditText6.perform(closeSoftKeyboard());
-        
         ViewInteraction materialButton4 = onView(
-allOf(withId(R.id.enterCourseInfo), withText("Enter"),
-childAtPosition(
-childAtPosition(
-withId(R.id.custom),
-0),
-7),
-isDisplayed()));
-        materialButton4.perform(click());
-        
-        ViewInteraction materialButton5 = onView(
 allOf(withId(R.id.doneAddingClasses), withText("Done"),
 childAtPosition(
 childAtPosition(
 withId(R.id.custom),
 0),
-8),
+10),
+isDisplayed()));
+        materialButton4.perform(click());
+        
+        ViewInteraction floatingActionButton = onView(
+allOf(withId(R.id.MoreOpts),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+12),
+isDisplayed()));
+        floatingActionButton.perform(click());
+        
+        ViewInteraction floatingActionButton2 = onView(
+allOf(withId(R.id.floatingActionButton3),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+10),
+isDisplayed()));
+        floatingActionButton2.perform(click());
+        
+        ViewInteraction materialButton5 = onView(
+allOf(withId(R.id.StartStopBttn), withText("START"),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+2),
 isDisplayed()));
         materialButton5.perform(click());
         
         ViewInteraction materialButton6 = onView(
-allOf(withId(R.id.nearByMockScreen), withText("MOCK"),
+allOf(withId(R.id.StartStopBttn), withText("STOP"),
 childAtPosition(
 childAtPosition(
 withId(android.R.id.content),
 0),
-3),
+2),
 isDisplayed()));
         materialButton6.perform(click());
         
-        ViewInteraction appCompatEditText7 = onView(
-allOf(withId(R.id.DemomockUserInput),
+        ViewInteraction appCompatEditText5 = onView(
+allOf(withId(R.id.editTextTextPersonName2),
 childAtPosition(
 childAtPosition(
-withId(android.R.id.content),
+withId(R.id.custom),
 0),
-5),
-isDisplayed()));
-        appCompatEditText7.perform(longClick());
-        
-        ViewInteraction linearLayout = onView(
-allOf(withContentDescription("Paste"),
-childAtPosition(
-childAtPosition(
-withClassName(is("android.widget.RelativeLayout")),
 1),
-0),
 isDisplayed()));
-        linearLayout.perform(click());
-        
-        ViewInteraction appCompatEditText8 = onView(
-allOf(withId(R.id.DemomockUserInput),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-5),
-isDisplayed()));
-        appCompatEditText8.perform(replaceText("Bill,,,\nhttps://lh3.googleusercontent.com/pw/AM-JKLXQ2ix4dg-PzLrPOSMOOy6M3PSUrijov9jCLXs4IGSTwN73B4kr-F6Nti_4KsiUU8LzDSGPSWNKnFdKIPqCQ2dFTRbARsW76pevHPBzc51nceZDZrMPmDfAYyI4XNOnPrZarGlLLUZW9wal6j-z9uA6WQ=w854-h924-no?authuser=0,,,\n2022,SP,CSE,127\n2022,WI,CSE,110\n2022,WI,CSE,123\n2022,SP,CSE,123"), closeSoftKeyboard());
+        appCompatEditText5.perform(replaceText("session"), closeSoftKeyboard());
         
         ViewInteraction materialButton7 = onView(
-allOf(withId(R.id.SubmitMockUser), withText("Enter"),
+allOf(withId(R.id.saveButtonForSessionName), withText("Save"),
 childAtPosition(
 childAtPosition(
-withId(android.R.id.content),
+withId(R.id.custom),
 0),
-6),
+0),
 isDisplayed()));
         materialButton7.perform(click());
         
-        ViewInteraction materialButton8 = onView(
-allOf(withId(R.id.nearByMockScreen), withText("LIST"),
+        ViewInteraction floatingActionButton3 = onView(
+allOf(withId(R.id.floatingActionButton3),
 childAtPosition(
 childAtPosition(
 withId(android.R.id.content),
 0),
-3),
+10),
 isDisplayed()));
-        materialButton8.perform(click());
+        floatingActionButton3.perform(click());
         
         ViewInteraction textView = onView(
-allOf(withId(R.id.number_matches), withText("2"),
+allOf(withId(R.id.sessionName), withText("session"),
 withParent(allOf(withId(R.id.frameLayout),
-withParent(withId(R.id.list_of_students)))),
+withParent(withId(R.id.List_Of_Sessions)))),
 isDisplayed()));
-        textView.check(matches(withText("2")));
+        textView.check(matches(withText("session")));
         }
     
     private static Matcher<View> childAtPosition(

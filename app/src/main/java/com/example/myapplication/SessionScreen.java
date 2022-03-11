@@ -35,6 +35,7 @@ public class SessionScreen extends AppCompatActivity {
         rv.setLayoutManager(RVLM);
 
         SessionAdapter SA = new SessionAdapter(keys);
+
         rv.setAdapter(SA);
         rv.setVisibility(View.VISIBLE);
 

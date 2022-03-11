@@ -50,17 +50,20 @@
         app:layout_constraintVertical_bias="0.542" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/favoriteStarDetailsPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.445"
+        app:layout_constraintHorizontal_bias="0.363"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.125"
+        app:layout_constraintVertical_bias="0.725"
+
         app:srcCompat="@drawable/ic_star_empty" />
+
 
     <ImageButton
         android:id="@+id/imageButton2"
@@ -69,10 +72,10 @@
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.552"
+        app:layout_constraintHorizontal_bias="0.459"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.125"
+        app:layout_constraintVertical_bias="0.725"
         app:srcCompat="@drawable/ic_wave_empty_hand" />
 
 

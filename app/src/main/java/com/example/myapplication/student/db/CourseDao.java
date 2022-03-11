@@ -11,6 +11,9 @@ public interface CourseDao {
     @Query("SELECT * FROM courses")
     List<Course> getAllCourses();
 
+    @Query("UPDATE courses SET year=:year, quarter=:quarter, course_code=:courseCode, course_size=:courseSize WHERE id=:id")
+    void update(int id, String year, String quarter, String courseCode, String courseSize);
+
     @Insert
     void insertCourse(Course course);
 

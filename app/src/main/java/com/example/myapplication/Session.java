@@ -63,13 +63,15 @@ public class Session {
             @NonNull StudentDao studentDao, @NonNull CourseDao courseDao) {
         List<Student> allStudents = studentDao.getAll();
         List<Course> allCourses = courseDao.getAllCourses();
+
         for (Student student : allStudents) {
             for (Course course : allCourses) {
                 if (student.getCourses().contains(course.getCourseCode())) {
-                    String sequence = student.getName() + " "
+                    String sequence = student.getId() + " "
+                            + student.getName() + " "
                             + student.getHeadShotURL() + " "
                             + student.getNumSharedCourses() + " "
-                            + student.getCourses();
+                            + student.getCourses() + " ";
                     sessionContent.add(sequence);
                     break;
                 }

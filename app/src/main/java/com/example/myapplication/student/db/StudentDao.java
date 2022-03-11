@@ -15,6 +15,12 @@ public interface StudentDao {
     @Query("SELECT * FROM students WHERE id=:id")
     Student getStudentByID(String id);
 
+    @Query("UPDATE students SET head_shot_url=:headShotURL, name=:name, courses=:courses, num_shared_courses=:numSharedCourses WHERE id=:id")
+    void update(String id, String headShotURL, String name, String courses, int numSharedCourses);
+
+    @Query("UPDATE students set num_shared_courses=:numSharedCourses WHERE id=:id")
+    void SetSharedCourse(String id, int numSharedCourses);
+
     @Insert
     void insertStudent(Student student);
 

@@ -3,8 +3,6 @@ package com.example.myapplication;
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
-import static com.example.myapplication.OptionsMenuControls.buildFavoritesSection;
-import static com.example.myapplication.OptionsMenuControls.buildListFilters;
 import static com.example.myapplication.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.OptionsMenuControls.showMenu;
 
@@ -17,14 +15,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
@@ -46,32 +47,30 @@ import java.util.Calendar;
 
 
 public class MainActivity extends AppCompatActivity {
-
-    private boolean active = false;
+    public boolean active = false;
     // keys for Shared Preference
-    private final String IS_FIRST_TIME_SETUP_COMPLETE = "isFirstTimeSetUpComplete";
-    private final String USER_NAME = "user_name";
-    private final String HEAD_SHOT_URL = "head_shot_url";
-    private final String USER_COURSE_ = "user_course_";
-    private final String USER_SAVED_SESSIONS = "saved_session";
+    public final String IS_FIRST_TIME_SETUP_COMPLETE = "isFirstTimeSetUpComplete";
+    public final String USER_NAME = "user_name";
+    public final String HEAD_SHOT_URL = "head_shot_url";
+    public final String USER_COURSE_ = "user_course_";
+    public final String USER_SAVEDSESSIONS= "saved_session";
+    public final String USER_FAVORITES = "favorites";
     // database variables
-    private AppDatabaseStudent dbStudent;
-    private AppDatabaseCourses dbCourse;
-    private StudentDao studentDao;
-    private CourseDao courseDao;
+    public AppDatabaseStudent dbStudent;
+     AppDatabaseCourses dbCourse;
+    public StudentDao studentDao;
+    public CourseDao courseDao;
     // SharedPreference that store user info
-    private SharedPreferences userInfo;
-    private MessageListener searchingClassmate;
-    private Message mMessage;
-    private static final String TAG = "Turn on Search";
+    public static SharedPreferences userInfo;
+    public MessageListener searchingClassmate;
+    public Message mMessage;
+    public static final String TAG = "Turn on Search";
     // bluetooth permission tracking variable
-    private BTPermission btPermission;
-    private Date currentTime;
-    private SavingSession savingSession;
-
-
+    public BTPermission btPermission;
+    public Date currentTime;
+    public SavingSession savingSession;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Google login stuff. Move to own class //
@@ -110,10 +109,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("Bluetooth permission", "Bluetooth permission already granted");
         }
-
         // check for first time setup
-        buildListFilters(this, getLayoutInflater());
-        buildFavoritesSection(this, getLayoutInflater());
         if(!userInfo.getBoolean(IS_FIRST_TIME_SETUP_COMPLETE, false)) {
             Log.d("SETUPLOG", "First time setup not complete... Running now!");
             //Run First time setup
@@ -126,14 +122,12 @@ public class MainActivity extends AppCompatActivity {
         DemoMock.setVisibility(View.INVISIBLE);
         Button mockEnter = findViewById(R.id.SubmitMockUser);
         mockEnter.setVisibility(View.INVISIBLE);
-
         //UI buttons
         FloatingActionButton options = findViewById(R.id.MoreOpts);
         FloatingActionButton FavoritesTab = findViewById(R.id.floatingActionButton2);
         FloatingActionButton ListSesh = findViewById(R.id.floatingActionButton3);
         FloatingActionButton FilterOptions = findViewById(R.id.floatingActionButton4);
         //This toggles it on or off and opens window
-
         // Set up nearby Message
         searchingClassmate = new MessageListener() {
             @Override
@@ -146,18 +140,16 @@ public class MainActivity extends AppCompatActivity {
                 String studentName = arrayOfStudentInfo[1];
                 String studentHeadShot = arrayOfStudentInfo[2];
                 String studentCourses = arrayOfStudentInfo[3];
+
                 Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
                 dbStudent.studentDao().insertStudent(newStudent);
                 Log.d("Student being added", newStudent.getName());
-
                 // Refresh List Student Recycler
                 refreshStudentList();
             }
-
             @Override
             public void onLost(@NonNull Message message){
                 Log.d(TAG, "Lost sight of message: " + new String(message.getContent()));
-
                 // Delete Student from Database
                 String studentInfo = new String(message.getContent());
                 String[] arrayOfStudentInfo = studentInfo.split("\n");
@@ -170,11 +162,9 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e){
                     Log.d(studentId, "Student not found");
                 }
-
                 // Refresh List Student Recycler
                 refreshStudentList();
             }
-
         };
 
         //Format publish message
@@ -195,10 +185,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!active){
-                    active = showMenu(userInfo, getLayoutInflater(), getResources(), FavoritesTab, ListSesh, FilterOptions);
+                    active = showMenu(userInfo,getLayoutInflater(),getResources(), FavoritesTab, ListSesh);
                 }
                 else{
-                    active = closeMenu(FavoritesTab, ListSesh, FilterOptions);
+                    active = closeMenu(FavoritesTab, ListSesh);
                 }
             }
         });
@@ -207,15 +197,36 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(contexty, SessionScreen.class);
-                //LS = list sessions
-                Set<String> LS = userInfo.getStringSet(USER_SAVED_SESSIONS, null);
-                intent.putExtra("ListStr", new ArrayList<>(LS));
-                startActivity(intent);
+                //LS = list sessions0
+                Set<String> LS = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                if(LS != null) {
+                    intent.putExtra("ListStr", new ArrayList<>(LS));
+                    startActivity(intent);
+                }
+                else{
+                    Log.d("Alert", "User trying to view empty session");
+                    Toast.makeText(contexty, "No sessions to display", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        FavoritesTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(contexty, FavoriteScreen.class);
+                Set<String> LF = userInfo.getStringSet(USER_FAVORITES, null);
+                Log.d("vals", String.valueOf(LF));
+
+                if(LF != null){
+                    intent.putExtra("ListFav", new ArrayList<>(LF));
+                    startActivity(intent);
+                }
             }
         });
     }
-
-
+    public static SharedPreferences returnSP(){
+        return userInfo;
+    }
     //TODO: Move this to its own class.
     /*Google auth code here. Since it is difficult to test and run on an emulator we have left it
     commented out but the code is functional on a physical android device.
@@ -251,9 +262,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.d("Message", e.toString());
 //        }
 //    }
-
     */
-
     /**
      * This method is responsible for enabling and disabling the search feature.
      * It is also responsible for calling saving session to database method.
@@ -289,6 +298,9 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
                 studentsRecyclerView.setLayoutManager(studentsLayoutManager);
                 studentsRecyclerView.setVisibility(View.VISIBLE);
+                //This section will be for adding favorite students
+
+
             }
         }
         if(current.equals("STOP")){
@@ -314,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
                     SharedPreferences.Editor insertSavedSesh = userInfo.edit();
-                    Set<String> strings = userInfo.getStringSet(USER_SAVED_SESSIONS, null);
+                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
                     boolean alreadyExists = false;
                     if(strings == null) {
                         strings = new HashSet<>(Arrays.asList(SName));
@@ -341,7 +353,6 @@ public class MainActivity extends AppCompatActivity {
             startStop.setBackgroundColor(0Xff99cc00);
         }
     }
-
     //This is for mocking messages
     public void mockMessage(View view) {
         Button startStopBtn = findViewById(R.id.StartStopBttn);
@@ -349,7 +360,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Can only mock during searching!", Toast.LENGTH_SHORT).show();
             return;
         }
-
         RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
         RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
         studentsRecyclerView.setLayoutManager(studentsLayoutManager);
@@ -364,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
             EditText DemoMock = findViewById(R.id.DemomockUserInput);
             DemoMock.setVisibility(View.VISIBLE);
             Button mockEnter = findViewById(R.id.SubmitMockUser);
+
             mockEnter.setVisibility(View.VISIBLE);
             mockEnter.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -382,6 +393,7 @@ public class MainActivity extends AppCompatActivity {
                         courses.append(splitInfo[i]);
                         if (i != splitInfo.length - 1) courses.append(" ");
                     }
+                    //Save session here
 
                     // check whether the students' course match the user's
                     // if so, add the user to the students to display
@@ -406,7 +418,6 @@ public class MainActivity extends AppCompatActivity {
                             courses;
                     Message fakedMessage = new Message(fakedMessageStr.getBytes(StandardCharsets.UTF_8));
                     searchingClassmate.onFound((fakedMessage));
-
                     DemoMock.setText("");
                 }
             });
@@ -426,6 +437,7 @@ public class MainActivity extends AppCompatActivity {
             mockSwitch.setBackgroundColor(0Xff99cc00);
             RecyclerView studentList = findViewById(R.id.list_of_students);
             studentList.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -433,12 +445,25 @@ public class MainActivity extends AppCompatActivity {
      * This method shows a list of students who has taken the same course with the app's user, sorted by the
      * number of classes the student shared with the user
      */
-    private void refreshStudentList() {
+    public void refreshStudentList() {
         // get user's taken courses
         List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
-
         // get list of students
         List<Student> listOfStudents = studentDao.getAll();
+        // check whether the students' course match the user's
+        // if so, add the user to the students to display
+        for (Student student : listOfStudents) {
+            int numSharedCourses = 0;
+            for (String courseStr : listOfUserCourses) {
+                if (student.getCourses().contains(courseStr)) {
+                    // the str of courses of a student contains a substring representing one of the
+                    // user's taken courses, the student is a match.
+                    numSharedCourses++;
+                }
+            }
+            student.setNumSharedCourses(numSharedCourses);
+            studentDao.SetSharedCourse(student.getId(), numSharedCourses);
+        }
 
         listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
 
@@ -448,16 +473,25 @@ public class MainActivity extends AppCompatActivity {
                 it.remove();
             }
         }
-
         RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(listOfStudents);
+        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(userInfo, listOfStudents);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+                // This block handles sort-by-class-size / recency buttons on main
+                Button classSortButtonMain = findViewById(R.id.class_size_sort_button_main);
+                classSortButtonMain.setVisibility(View.VISIBLE);
+                Button recencySortButtonMain = findViewById(R.id.recency_sort_button_main);
+                recencySortButtonMain.setVisibility(View.VISIBLE);
+
+                List<Course> courseList = dbCourse.courseDao().getAllCourses();
+                //SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
+                //sortUtil.setupButtons();
             }
         });
     }
+
 
     //Cleans up program for shut down.
     @Override
