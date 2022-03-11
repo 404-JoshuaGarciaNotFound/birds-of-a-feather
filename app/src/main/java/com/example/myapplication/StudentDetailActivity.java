@@ -105,14 +105,15 @@ public class StudentDetailActivity extends AppCompatActivity {
         Set<String> favoritesList = userInfo.getStringSet("favorites", null);
 
         Log.d("Info", student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
-
         if (favoritesList != null) {
             if (favoritesList.size() != 0) {
                 if (favoritesList.contains(student.getId() + " " + student.getName() + " " + student.getHeadShotURL() )) {
                     favoritesStar.setBackgroundResource(R.drawable.ic_star);
                 }
+
             }
         }
+
 
     }
 

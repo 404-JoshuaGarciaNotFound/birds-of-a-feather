@@ -29,13 +29,14 @@ public class FavoriteScreen extends AppCompatActivity {
         });
         Bundle extras = getIntent().getExtras();
         ArrayList<String> keys = extras.getStringArrayList("ListFav");
-        Log.d("Extras", keys.get(0));
-        RecyclerView rv = (RecyclerView) findViewById(R.id.List_Of_Favorites);
-        RecyclerView.LayoutManager RVLM = new LinearLayoutManager(this);
-        rv.setLayoutManager(RVLM);
-        FavoritesSectionAdapter SA = new FavoritesSectionAdapter(keys);
-        rv.setAdapter(SA);
-        rv.setVisibility(View.VISIBLE);
-
+        if(keys.size() != 0) {
+            Log.d("Extras", keys.get(0));
+            RecyclerView rv = (RecyclerView) findViewById(R.id.List_Of_Favorites);
+            RecyclerView.LayoutManager RVLM = new LinearLayoutManager(this);
+            rv.setLayoutManager(RVLM);
+            FavoritesSectionAdapter SA = new FavoritesSectionAdapter(keys);
+            rv.setAdapter(SA);
+            rv.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -87,6 +87,30 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:id="@+id/recency_sort_button_main"
+        android:layout_width="171dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="640dp"
+        android:text="@string/sort_by_recency"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.862"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/class_size_sort_button_main"
+        android:layout_width="171dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="640dp"
+        android:text="@string/sort_by_class_size"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.067"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
         android:id="@+id/SubmitMockUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

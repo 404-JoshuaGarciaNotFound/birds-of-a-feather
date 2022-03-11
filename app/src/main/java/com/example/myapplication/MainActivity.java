@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.CourseDao;
 import com.example.myapplication.student.db.Student;
 import com.example.myapplication.student.db.StudentDao;
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(contexty, SessionScreen.class);
-                //LS = list sessions
+                //LS = list sessions0
                 Set<String> LS = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
                 if(LS != null) {
                     intent.putExtra("ListStr", new ArrayList<>(LS));
@@ -470,6 +472,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+                // This block handles sort-by-class-size / recency buttons on main
+                Button classSortButtonMain = findViewById(R.id.class_size_sort_button_main);
+                classSortButtonMain.setVisibility(View.VISIBLE);
+                Button recencySortButtonMain = findViewById(R.id.recency_sort_button_main);
+                recencySortButtonMain.setVisibility(View.VISIBLE);
+
+                List<Course> courseList = dbCourse.courseDao().getAllCourses();
+                //SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
+                //sortUtil.setupButtons();
             }
         });
     }

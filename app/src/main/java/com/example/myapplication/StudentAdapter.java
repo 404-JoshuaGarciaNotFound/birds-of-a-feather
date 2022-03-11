@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.StrictMode;
 import android.util.Log;
@@ -96,9 +97,32 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                                             insertStudentFav.putStringSet("favorites", favoritesList);
                                             insertStudentFav.apply();
                                             Log.d("List", String.valueOf(favoritesList));
-                                            favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                                            if(favoritesStar.getTag() != null) {
+                                                if (favoritesStar.getTag().equals("ON")) {
+                                                    favoritesStar.setBackgroundResource(R.drawable.ic_star_empty);
+                                                    favoritesStar.setTag("OFF");
+                                                    //Remove from favorites
+                                                    Log.d("newL", String.valueOf(favoritesList));
+
+                                                    favoritesList.remove(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+                                                    Log.d("newL", String.valueOf(favoritesList));
+                                                    insertStudentFav.remove("favorites");
+                                                    insertStudentFav.apply();
+                                                    insertStudentFav.putStringSet("favorites", favoritesList);
+                                                    insertStudentFav.apply();
+                                                    //insertStudentFav.remove("favorites");
+
+                                                } else {
+                                                    favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                                                    favoritesStar.setTag("ON");
+                                                }
+                                            }else {
+                                                favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                                                favoritesStar.setTag("ON");
+                                            }
                                         } else {
                                             Log.d("Error", "No douplicates in favorites");
+
                                         }
                                     }
                                     Log.d("CLICKED HEHEHE", "Completed");
@@ -147,7 +171,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                     Log.d("A", String.valueOf(favoritesList));
                     Log.d("a", String.valueOf(favoritesList.contains(this.student.getId() + " " + this.student.getName() + " " + this.student.getHeadShotURL())));
                     if (favoritesList.contains(this.student.getId() + " " + this.student.getName() + " " + this.student.getHeadShotURL() )) {
-                        favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                            favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                            favoritesStar.setTag("ON");
                     }
                 }
             }
