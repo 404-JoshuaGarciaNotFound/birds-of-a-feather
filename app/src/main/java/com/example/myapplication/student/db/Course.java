@@ -20,6 +20,12 @@ public class Course implements Comparable<Course> {
     @ColumnInfo(name = "course_code")
     private String courseCode;
 
+    // course size can be:
+    // tiny, small, medium, large, Huge, Gigantic
+    // by default, set it to tiny
+    @ColumnInfo(name = "course_size")
+    private String courseSize = "Tiny";
+
     public int getId() {
         return id;
     }
@@ -52,7 +58,23 @@ public class Course implements Comparable<Course> {
         this.courseCode = courseCode;
     }
 
+    public String getCourseSize() {
+        return courseSize;
+    }
+
+    public void setCourseSize(String courseSize) {
+        this.courseSize = courseSize;
+    }
+
     public Course() {
+    }
+
+    public Course(int id, String year, String quarter, String courseCode, String courseSize) {
+        this.id = id;
+        this.year = year;
+        this.quarter = quarter;
+        this.courseCode = courseCode;
+        this.courseSize = courseSize;
     }
 
     public Course(int id, String year, String quarter, String courseCode) {
@@ -67,6 +89,7 @@ public class Course implements Comparable<Course> {
         this.year = other.getYear();
         this.quarter = other.getQuarter();
         this.courseCode = other.getCourseCode();
+        this.courseSize = other.getCourseSize();
     }
 
     public boolean equals(Course other) {
@@ -131,4 +154,5 @@ public class Course implements Comparable<Course> {
 
         return quarterInd;
     }
+
 }

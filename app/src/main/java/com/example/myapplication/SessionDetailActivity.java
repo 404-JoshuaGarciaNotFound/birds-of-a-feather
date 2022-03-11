@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.student.db.AppDatabaseCourses;
 import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.Course;
 import com.example.myapplication.student.db.Student;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -96,6 +97,7 @@ public class SessionDetailActivity extends AppCompatActivity {
 
         //Here we regenerate our list of students
         AppDatabaseStudent dbStudent2 = AppDatabaseStudent.singleton(this);
+        AppDatabaseCourses dbCourse = AppDatabaseCourses.singleton(this);
         dbStudent2.studentDao().clear();
         ArrayList<String> Convert = new ArrayList<String>(vals);
         for(int i = 0; i < Convert.size(); i++){
@@ -123,6 +125,14 @@ public class SessionDetailActivity extends AppCompatActivity {
         LOS.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
         StudentAdapter SA = new StudentAdapter(userInfo, LOS);
         RV.setAdapter(SA);
+
+        // this block set up filter buttons functionalities
+        Button classSortButton = findViewById(R.id.class_size_sort_button);
+        Button recencySortButton = findViewById(R.id.recency_sort_button);
+        List<Course> courseList = dbCourse.courseDao().getAllCourses();
+        FilterUtil filterUtil = new FilterUtil(courseList, LOS, classSortButton, recencySortButton, RV);
+        filterUtil.setupButtons();
+
         FloatingActionButton FABreturn = (FloatingActionButton) findViewById(R.id.ReturnHomey);
         //Finally we have a intent to return to home screen
         FABreturn.setOnClickListener(new View.OnClickListener() {

@@ -39,6 +39,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/ACText4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Course Size"
+        android:textSize="14sp" />
+
+    <Spinner
+        android:id="@+id/selectCourseSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <EditText
         android:id="@+id/editSubject"
         android:layout_width="match_parent"

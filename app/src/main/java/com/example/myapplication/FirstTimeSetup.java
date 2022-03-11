@@ -118,6 +118,11 @@ public class FirstTimeSetup {
         Spinner spinner2 = newSpinnerSpinny(context, addClassesView, R.id.selectQuarter,  R.array.quarter,
                 android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item);
 
+        Spinner spinner3 = newSpinnerSpinny(
+                context, addClassesView,
+                R.id.selectCourseSize, R.array.course_size,
+                android.R.layout.simple_spinner_item,
+                android.R.layout.simple_spinner_dropdown_item);
 
         // Edit text field for subject
         EditText editSubject = (EditText) addClassesView.findViewById(R.id.editSubject);
@@ -132,12 +137,15 @@ public class FirstTimeSetup {
             public void onClick(View view) {
                 int yearInd = spinner1.getSelectedItemPosition();
                 int quarterInd = spinner2.getSelectedItemPosition();
+                int courseSizeInd = spinner3.getSelectedItemPosition();
                 String subject = editSubject.getText().toString().trim();
                 String courseNumber = editCourseNumber.getText().toString().trim();
 
                 // To get string of year and quarter use the following two lines
                 String year = context.getResources().getStringArray(R.array.year)[yearInd];
                 String quarter = context.getResources().getStringArray(R.array.quarter)[quarterInd];
+                String courseSize = context.getResources()
+                        .getStringArray(R.array.course_size)[courseSizeInd];
 
                 // Course number can also be converted to int when saving to db
 
@@ -155,15 +163,23 @@ public class FirstTimeSetup {
 
                 if (exit) {
 //                    Log.d("str format: ", year + " " + quarter + " " + subject + " " + courseNumber);
-                    addCourse(DB, year, quarter, subject, courseNumber);
+                    addCourse(DB, year, quarter, subject, courseNumber, courseSize);
                     addClasses.cancel();
-                    repeatAddClasses(DB, context, inflater, yearInd, quarterInd, subject, courseNumber);
+                    repeatAddClasses(DB, context, inflater, yearInd, quarterInd, courseSizeInd, subject, courseNumber);
                 }
             }
         });
     }
 
-    public static void repeatAddClasses(AppDatabaseCourses DB, Context context, LayoutInflater inflater, int previousYearInd, int previousQuarterInd, String previousSubject, String previousCourseNumber) {
+    public static void repeatAddClasses(
+            AppDatabaseCourses DB,
+            Context context,
+            LayoutInflater inflater,
+            int previousYearInd,
+            int previousQuarterInd,
+            int previousCourseSizeInd,
+            String previousSubject,
+            String previousCourseNumber) {
 
         //This method creates the UI window
         CreateBuilderAlert.returningVals AD = buildBuilder(context, R.layout.activity_repeat_add_classes,
@@ -181,6 +197,13 @@ public class FirstTimeSetup {
         Spinner spinner2 = newSpinnerSpinny(context, addClassesView, R.id.selectQuarter,  R.array.quarter,
                 android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item,previousQuarterInd);
 
+        // Spinner for selecting course size
+        Spinner spinner3 = newSpinnerSpinny(
+                context, addClassesView, R.id.selectCourseSize,  R.array.course_size,
+                android.R.layout.simple_spinner_item,
+                android.R.layout.simple_spinner_dropdown_item,
+                previousCourseSizeInd);
+
         // Edit text field for subject
         EditText editSubject = (EditText) addClassesView.findViewById(R.id.editSubject);
         editSubject.setText(previousSubject);
@@ -196,6 +219,7 @@ public class FirstTimeSetup {
             public void onClick(View view) {
                 int yearInd = spinner1.getSelectedItemPosition();
                 int quarterInd = spinner2.getSelectedItemPosition();
+                int courseSizeInd = spinner3.getSelectedItemPosition();
                 String subject = editSubject.getText().toString().trim();
                 String courseNumber = editCourseNumber.getText().toString().trim();
 
@@ -220,6 +244,7 @@ public class FirstTimeSetup {
                 // Make sure the user has changed some fields
                 if (yearInd == previousYearInd
                         && quarterInd == previousQuarterInd
+                        && courseSizeInd == previousCourseSizeInd
                         && subject.equalsIgnoreCase(previousSubject)
                         && courseNumber.equalsIgnoreCase(previousCourseNumber)
                 ) {
@@ -229,10 +254,11 @@ public class FirstTimeSetup {
 
                 String year = context.getResources().getStringArray(R.array.year)[yearInd];
                 String quarter = context.getResources().getStringArray(R.array.quarter)[quarterInd];
+                String courseSize =  context.getResources().getStringArray(R.array.course_size)[courseSizeInd];
                 if (exit) {
-                    addCourse(DB, year, quarter, subject, courseNumber);
+                    addCourse(DB, year, quarter, subject, courseNumber, courseSize);
                     addClasses.cancel();
-                    repeatAddClasses(DB, context, inflater, yearInd, quarterInd, subject, courseNumber);
+                    repeatAddClasses(DB, context, inflater, yearInd, quarterInd, courseSizeInd, subject, courseNumber);
                 }
             }
         });
@@ -257,10 +283,14 @@ public class FirstTimeSetup {
      * @param subject
      * @param courseNumber
      */
-    private static void addCourse(AppDatabaseCourses DB, String year, String quarter, String subject, String courseNumber) {
+    private static void addCourse(AppDatabaseCourses DB,
+                                  String year,
+                                  String quarter,
+                                  String subject,
+                                  String courseNumber, String courseSize) {
         String courseCode = subject + "," + courseNumber;
         DB.courseDao().insertCourse(
-                new Course(DB.courseDao().count() + 1, year, quarter, courseCode));
+                new Course(DB.courseDao().count() + 1, year, quarter, courseCode, courseSize));
     }
 }
 
