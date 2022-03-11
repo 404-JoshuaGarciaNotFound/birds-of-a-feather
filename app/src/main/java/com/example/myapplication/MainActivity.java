@@ -3,7 +3,6 @@ package com.example.myapplication;
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
-import static com.example.myapplication.OptionsMenuControls.buildFavoritesSection;
 import static com.example.myapplication.OptionsMenuControls.buildListFilters;
 import static com.example.myapplication.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.OptionsMenuControls.showMenu;
@@ -54,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     public final String HEAD_SHOT_URL = "head_shot_url";
     public final String USER_COURSE_ = "user_course_";
     public final String USER_SAVEDSESSIONS= "saved_session";
+
     public final String USER_FAVORITES = "favorites";
     // database variables
     public AppDatabaseStudent dbStudent;
@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
                 //Add if statement that checks DB if exists
                 if(!SName.equals("")) {
                     SharedPreferences.Editor insertSavedSesh = userInfo.edit();
-                    Set<String> strings = userInfo.getStringSet(USER_SAVED_SESSIONS, null);
+                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
                     boolean alreadyExists = false;
                     if(strings == null) {
                         strings = new HashSet<>(Arrays.asList(SName));

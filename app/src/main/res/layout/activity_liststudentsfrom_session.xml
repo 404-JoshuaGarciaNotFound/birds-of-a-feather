@@ -6,7 +6,6 @@
     android:layout_height="match_parent">
 
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ListOfStudentsFromSession"
         android:layout_width="411dp"
@@ -15,17 +14,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+
     <TextView
         android:id="@+id/seshNamey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/session_name"
+
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/ReturnHomey"
@@ -59,7 +60,7 @@
         android:src="@android:drawable/ic_menu_edit"
         app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.781"
+        app:layout_constraintHorizontal_bias="0.775"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
