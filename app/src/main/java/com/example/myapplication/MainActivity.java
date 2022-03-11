@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private BTPermission btPermission;
     private Date currentTime;
     private SavingSession savingSession;
+    private boolean isInStart;
 
 
     @Override
@@ -268,10 +269,11 @@ public class MainActivity extends AppCompatActivity {
         String current = startStop.getText().toString();
         Log.d("CurrentState", current);
         if(current.equals("START")) {
-            if (!btPermission.BTPermissionIsGranted()) {
-                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
-                btPermission.promptPermissionRequiredMessage();
-            } else {
+//            if (!btPermission.BTPermissionIsGranted()) {
+//                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
+//                btPermission.promptPermissionRequiredMessage();
+//            } else {
+                isInStart = true;
                 Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 currentTime = Calendar.getInstance().getTime();
@@ -292,9 +294,10 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
                 studentsRecyclerView.setLayoutManager(studentsLayoutManager);
                 studentsRecyclerView.setVisibility(View.VISIBLE);
-            }
+//            }
         }
         if(current.equals("STOP")){
+            isInStart = false;
             startStop.setText("START");
             Log.d("Nearby Messages Status", "DISABLED");
             //Turn off Nearby Message
@@ -453,13 +456,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        if(isInStart) {
+            Log.d("first", "in onDestroy");
+            savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, "");
+            Log.d("first", "step 1 complete");
+            savingSession.saveCurrentSession();
+            Log.d("first", "step 2 complete");
+        }
+        super.onPause();
+    }
+
     //Cleans up program for shut down.
     @Override
     protected void onDestroy() {
-        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, "");
-        savingSession.saveCurrentSession();
-        super.onDestroy();
+//        Log.d("first", "in onDestroy");
+//        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, "");
+//        Log.d("first", "step 1 complete");
+//        savingSession.saveCurrentSession();
+//        Log.d("first", "step 2 complete");
         dbStudent.close();
+        super.onDestroy();
     }
 
 
