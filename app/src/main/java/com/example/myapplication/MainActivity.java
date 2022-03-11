@@ -386,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
                         courses.append(splitInfo[i]);
                         if (i != splitInfo.length - 1) courses.append(" ");
                     }
+                    //Save session here
 
                     // check whether the students' course match the user's
                     // if so, add the user to the students to display

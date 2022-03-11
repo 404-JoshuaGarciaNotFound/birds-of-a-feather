@@ -144,8 +144,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
             if (favoritesList != null) {
                 if (favoritesList.size() != 0) {
-                    Log.d("a", String.valueOf(favoritesList.contains(this.student.getId() + this.student.getName() + this.student.getHeadShotURL())));
-                    if (favoritesList.contains(this.student.getId() + this.student.getName() + this.student.getHeadShotURL() )) {
+                    Log.d("A", String.valueOf(favoritesList));
+                    Log.d("a", String.valueOf(favoritesList.contains(this.student.getId() + " " + this.student.getName() + " " + this.student.getHeadShotURL())));
+                    if (favoritesList.contains(this.student.getId() + " " + this.student.getName() + " " + this.student.getHeadShotURL() )) {
                         favoritesStar.setBackgroundResource(R.drawable.ic_star);
                     }
                 }

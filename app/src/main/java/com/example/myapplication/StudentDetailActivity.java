@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +31,8 @@ import com.google.android.gms.nearby.messages.Message;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Executors;
 
 public class StudentDetailActivity extends AppCompatActivity {
 
@@ -61,6 +64,8 @@ public class StudentDetailActivity extends AppCompatActivity {
         Log.d("student_detail_info", "onCreate: start ");
 
         //Set up database
+        userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+
         dbStudent = AppDatabaseStudent.singleton(this);
         dbCourse = AppDatabaseCourses.singleton(this);
         studentDao = dbStudent.studentDao();
@@ -75,6 +80,7 @@ public class StudentDetailActivity extends AppCompatActivity {
         List<Course> myCourses = dbCourse.courseDao().getAllCourses();
         String otherCourses = student.getCourses();
         Log.d("Student Course", otherCourses);
+
         List<Course> listOfCourse = findSharedCourse(otherCourses, myCourses);
         //Sort chronologically
         Collections.sort(listOfCourse);
@@ -93,23 +99,41 @@ public class StudentDetailActivity extends AppCompatActivity {
         coursesRecyclerView.setLayoutManager(coursesLayoutManager);
         coursesViewAdapter = new CourseViewAdapter(listOfCourse);
         coursesRecyclerView.setAdapter(coursesViewAdapter);
+
+        //This method updates the star shape if a student is a favorite.
+        ImageButton favoritesStar = findViewById(R.id.favoriteStarStudentDetails);
+        Set<String> favoritesList = userInfo.getStringSet("favorites", null);
+
+        Log.d("Info", student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+
+        if (favoritesList != null) {
+            if (favoritesList.size() != 0) {
+                if (favoritesList.contains(student.getId() + " " + student.getName() + " " + student.getHeadShotURL() )) {
+                    favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                }
+            }
+        }
+
     }
 
     //Function to find sharedCourse
     //@param CourseList from both students
+    @NonNull
     public static List<Course> findSharedCourse(String otherCourses, List<Course> myCourses){
         String[] arrayofCourses = otherCourses.split(" ");
         List<Course> listOfCourse = new ArrayList<>();
-        for (Course mySingleCourse : myCourses){
-            for (String otherSingleCourse : arrayofCourses){
-                String[] otherCourseInfo = otherSingleCourse.split(",");
-                String otherYear = otherCourseInfo[0];
-                String otherQuarter = otherCourseInfo[1];
-                String otherCourse = otherCourseInfo[2] + "," + otherCourseInfo[3];
-                if (mySingleCourse.getYear().equals(otherYear) &&
-                        mySingleCourse.getQuarter().equals(otherQuarter) &&
-                        mySingleCourse.getCourseCode().equals(otherCourse)){
-                    listOfCourse.add(mySingleCourse);
+        for (Course mySingleCourse : myCourses) {
+            for (String otherSingleCourse : arrayofCourses) {
+                if(otherSingleCourse.length() != 1) {
+                    String[] otherCourseInfo = otherSingleCourse.split(",");
+                    String otherYear = otherCourseInfo[0];
+                    String otherQuarter = otherCourseInfo[1];
+                    String otherCourse = otherCourseInfo[2] + "," + otherCourseInfo[3];
+                    if (mySingleCourse.getYear().equals(otherYear) &&
+                            mySingleCourse.getQuarter().equals(otherQuarter) &&
+                            mySingleCourse.getCourseCode().equals(otherCourse)) {
+                        listOfCourse.add(mySingleCourse);
+                    }
                 }
             }
         }

@@ -91,7 +91,6 @@ public class SessionDetailActivity extends AppCompatActivity {
                         }
                     }
                 });
-
             }
         });
 
