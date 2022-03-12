@@ -20,7 +20,9 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication">
+        android:theme="@style/Theme.MyApplication"
+        android:name="com.example.myapplication.MyApplication">
+
 
         <meta-data
             android:name="com.google.android.nearby.messages.API_KEY"
@@ -49,5 +51,7 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
+
 
 </manifest>

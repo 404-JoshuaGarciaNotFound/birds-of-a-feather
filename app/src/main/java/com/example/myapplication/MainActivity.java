@@ -198,6 +198,9 @@ public class MainActivity extends AppCompatActivity {
         String myCourses = coursesStr.toString();
         String myInfo = myId + "\n" + myName + "\n" + myHeadShot + "\n" + myCourses;
         mMessage = new Message(myInfo.getBytes());
+        SharedPreferences.Editor userInfoEditor = userInfo.edit();
+        userInfoEditor.putString("nearby_message", new String(mMessage.getContent()));
+        userInfoEditor.apply();
 
         options.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +251,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
         refreshStudentList(studentList);
+        Nearby.getMessagesClient(this).publish(mMessage);
+        Nearby.getMessagesClient(this).subscribe(searchingClassmate);
     }
 
     public static SharedPreferences returnSP(){
@@ -546,4 +551,9 @@ public class MainActivity extends AppCompatActivity {
 //            refreshStudentList();
 //        }
 //    }
+
+    public void publishWave(Message waveMessage){
+        Nearby.getMessagesClient(this).publish(waveMessage);
+        Log.d("Publish Message", new String(waveMessage.getContent()));
+    }
 }

@@ -195,7 +195,6 @@ public class StudentDetailActivity extends AppCompatActivity {
         else{
             generateWaveMessage();
         }
-
     }
 
     public void generateWaveMessage(){
@@ -224,6 +223,8 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //Change icon
         waveButton.setImageDrawable(getDrawable(R.drawable.ic_wave_hand));
+        Context context = MyApplication.getContext();
+        Nearby.getMessagesClient(context).publish(waveMessage);
         waveSent = true;
 
         //Check waveMessage
@@ -237,8 +238,9 @@ public class StudentDetailActivity extends AppCompatActivity {
     public void goBack(View view){
         //Change waveReceived to false
         dbStudent.studentDao().setWaveReceived(studentId, false);
-        if (waveMessage != null){
-            Nearby.getMessagesClient(this).unpublish(waveMessage);
+        if (waveSent){
+            Context context = MyApplication.getContext();
+            Nearby.getMessagesClient(context).publish(waveMessage);
         }
         finish();
 

@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 import static com.example.myapplication.MainActivity.returnSP;
+import static com.example.myapplication.MainActivity.userInfo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,7 +25,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.student.db.Student;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -208,6 +212,11 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
         @Override
         public void onClick(View view) {
+            SharedPreferences userInfo = returnSP();
+            String searchInfo = userInfo.getString("nearby_message", "");
+            Message mMessage = new Message(searchInfo.getBytes(StandardCharsets.UTF_8));
+            Context mainContext = MyApplication.getContext();
+            Nearby.getMessagesClient(mainContext).unpublish(mMessage);
 
             Context context = view.getContext();
             Intent intent = new Intent(context, StudentDetailActivity.class);
