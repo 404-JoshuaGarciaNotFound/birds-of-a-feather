@@ -47,4 +47,5 @@ public class SavingSession {
         session.populateSessionContentWithSameCourse(studentDao, courseDao);
         session.saveSession(userInfo);
     }
+
 }

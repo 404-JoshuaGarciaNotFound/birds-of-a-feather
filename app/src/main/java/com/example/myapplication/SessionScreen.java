@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import static com.example.myapplication.ArrangeStudentList.arrangeStudentList;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.student.db.AppDatabaseStudent;
+import com.example.myapplication.student.db.Course;
+import com.example.myapplication.student.db.Student;
+import com.example.myapplication.student.db.StudentDao;
+import com.google.android.gms.nearby.Nearby;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SessionScreen extends AppCompatActivity {
     @Override

@@ -33,6 +33,12 @@ import com.example.myapplication.student.db.StudentDao;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
+import com.google.android.gms.nearby.messages.PublishCallback;
+import com.google.android.gms.nearby.messages.PublishOptions;
+import com.google.android.gms.nearby.messages.Strategy;
+import com.google.android.gms.nearby.messages.SubscribeCallback;
+import com.google.android.gms.nearby.messages.SubscribeOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.nio.charset.StandardCharsets;
@@ -66,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
     public MessageListener searchingClassmate;
     public Message mMessage;
     public static final String TAG = "Turn on Search";
+    private static final int TTL_IN_SECONDS = 20; // Three minutes.
+    private static final Strategy PUB_SUB_STRATEGY = new Strategy.Builder()
+            .setTtlSeconds(TTL_IN_SECONDS).build();
     // bluetooth permission tracking variable
     public BTPermission btPermission;
     public SavingSession savingSession;
@@ -164,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 // Refresh List Student Recycler
                 List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
                 refreshStudentList(studentList);
+
             }
             @Override
             public void onLost(@NonNull Message message){
@@ -174,15 +184,15 @@ public class MainActivity extends AppCompatActivity {
                 String studentId = arrayOfStudentInfo[0];
 
                 try {
-                    Student lostStudent = dbStudent.studentDao().getStudentByID(studentId);
-                    Log.d("Deleting Student", lostStudent.getName());
-                    dbStudent.studentDao().deleteStudent(lostStudent);
+                   // Student lostStudent = dbStudent.studentDao().getStudentByID(studentId);
+                   // Log.d("Deleting Student", lostStudent.getName());
+                  //  dbStudent.studentDao().deleteStudent(lostStudent);
                 } catch (Exception e){
-                    Log.d(studentId, "Student not found");
+                   // Log.d(studentId, "Student not found");
                 }
                 // Refresh List Student Recycler
-                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
-                refreshStudentList(studentList);
+               // List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+               // refreshStudentList(studentList);
             }
         };
 
@@ -199,6 +209,9 @@ public class MainActivity extends AppCompatActivity {
         String myCourses = coursesStr.toString();
         String myInfo = myId + "\n" + myName + "\n" + myHeadShot + "\n" + myCourses;
         mMessage = new Message(myInfo.getBytes());
+        SharedPreferences.Editor userInfoEditor = userInfo.edit();
+        userInfoEditor.putString("nearby_message", new String(mMessage.getContent()));
+        userInfoEditor.apply();
 
         options.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,7 +261,10 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+        Nearby.getMessagesClient(this).publish(mMessage);
+        Nearby.getMessagesClient(this).subscribe(searchingClassmate);
         refreshStudentList(studentList);
+
     }
 
     public static SharedPreferences returnSP(){
@@ -294,6 +310,9 @@ public class MainActivity extends AppCompatActivity {
      * This method is responsible for enabling and disabling the search feature.
      * It is also responsible for calling saving session to database method.
     **/
+
+
+
     public AlertDialog saveSesh;
     public void StartStopButton(View view) {
         //Add check if setup complete
@@ -301,11 +320,11 @@ public class MainActivity extends AppCompatActivity {
         String current = startStop.getText().toString();
         Log.d("CurrentState", current);
         if(current.equals("START")) {
-            if (!btPermission.BTPermissionIsGranted()) {
-                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
-                btPermission.promptPermissionRequiredMessage();
-            } else {
-                Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
+//            if (!btPermission.BTPermissionIsGranted()) {
+//                Log.d("Bluetooth permission", "Bluetooth permission is not granted, refuse to proceed");
+//                btPermission.promptPermissionRequiredMessage();
+//            } else {
+                // Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 currentTime = Calendar.getInstance().getTime();
 
@@ -333,13 +352,46 @@ public class MainActivity extends AppCompatActivity {
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
                 //Turn on Nearby Message
-                Nearby.getMessagesClient(this).publish(mMessage);
-                Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+                PublishOptions pubOptions = new PublishOptions.Builder()
+                    .setStrategy(PUB_SUB_STRATEGY)
+                    .setCallback(new PublishCallback() {
+                        @Override
+                        public void onExpired() {
+                            super.onExpired();
+                            Log.i("Nearby", "No longer publishing");
+                        }
+                    }).build();
+                Nearby.getMessagesClient(this).publish(mMessage, pubOptions).addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(MainActivity.this, "Publishing!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                SubscribeOptions subOptions = new SubscribeOptions.Builder()
+                    .setStrategy(PUB_SUB_STRATEGY)
+                    .setCallback(new SubscribeCallback() {
+                        @Override
+                        public void onExpired() {
+                            super.onExpired();
+                            Log.i("Nearby", "No longer subscribing");
+                        }
+                    }).build();
+                Nearby.getMessagesClient(this).subscribe(searchingClassmate, subOptions).addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Toast.makeText(MainActivity.this, "Subscribing!", Toast.LENGTH_SHORT).show();
+                }
+            });
 //                //Delete database before Searching
 //                dbStudent.studentDao().clear();
                 // Clear Database for a new search
 
+                Log.d("In db", userInfo.getString(USER_NAME, "no name"));
+                Log.d("In db", userInfo.getString(USER_COURSE_, "no name"));
+                Log.d("In db", userInfo.getString(HEAD_SHOT_URL, "no name"));
                 Log.d("publish message", new String(mMessage.getContent()));
+
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
 
                 // Set up recyclerView of list of students
@@ -351,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
                 //Refresh List
                 List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
                 refreshStudentList(studentList);
-            }
+//            }
         }
         if(current.equals("STOP")){
             startStop.setText("START");
@@ -618,4 +670,9 @@ public class MainActivity extends AppCompatActivity {
 //            refreshStudentList();
 //        }
 //    }
+
+    public void publishWave(Message waveMessage){
+        Nearby.getMessagesClient(this).publish(waveMessage);
+        Log.d("Publish Message", new String(waveMessage.getContent()));
+    }
 }

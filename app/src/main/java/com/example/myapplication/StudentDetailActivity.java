@@ -1,8 +1,10 @@
 package com.example.myapplication;
 
 import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
+import static com.example.myapplication.ArrangeStudentList.arrangeStudentList;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
+import static com.example.myapplication.MainActivity.returnSP;
 
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +40,10 @@ import com.google.android.gms.nearby.messages.Message;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 public class StudentDetailActivity extends AppCompatActivity {
 
@@ -129,8 +133,8 @@ public class StudentDetailActivity extends AppCompatActivity {
             if (favoritesList.size() != 0) {
                 if (favoritesList.contains(student.getId() + " " + student.getName() + " " + student.getHeadShotURL() )) {
                     favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                    favoritesStar.setTag("ON");
                 }
-
             }
         }
     }
@@ -186,6 +190,64 @@ public class StudentDetailActivity extends AppCompatActivity {
         return listOfCourse;
 
     }
+    public void FavoriteSomeone(View view){
+        ImageButton favoritesStar = view.findViewById(R.id.favoriteStarStudentDetails);
+        Set<String> favoritesList = userInfo.getStringSet("favorites", null);
+        Log.d("list", String.valueOf(favoritesList));
+        SharedPreferences.Editor insertStudentFav =  userInfo.edit();
+        Log.d("ACTION", String.valueOf(favoritesStar.getTag()));
+
+        if(favoritesList == null || favoritesList.size() == 0){
+            Log.d("Empty List", "No items");
+            Set<String> newSet = new HashSet<String>();
+            Toast.makeText(favoritesStar.getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+            newSet.add(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+            insertStudentFav.putStringSet("favorites", newSet);
+            insertStudentFav.apply();
+            favoritesStar.setTag("ON");
+            favoritesStar.setBackgroundResource(R.drawable.ic_star);
+        }
+        else{
+            if(favoritesStar.getTag() != null) {
+                if (favoritesStar.getTag().equals("ON")) {
+                    favoritesStar.setBackgroundResource(R.drawable.ic_star_empty);
+                    favoritesStar.setTag("OFF");
+                    //Remove from favorites
+                    Log.d("b4", String.valueOf(favoritesList));
+                    favoritesList.remove(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+                    insertStudentFav.remove("favorites");
+                    insertStudentFav.apply();
+                    insertStudentFav.putStringSet("favorites", favoritesList);
+                    insertStudentFav.apply();
+                    Log.d("after", String.valueOf(favoritesList));
+                    Toast.makeText(favoritesStar.getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                    favoritesStar.setTag("ON");
+                    Toast.makeText(favoritesStar.getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                    favoritesList.remove(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+                    insertStudentFav.remove("favorites");
+                    insertStudentFav.apply();
+                    insertStudentFav.putStringSet("favorites", favoritesList);
+                    insertStudentFav.apply();
+                    favoritesList.add(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
+                    insertStudentFav.remove("favorites");
+                    insertStudentFav.putStringSet("favorites", favoritesList);
+                    insertStudentFav.apply();
+                    Log.d("inserted", String.valueOf(favoritesList));
+
+                }
+
+
+            }else{
+                favoritesStar.setBackgroundResource(R.drawable.ic_star);
+                favoritesStar.setTag("ON");
+                Log.d("prev", String.valueOf(favoritesList));
+
+            }
+        }
+    }
 
     // onClick function for sending wave
     public void sendWave(View view){
@@ -195,7 +257,6 @@ public class StudentDetailActivity extends AppCompatActivity {
         else{
             generateWaveMessage();
         }
-
     }
 
     public void generateWaveMessage(){
@@ -224,6 +285,8 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //Change icon
         waveButton.setImageDrawable(getDrawable(R.drawable.ic_wave_hand));
+        Context context = MyApplication.getContext();
+        Nearby.getMessagesClient(context).publish(waveMessage);
         waveSent = true;
 
         //Check waveMessage
@@ -231,14 +294,16 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //Display toast
         Toast.makeText(this, "Wave send", Toast.LENGTH_SHORT).show();
+
     }
 
     // onClick function for backButton
     public void goBack(View view){
         //Change waveReceived to false
         dbStudent.studentDao().setWaveReceived(studentId, false);
-        if (waveMessage != null){
-            Nearby.getMessagesClient(this).unpublish(waveMessage);
+        if (waveSent){
+            Context context = MyApplication.getContext();
+            Nearby.getMessagesClient(context).publish(waveMessage);
         }
         finish();
 
