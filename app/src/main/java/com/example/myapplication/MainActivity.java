@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     // bluetooth permission tracking variable
     public BTPermission btPermission;
     public Date currentTime;
+    public Date newTime;
     public SavingSession savingSession;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -301,9 +302,6 @@ public class MainActivity extends AppCompatActivity {
                     session.saveSession(userInfo);
                 }
 
-
-
-
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
@@ -414,7 +412,37 @@ public class MainActivity extends AppCompatActivity {
                         courses.append(splitInfo[i]);
                         if (i != splitInfo.length - 1) courses.append(" ");
                     }
-                    //Save session here
+
+                    String newVal = idStr + " " + name + " " + url + " " + courses.toString();
+
+                    // Modify session here
+                    newTime = Calendar.getInstance().getTime();
+                    String reNamed = newTime.toString();
+                    String key = currentTime.toString();
+                    SharedPreferences userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+                    Set<String> vals = userInfo.getStringSet(key, null);
+                    vals.add(newVal);
+                    Set<String> keys = userInfo.getStringSet("saved_session", null);
+                    //Removes entry from string set
+                    SharedPreferences.Editor UIEdit = userInfo.edit();
+                    UIEdit.remove(key);
+                    UIEdit.apply();
+                    UIEdit.putStringSet(reNamed, vals);
+                    UIEdit.apply();
+                    Log.d("Old keys", String.valueOf(keys));
+                    //Now will remove old session name from keys list
+                    UIEdit.remove("saved_session");
+                    UIEdit.apply();
+                    ArrayList<String> temp = new ArrayList<String>(keys);
+                    int renamevaL = temp.indexOf(key);
+                    temp.set(renamevaL, reNamed);
+                    Set<String> newKeys = new HashSet<String>(temp);
+                    Log.d("newKeys", String.valueOf(newKeys));
+                    UIEdit.putStringSet("saved_session", newKeys);
+                    UIEdit.apply();
+                    Log.d("Renamed", String.valueOf(userInfo.getStringSet(reNamed, null)));
+
+                    currentTime = newTime;
 
                     // check whether the students' course match the user's
                     // if so, add the user to the students to display
