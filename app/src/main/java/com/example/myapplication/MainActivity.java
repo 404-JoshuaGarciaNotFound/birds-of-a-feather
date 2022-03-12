@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 // Refresh List Student Recycler
                 List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
                 refreshStudentList(studentList);
+
             }
             @Override
             public void onLost(@NonNull Message message){
@@ -173,15 +174,15 @@ public class MainActivity extends AppCompatActivity {
                 String studentId = arrayOfStudentInfo[0];
 
                 try {
-                    Student lostStudent = dbStudent.studentDao().getStudentByID(studentId);
-                    Log.d("Deleting Student", lostStudent.getName());
-                    dbStudent.studentDao().deleteStudent(lostStudent);
+                   // Student lostStudent = dbStudent.studentDao().getStudentByID(studentId);
+                   // Log.d("Deleting Student", lostStudent.getName());
+                  //  dbStudent.studentDao().deleteStudent(lostStudent);
                 } catch (Exception e){
-                    Log.d(studentId, "Student not found");
+                   // Log.d(studentId, "Student not found");
                 }
                 // Refresh List Student Recycler
-                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
-                refreshStudentList(studentList);
+               // List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+               // refreshStudentList(studentList);
             }
         };
 
@@ -247,7 +248,10 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+        Nearby.getMessagesClient(this).publish(mMessage);
+        Nearby.getMessagesClient(this).subscribe(searchingClassmate);
         refreshStudentList(studentList);
+
     }
 
     public static SharedPreferences returnSP(){
@@ -293,6 +297,9 @@ public class MainActivity extends AppCompatActivity {
      * This method is responsible for enabling and disabling the search feature.
      * It is also responsible for calling saving session to database method.
     **/
+
+
+
     public AlertDialog saveSesh;
     public void StartStopButton(View view) {
         //Add check if setup complete
