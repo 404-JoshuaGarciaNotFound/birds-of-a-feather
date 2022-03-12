@@ -33,6 +33,12 @@ import com.example.myapplication.student.db.StudentDao;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
+import com.google.android.gms.nearby.messages.PublishCallback;
+import com.google.android.gms.nearby.messages.PublishOptions;
+import com.google.android.gms.nearby.messages.Strategy;
+import com.google.android.gms.nearby.messages.SubscribeCallback;
+import com.google.android.gms.nearby.messages.SubscribeOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.nio.charset.StandardCharsets;
@@ -66,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
     public MessageListener searchingClassmate;
     public Message mMessage;
     public static final String TAG = "Turn on Search";
+    private static final int TTL_IN_SECONDS = 20; // Three minutes.
+    private static final Strategy PUB_SUB_STRATEGY = new Strategy.Builder()
+            .setTtlSeconds(TTL_IN_SECONDS).build();
     // bluetooth permission tracking variable
     public BTPermission btPermission;
     public Date currentTime;
@@ -318,8 +327,37 @@ public class MainActivity extends AppCompatActivity {
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
                 //Turn on Nearby Message
-                Nearby.getMessagesClient(this).publish(mMessage);
-                Nearby.getMessagesClient(this).subscribe(searchingClassmate);
+                PublishOptions pubOptions = new PublishOptions.Builder()
+                    .setStrategy(PUB_SUB_STRATEGY)
+                    .setCallback(new PublishCallback() {
+                        @Override
+                        public void onExpired() {
+                            super.onExpired();
+                            Log.i("Nearby", "No longer publishing");
+                        }
+                    }).build();
+                Nearby.getMessagesClient(this).publish(mMessage, pubOptions).addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(MainActivity.this, "Publishing!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                SubscribeOptions subOptions = new SubscribeOptions.Builder()
+                    .setStrategy(PUB_SUB_STRATEGY)
+                    .setCallback(new SubscribeCallback() {
+                        @Override
+                        public void onExpired() {
+                            super.onExpired();
+                            Log.i("Nearby", "No longer subscribing");
+                        }
+                    }).build();
+                Nearby.getMessagesClient(this).subscribe(searchingClassmate, subOptions).addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Toast.makeText(MainActivity.this, "Subscribing!", Toast.LENGTH_SHORT).show();
+                }
+            });
 //                //Delete database before Searching
 //                dbStudent.studentDao().clear();
                 // Clear Database for a new search
