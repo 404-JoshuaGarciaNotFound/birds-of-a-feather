@@ -528,7 +528,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     courses.deleteCharAt(courses.length() - 1);
 
-                    String newVal = idStr + " " + name + " " + url + " 1 " + courses.toString() + " ";
+                    int numSharedCourses = getNumSharedCourses(courses.toString());
+
+                    String newVal = idStr + " " + name + " " + url + " " + numSharedCourses + " " + courses.toString() + " ";
 
                     // Modify session here
                     newTime = Calendar.getInstance().getTime();
@@ -675,6 +677,25 @@ public class MainActivity extends AppCompatActivity {
 //            refreshStudentList();
 //        }
 //    }
+
+    public int getNumSharedCourses(String courses) {
+
+        int numSharedCourses = 0;
+        int i = 0;
+
+        while(true) {
+            StringBuilder course = new StringBuilder();
+            course.append("user_course_");
+            course.append(i++);
+            String checkCourse = userInfo.getString(course.toString(), "default");
+            if(checkCourse.equals("default"))
+                break;
+            if(courses.contains(checkCourse))
+                numSharedCourses++;
+        }
+
+        return numSharedCourses;
+    }
 
     public void publishWave(Message waveMessage){
         Nearby.getMessagesClient(this).publish(waveMessage);
