@@ -35,6 +35,8 @@ public class Session {
         this.sessionContent = new HashSet<>();
     }
 
+
+
     /**
      * Below are getters and setters
      */
@@ -73,6 +75,7 @@ public class Session {
                             + student.getNumSharedCourses() + " "
                             + student.getCourses() + " ";
                     sessionContent.add(sequence);
+                    Log.d(TAG, "Student " + student.getName() + " saved to session " + sessionName + " with courses " + student.getCourses());
                     break;
                 }
             }
@@ -93,6 +96,7 @@ public class Session {
                     + student.getNumSharedCourses() + " "
                     + student.getCourses();
             sessionContent.add(sequence);
+            Log.d(TAG, "Student " + student.getName() + " saved to session " + sessionName + " with courses " + student.getCourses());
         }
     }
 
