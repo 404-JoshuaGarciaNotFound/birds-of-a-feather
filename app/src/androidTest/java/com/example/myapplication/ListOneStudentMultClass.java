@@ -241,11 +241,11 @@ isDisplayed()));
         materialButton10.perform(click());
         
         ViewInteraction textView = onView(
-allOf(withId(R.id.number_matches), withText("3"),
+allOf(withId(R.id.number_matches), withText("Number of Shared Courses: 3"),
 withParent(allOf(withId(R.id.frameLayout),
 withParent(withId(R.id.list_of_students)))),
 isDisplayed()));
-        textView.check(matches(withText("3")));
+        textView.check(matches(withText("Number of Shared Courses: 3")));
         }
     
     private static Matcher<View> childAtPosition(
