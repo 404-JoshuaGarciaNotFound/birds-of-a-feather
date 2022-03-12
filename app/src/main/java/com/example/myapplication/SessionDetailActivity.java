@@ -44,6 +44,7 @@ public class SessionDetailActivity extends AppCompatActivity {
         Set<String> vals = userInfo.getStringSet(key, null);
         //This creates an alert builder
         setContentView(R.layout.activity_liststudentsfrom_session);
+        int a = (R.layout.activity_liststudentsfrom_session);
         CreateBuilderAlert.returningVals ADcn = buildBuilder(this, R.layout.change_session_name,
                 getLayoutInflater(), true, "New Name");
         AlertDialog renameSession = ADcn.alertDiag;

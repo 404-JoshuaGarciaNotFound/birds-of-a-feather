@@ -242,6 +242,10 @@ public class StudentDetailActivity extends AppCompatActivity {
         Toast.makeText(this, "Wave send", Toast.LENGTH_SHORT).show();
 
     }
+    public void refresymemeplz(View view){
+
+
+    }
 
     // onClick function for backButton
     public void goBack(View view){
