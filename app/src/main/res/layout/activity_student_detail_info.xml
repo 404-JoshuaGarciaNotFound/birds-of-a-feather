@@ -25,6 +25,7 @@
         android:id="@+id/favoriteStarStudentDetails"
         android:layout_width="33dp"
         android:layout_height="25dp"
+        android:onClick="FavoriteSomeone"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

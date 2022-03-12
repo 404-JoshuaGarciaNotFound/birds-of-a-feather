@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 import static com.example.myapplication.MainActivity.returnSP;
-import static com.example.myapplication.MainActivity.userInfo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -121,7 +120,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                                 Toast.makeText(favoritesStar.getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
                                 Log.d("1", String.valueOf(returnSP().getStringSet("favorites", null)));
                                 Log.d("Info", student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
-                                //???? this works some how
+                                //If it works it works
                                 favoritesList.remove(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
                                 insertStudentFav.remove("favorites");
                                 insertStudentFav.apply();
@@ -197,6 +196,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
             //This method updates the star shape if a student is a favorite.
             Set<String> favoritesList = sp.getStringSet("favorites", null);
+
             SharedPreferences.Editor insertStudentFav =  returnSP().edit();
             Set<String> favoritesList2 =  returnSP().getStringSet("favorites", null);
 
