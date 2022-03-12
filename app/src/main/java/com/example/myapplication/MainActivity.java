@@ -413,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
                         if (i != splitInfo.length - 1) courses.append(" ");
                     }
 
-                    String newVal = idStr + " " + name + " " + url + " " + courses.toString();
+                    String newVal = idStr + " " + name + " " + url + " 1 " + courses.toString() + " ";
 
                     // Modify session here
                     newTime = Calendar.getInstance().getTime();
