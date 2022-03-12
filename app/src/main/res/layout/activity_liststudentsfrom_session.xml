@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ListOfStudentsFromSession"
         android:layout_width="411dp"

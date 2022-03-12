@@ -176,11 +176,11 @@ class ListOneStudentClass {
         materialButton8.perform(click());
 
         ViewInteraction textView = onView(
-                allOf(withId(R.id.number_matches), withText("1"),
+                allOf(withId(R.id.number_matches), withText("Number of Shared Courses: 1"),
                         withParent(allOf(withId(R.id.frameLayout),
                                 withParent(withId(R.id.list_of_students)))),
                         isDisplayed()));
-        textView.check(matches(withText("1")));
+        textView.check(matches(withText("Number of Shared Courses: 1")));
     }
 
     private static Matcher<View> childAtPosition(

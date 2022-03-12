@@ -77,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
             .setTtlSeconds(TTL_IN_SECONDS).build();
     // bluetooth permission tracking variable
     public BTPermission btPermission;
-    public Date currentTime;
     public SavingSession savingSession;
+    public Date currentTime;
+    public Date newTime;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -326,6 +327,27 @@ public class MainActivity extends AppCompatActivity {
                 // Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 currentTime = Calendar.getInstance().getTime();
+
+                studentDao.clear();
+
+                // Create initial session that will be modified whenever new mock occurs
+//                refreshStudentList();
+                String SName = currentTime.toString();
+                //Add if statement that checks DB if exists
+                SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+                Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                boolean alreadyExists = false;
+                if (strings == null) {
+                    strings = new HashSet<>(Arrays.asList(SName));
+                } else {
+                    alreadyExists = strings.contains(SName);
+                }
+                if (!alreadyExists) {
+                    Session session = new Session(SName);
+                    session.populateSessionContentWithSameCourse(studentDao, courseDao);
+                    session.saveSession(userInfo);
+                }
+
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
@@ -364,7 +386,6 @@ public class MainActivity extends AppCompatActivity {
 //                //Delete database before Searching
 //                dbStudent.studentDao().clear();
                 // Clear Database for a new search
-                studentDao.clear();
 
                 Log.d("In db", userInfo.getString(USER_NAME, "no name"));
                 Log.d("In db", userInfo.getString(USER_COURSE_, "no name"));
@@ -402,29 +423,49 @@ public class MainActivity extends AppCompatActivity {
             Button b = saveSesh.findViewById(R.id.saveButtonForSessionName);
             b.setOnClickListener(v9 -> {
                 final EditText seshName = (EditText) saveSesh.findViewById(R.id.editTextTextPersonName2);
-                String SName = seshName.getText().toString();
+                String reNamed = seshName.getText().toString();
                 //Add if statement that checks DB if exists
-                if(!SName.equals("")) {
-                    SharedPreferences.Editor insertSavedSesh = userInfo.edit();
-                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
-                    boolean alreadyExists = false;
-                    if(strings == null) {
-                        strings = new HashSet<>(Arrays.asList(SName));
-                    }else{
-                        alreadyExists = strings.contains(SName);
+                if(!reNamed.equals("")) {
+//                    SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+//                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+//                    boolean alreadyExists = false;
+//                    if(strings == null) {
+//                        strings = new HashSet<>(Arrays.asList(SName));
+//                    }else{
+//                        alreadyExists = strings.contains(SName);
+//                    }
+//                    if(!alreadyExists) {
+//                        Session session = new Session(SName);
+//                        session.populateSessionContentWithSameCourse(studentDao, courseDao);
+//                        session.saveSession(userInfo);
+//                        saveSesh.cancel();
+
+                    Set<String> keys = userInfo.getStringSet("saved_session", null);
+                    String key = currentTime.toString();
+                    SharedPreferences userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+                    Set<String> vals = userInfo.getStringSet(key, null);
+
+                    //Removes entry from string set
+                    SharedPreferences.Editor UIEdit = userInfo.edit();
+                    UIEdit.remove(key);
+                    UIEdit.apply();
+                    UIEdit.putStringSet(reNamed, vals);
+                    UIEdit.apply();
+                    Log.d("Old keys", String.valueOf(keys));
+                    //Now will remove old session name from keys list
+                    UIEdit.remove("saved_session");
+                    UIEdit.apply();
+                    ArrayList<String> temp = new ArrayList<String>(keys);
+                    int renamevaL = temp.indexOf(key);
+                    temp.set(renamevaL, reNamed);
+                    Set<String> newKeys = new HashSet<String>(temp);
+                    Log.d("newKeys", String.valueOf(newKeys));
+                    UIEdit.putStringSet("saved_session", newKeys);
+                    UIEdit.apply();
+                    Log.d("Renamed", String.valueOf(userInfo.getStringSet(reNamed, null)));
+                    saveSesh.cancel();
                     }
-                    if(!alreadyExists) {
-//                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
-//                        savingSession.saveCurrentSession();
-                        Session session = new Session(SName);
-                        session.populateSessionContentWithSameCourse(studentDao, courseDao);
-                        session.saveSession(userInfo);
-                        saveSesh.cancel();
-                    }
-                    else{
-                        seshName.setError("No duplicate names allowed");
-                    }
-                }
+
                 else{
                     seshName.setError("Your Session name can not be blank.");
                 }
@@ -481,6 +522,37 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     courses.deleteCharAt(courses.length() - 1);
+
+                    String newVal = idStr + " " + name + " " + url + " 1 " + courses.toString() + " ";
+
+                    // Modify session here
+                    newTime = Calendar.getInstance().getTime();
+                    String reNamed = newTime.toString();
+                    String key = currentTime.toString();
+                    SharedPreferences userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+                    Set<String> vals = userInfo.getStringSet(key, null);
+                    vals.add(newVal);
+                    Set<String> keys = userInfo.getStringSet("saved_session", null);
+                    //Removes entry from string set
+                    SharedPreferences.Editor UIEdit = userInfo.edit();
+                    UIEdit.remove(key);
+                    UIEdit.apply();
+                    UIEdit.putStringSet(reNamed, vals);
+                    UIEdit.apply();
+                    Log.d("Old keys", String.valueOf(keys));
+                    //Now will remove old session name from keys list
+                    UIEdit.remove("saved_session");
+                    UIEdit.apply();
+                    ArrayList<String> temp = new ArrayList<String>(keys);
+                    int renamevaL = temp.indexOf(key);
+                    temp.set(renamevaL, reNamed);
+                    Set<String> newKeys = new HashSet<String>(temp);
+                    Log.d("newKeys", String.valueOf(newKeys));
+                    UIEdit.putStringSet("saved_session", newKeys);
+                    UIEdit.apply();
+                    Log.d("Renamed", String.valueOf(userInfo.getStringSet(reNamed, null)));
+
+                    currentTime = newTime;
 
                     String fakedMessageStr = idStr + "\n" +
                             name + "\n" +

@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class ListOneStudentName {
+public class SaveResetList {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -49,7 +49,7 @@ public class ListOneStudentName {
 "android.permission.BLUETOOTH_CONNECT");
 
     @Test
-    public void listOneStudentName() {
+    public void saveResetList() {
         ViewInteraction appCompatEditText = onView(
 allOf(withId(R.id.personName),
 childAtPosition(
@@ -158,27 +158,7 @@ withId(android.R.id.content),
 0),
 5),
 isDisplayed()));
-        appCompatEditText5.perform(longClick());
-        
-        ViewInteraction linearLayout = onView(
-allOf(withContentDescription("Paste"),
-childAtPosition(
-childAtPosition(
-withClassName(is("android.widget.RelativeLayout")),
-1),
-0),
-isDisplayed()));
-        linearLayout.perform(click());
-        
-        ViewInteraction appCompatEditText6 = onView(
-allOf(withId(R.id.DemomockUserInput),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-5),
-isDisplayed()));
-        appCompatEditText6.perform(replaceText("uuid,,,\nBill,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,\n2021,FA,CSE,210\n2022,FA,CSE,110"), closeSoftKeyboard());
+        appCompatEditText5.perform(replaceText("uuid2,,,\nTed,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,\n2021,FA,CSE,210\n2022,FA,CSE,110\n2022,FA,CSE,11\n2022,FA,CSE,112"), closeSoftKeyboard());
         
         ViewInteraction materialButton7 = onView(
 allOf(withId(R.id.SubmitMockUser), withText("Enter"),
@@ -200,12 +180,92 @@ withId(android.R.id.content),
 isDisplayed()));
         materialButton8.perform(click());
         
+        ViewInteraction materialButton9 = onView(
+allOf(withId(R.id.StartStopBttn), withText("STOP"),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+2),
+isDisplayed()));
+        materialButton9.perform(click());
+        
+        ViewInteraction appCompatEditText6 = onView(
+allOf(withId(R.id.editTextTextPersonName2),
+childAtPosition(
+childAtPosition(
+withId(R.id.custom),
+0),
+1),
+isDisplayed()));
+        appCompatEditText6.perform(replaceText("mysession"), closeSoftKeyboard());
+        
+        ViewInteraction materialButton10 = onView(
+allOf(withId(R.id.saveButtonForSessionName), withText("Save"),
+childAtPosition(
+childAtPosition(
+withId(R.id.custom),
+0),
+0),
+isDisplayed()));
+        materialButton10.perform(click());
+        
+        ViewInteraction materialButton11 = onView(
+allOf(withId(R.id.StartStopBttn), withText("START"),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+2),
+isDisplayed()));
+        materialButton11.perform(click());
+        
+        ViewInteraction materialButton12 = onView(
+allOf(withId(R.id.nearByMockScreen), withText("MOCK"),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+3),
+isDisplayed()));
+        materialButton12.perform(click());
+        
+        ViewInteraction appCompatEditText7 = onView(
+allOf(withId(R.id.DemomockUserInput),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+5),
+isDisplayed()));
+        appCompatEditText7.perform(replaceText("uuid,,,\nBill,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,\n2021,FA,CSE,210\n2022,FA,CSE,110\n2022,FA,CSE,11\n2022,FA,CSE,112"), closeSoftKeyboard());
+        
+        ViewInteraction materialButton13 = onView(
+allOf(withId(R.id.SubmitMockUser), withText("Enter"),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+8),
+isDisplayed()));
+        materialButton13.perform(click());
+        
+        ViewInteraction materialButton14 = onView(
+allOf(withId(R.id.nearByMockScreen), withText("BACK"),
+childAtPosition(
+childAtPosition(
+withId(android.R.id.content),
+0),
+3),
+isDisplayed()));
+        materialButton14.perform(click());
+        
         ViewInteraction textView = onView(
-allOf(withId(R.id.number_matches), withText("Number of Shared Courses: 1"),
+allOf(withId(R.id.student_firstname), withText("Bill"),
 withParent(allOf(withId(R.id.frameLayout),
 withParent(withId(R.id.list_of_students)))),
 isDisplayed()));
-        textView.check(matches(withText("Number of Shared Courses: 1")));
+        textView.check(matches(withText("Bill")));
         }
     
     private static Matcher<View> childAtPosition(

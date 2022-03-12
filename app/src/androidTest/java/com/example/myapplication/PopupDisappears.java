@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class ListOneStudentName {
+public class PopupDisappears {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -49,7 +49,7 @@ public class ListOneStudentName {
 "android.permission.BLUETOOTH_CONNECT");
 
     @Test
-    public void listOneStudentName() {
+    public void popupDisappears() {
         ViewInteraction appCompatEditText = onView(
 allOf(withId(R.id.personName),
 childAtPosition(
@@ -130,82 +130,31 @@ withId(R.id.custom),
 isDisplayed()));
         materialButton4.perform(click());
         
-        ViewInteraction materialButton5 = onView(
-allOf(withId(R.id.StartStopBttn), withText("START"),
+        ViewInteraction floatingActionButton = onView(
+allOf(withId(R.id.MoreOpts),
 childAtPosition(
 childAtPosition(
 withId(android.R.id.content),
 0),
-2),
+12),
 isDisplayed()));
-        materialButton5.perform(click());
+        floatingActionButton.perform(click());
         
-        ViewInteraction materialButton6 = onView(
-allOf(withId(R.id.nearByMockScreen), withText("MOCK"),
+        ViewInteraction floatingActionButton2 = onView(
+allOf(withId(R.id.MoreOpts),
 childAtPosition(
 childAtPosition(
 withId(android.R.id.content),
 0),
-3),
+12),
 isDisplayed()));
-        materialButton6.perform(click());
+        floatingActionButton2.perform(click());
         
-        ViewInteraction appCompatEditText5 = onView(
-allOf(withId(R.id.DemomockUserInput),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-5),
+        ViewInteraction imageButton = onView(
+allOf(withId(R.id.floatingActionButton2),
+withParent(withParent(withId(android.R.id.content))),
 isDisplayed()));
-        appCompatEditText5.perform(longClick());
-        
-        ViewInteraction linearLayout = onView(
-allOf(withContentDescription("Paste"),
-childAtPosition(
-childAtPosition(
-withClassName(is("android.widget.RelativeLayout")),
-1),
-0),
-isDisplayed()));
-        linearLayout.perform(click());
-        
-        ViewInteraction appCompatEditText6 = onView(
-allOf(withId(R.id.DemomockUserInput),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-5),
-isDisplayed()));
-        appCompatEditText6.perform(replaceText("uuid,,,\nBill,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,\n2021,FA,CSE,210\n2022,FA,CSE,110"), closeSoftKeyboard());
-        
-        ViewInteraction materialButton7 = onView(
-allOf(withId(R.id.SubmitMockUser), withText("Enter"),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-8),
-isDisplayed()));
-        materialButton7.perform(click());
-        
-        ViewInteraction materialButton8 = onView(
-allOf(withId(R.id.nearByMockScreen), withText("BACK"),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-3),
-isDisplayed()));
-        materialButton8.perform(click());
-        
-        ViewInteraction textView = onView(
-allOf(withId(R.id.number_matches), withText("Number of Shared Courses: 1"),
-withParent(allOf(withId(R.id.frameLayout),
-withParent(withId(R.id.list_of_students)))),
-isDisplayed()));
-        textView.check(matches(withText("Number of Shared Courses: 1")));
+        imageButton.check(matches(isDisplayed()));
         }
     
     private static Matcher<View> childAtPosition(
