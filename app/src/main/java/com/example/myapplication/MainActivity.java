@@ -478,8 +478,8 @@ public class MainActivity extends AppCompatActivity {
                     recencySortButtonMain.setVisibility(View.VISIBLE);
 
                     List<Course> courseList = dbCourse.courseDao().getAllCourses();
-                    //SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
-                    //sortUtil.setupButtons();
+//                    SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
+//                    sortUtil.setupButtons();
                 }
             });
 
