@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-class ListOneStudentClass {
+public class Test1_TestsNumCourses {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -44,7 +44,7 @@ class ListOneStudentClass {
                     "android.permission.BLUETOOTH_CONNECT");
 
     @Test
-    public void listOneStudentClass() {
+    public void test1_TestsNumCourses() {
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.personName),
                         childAtPosition(
@@ -53,7 +53,7 @@ class ListOneStudentClass {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText.perform(replaceText("Guy"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("Joshua"), closeSoftKeyboard());
 
         ViewInteraction materialButton = onView(
                 allOf(withId(R.id.SubmitFirstName), withText("Submit"),
@@ -153,7 +153,7 @@ class ListOneStudentClass {
                                         0),
                                 5),
                         isDisplayed()));
-        appCompatEditText5.perform(replaceText("a4ca50b6-941b-11ec-b909-0242ac120012,,,\nBill,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,\n2022,SP,CSE,127\n2022,FA,CSE,110\n2022,WI,CSE,123\n2022,SP,CSE,123"), closeSoftKeyboard());
+        appCompatEditText5.perform(replaceText("5d812697-e3fe-46ad-a7d5-b14c0031f1b9,,,,\nLiu,,,,\nhttps://i.ibb.co/N7MGG27/download.png,,,,\n2022,FA,CSE,127,tiny\n2022,FA,CSE,110,tiny\n2021,FA,CSE,210,tiny\n1eaf98d5-9bca-413c-a8b1-8ba494f9da67,wave,,, "), closeSoftKeyboard());
 
         ViewInteraction materialButton7 = onView(
                 allOf(withId(R.id.SubmitMockUser), withText("Enter"),
