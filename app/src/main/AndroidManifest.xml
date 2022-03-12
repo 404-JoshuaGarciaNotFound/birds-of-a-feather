@@ -24,7 +24,7 @@
 
         <meta-data
             android:name="com.google.android.nearby.messages.API_KEY"
-            android:value="AIzaSyCaIbNSSng0HmkVin9LIkmqjIrAchodeD4" />
+            android:value="AIzaSyA-iW6rdC-tiNzjfFTb12pT81YxFgh10ro" />
         <activity
             android:name=".SessionScreen"
             android:exported="false"/>

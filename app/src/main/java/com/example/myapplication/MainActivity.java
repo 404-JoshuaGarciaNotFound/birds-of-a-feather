@@ -5,6 +5,7 @@ import static com.example.myapplication.FirstTimeSetup.firstTimeSetupName;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
 import static com.example.myapplication.OptionsMenuControls.closeMenu;
 import static com.example.myapplication.OptionsMenuControls.showMenu;
+import static com.example.myapplication.ArrangeStudentList.arrangeStudentList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -67,8 +68,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "Turn on Search";
     // bluetooth permission tracking variable
     public BTPermission btPermission;
-    public Date currentTime;
     public SavingSession savingSession;
+    public Date currentTime;
+    public Date newTime;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,15 +139,31 @@ public class MainActivity extends AppCompatActivity {
                 String studentInfo = new String(message.getContent());
                 String[] arrayOfStudentInfo = studentInfo.split("\n");
                 String studentId = arrayOfStudentInfo[0];
-                String studentName = arrayOfStudentInfo[1];
-                String studentHeadShot = arrayOfStudentInfo[2];
-                String studentCourses = arrayOfStudentInfo[3];
+                if (dbStudent.studentDao().isInserted(studentId)) {
+                    Log.d(dbStudent.studentDao().getStudentByID(studentId).getName(), "Already in Database");
+                }
+                else {
+                    String studentName = arrayOfStudentInfo[1];
+                    String studentHeadShot = arrayOfStudentInfo[2];
+                    String studentCourses = arrayOfStudentInfo[3];
+                    Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
+                    dbStudent.studentDao().insertStudent(newStudent);
+                    Log.d("Student being added", newStudent.getName());
+                }
 
-                Student newStudent = new Student(studentId, studentHeadShot, studentName, studentCourses, 0);
-                dbStudent.studentDao().insertStudent(newStudent);
-                Log.d("Student being added", newStudent.getName());
+                // Display HandView when found wave
+                if (arrayOfStudentInfo.length == 5){
+                    String[] waveInfo = arrayOfStudentInfo[4].split(",");
+                    Log.d("myId", userInfo.getString("user_ID", "default"));
+                    if (waveInfo[0].equals(userInfo.getString("user_ID", "default"))) {
+                        dbStudent.studentDao().setWaveReceived(studentId, true);
+                        Log.d("Wave sent from", dbStudent.studentDao().getStudentByID(studentId).getName());
+                        Toast.makeText(MainActivity.this, "Wave Received from " + studentDao.getStudentByID(studentId).getName(), Toast.LENGTH_SHORT).show();
+                    }
+                }
                 // Refresh List Student Recycler
-                refreshStudentList();
+                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+                refreshStudentList(studentList);
             }
             @Override
             public void onLost(@NonNull Message message){
@@ -163,7 +181,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(studentId, "Student not found");
                 }
                 // Refresh List Student Recycler
-                refreshStudentList();
+                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+                refreshStudentList(studentList);
             }
         };
 
@@ -224,6 +243,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+        refreshStudentList(studentList);
+    }
+
     public static SharedPreferences returnSP(){
         return userInfo;
     }
@@ -281,14 +308,36 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 currentTime = Calendar.getInstance().getTime();
+
+                studentDao.clear();
+
+                // Create initial session that will be modified whenever new mock occurs
+//                refreshStudentList();
+                String SName = currentTime.toString();
+                //Add if statement that checks DB if exists
+                SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+                Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                boolean alreadyExists = false;
+                if (strings == null) {
+                    strings = new HashSet<>(Arrays.asList(SName));
+                } else {
+                    alreadyExists = strings.contains(SName);
+                }
+                if (!alreadyExists) {
+                    Session session = new Session(SName);
+                    session.populateSessionContentWithSameCourse(studentDao, courseDao);
+                    session.saveSession(userInfo);
+                }
+
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
                 //Turn on Nearby Message
                 Nearby.getMessagesClient(this).publish(mMessage);
                 Nearby.getMessagesClient(this).subscribe(searchingClassmate);
-                //Delete database before Searching
-                dbStudent.studentDao().clear();
+//                //Delete database before Searching
+//                dbStudent.studentDao().clear();
+                // Clear Database for a new search
 
                 Log.d("publish message", new String(mMessage.getContent()));
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
@@ -298,9 +347,10 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerView.LayoutManager studentsLayoutManager = new LinearLayoutManager(this);
                 studentsRecyclerView.setLayoutManager(studentsLayoutManager);
                 studentsRecyclerView.setVisibility(View.VISIBLE);
-                //This section will be for adding favorite students
 
-
+                //Refresh List
+                List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+                refreshStudentList(studentList);
             }
         }
         if(current.equals("STOP")){
@@ -310,11 +360,10 @@ public class MainActivity extends AppCompatActivity {
             Nearby.getMessagesClient(this).unpublish(mMessage);
             Nearby.getMessagesClient(this).unsubscribe(searchingClassmate);
             Toast.makeText(this, "Stop Searching", Toast.LENGTH_SHORT).show();
-//            // Turn off recyclerView of list of students
-//            RecyclerView studentsRecyclerView = findViewById(R.id.list_of_students);
-//            studentsRecyclerView.setVisibility(View.INVISIBLE);
             //Refresh the list after turning off search
-            refreshStudentList();
+            List<Student> studentList = arrangeStudentList(dbCourse, dbStudent, userInfo);
+            refreshStudentList(studentList);
+
             //Dialogue for saving the session
             CreateBuilderAlert.returningVals AD = buildBuilder(this, R.layout.savesession_uiscreen_prompt, getLayoutInflater(), false, "Save your Session");
             AlertDialog saveSesh = AD.alertDiag;
@@ -322,29 +371,49 @@ public class MainActivity extends AppCompatActivity {
             Button b = saveSesh.findViewById(R.id.saveButtonForSessionName);
             b.setOnClickListener(v9 -> {
                 final EditText seshName = (EditText) saveSesh.findViewById(R.id.editTextTextPersonName2);
-                String SName = seshName.getText().toString();
+                String reNamed = seshName.getText().toString();
                 //Add if statement that checks DB if exists
-                if(!SName.equals("")) {
-                    SharedPreferences.Editor insertSavedSesh = userInfo.edit();
-                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
-                    boolean alreadyExists = false;
-                    if(strings == null) {
-                        strings = new HashSet<>(Arrays.asList(SName));
-                    }else{
-                        alreadyExists = strings.contains(SName);
+                if(!reNamed.equals("")) {
+//                    SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+//                    Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+//                    boolean alreadyExists = false;
+//                    if(strings == null) {
+//                        strings = new HashSet<>(Arrays.asList(SName));
+//                    }else{
+//                        alreadyExists = strings.contains(SName);
+//                    }
+//                    if(!alreadyExists) {
+//                        Session session = new Session(SName);
+//                        session.populateSessionContentWithSameCourse(studentDao, courseDao);
+//                        session.saveSession(userInfo);
+//                        saveSesh.cancel();
+
+                    Set<String> keys = userInfo.getStringSet("saved_session", null);
+                    String key = currentTime.toString();
+                    SharedPreferences userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+                    Set<String> vals = userInfo.getStringSet(key, null);
+
+                    //Removes entry from string set
+                    SharedPreferences.Editor UIEdit = userInfo.edit();
+                    UIEdit.remove(key);
+                    UIEdit.apply();
+                    UIEdit.putStringSet(reNamed, vals);
+                    UIEdit.apply();
+                    Log.d("Old keys", String.valueOf(keys));
+                    //Now will remove old session name from keys list
+                    UIEdit.remove("saved_session");
+                    UIEdit.apply();
+                    ArrayList<String> temp = new ArrayList<String>(keys);
+                    int renamevaL = temp.indexOf(key);
+                    temp.set(renamevaL, reNamed);
+                    Set<String> newKeys = new HashSet<String>(temp);
+                    Log.d("newKeys", String.valueOf(newKeys));
+                    UIEdit.putStringSet("saved_session", newKeys);
+                    UIEdit.apply();
+                    Log.d("Renamed", String.valueOf(userInfo.getStringSet(reNamed, null)));
+                    saveSesh.cancel();
                     }
-                    if(!alreadyExists) {
-//                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
-//                        savingSession.saveCurrentSession();
-                        Session session = new Session(SName);
-                        session.populateSessionContentWithSameCourse(studentDao, courseDao);
-                        session.saveSession(userInfo);
-                        saveSesh.cancel();
-                    }
-                    else{
-                        seshName.setError("No duplicate names allowed");
-                    }
-                }
+
                 else{
                     seshName.setError("Your Session name can not be blank.");
                 }
@@ -383,39 +452,61 @@ public class MainActivity extends AppCompatActivity {
                     String mockUserInfo = newUser.getText().toString();
                     String[] splitInfo = mockUserInfo.split("\n");
                     String idStr = splitInfo[0]
-                            .substring(0, splitInfo[0].length() -3); //drop ,,,
+                            .substring(0, splitInfo[0].length() - 4); //drop ,,,,
                     String name = splitInfo[1]
-                            .substring(0, splitInfo[1].length() - 3); // drop ,,,
+                            .substring(0, splitInfo[1].length() - 4); // drop ,,,,
                     String url = splitInfo[2]
-                            .substring(0, splitInfo[2].length() - 3); // drop ,,,
+                            .substring(0, splitInfo[2].length() - 4); // drop ,,,,
                     StringBuilder courses = new StringBuilder();
+                    StringBuilder waveInfo = new StringBuilder();
                     for (int i = 3; i < splitInfo.length; i++) {
-                        courses.append(splitInfo[i]);
-                        if (i != splitInfo.length - 1) courses.append(" ");
-                    }
-                    //Save session here
-
-                    // check whether the students' course match the user's
-                    // if so, add the user to the students to display
-                    // FIXME: for those who implement messenger: this block calculate the
-                    //  numSharedCourse before a student is entered into database. So you need to
-                    //  pass this information to the messenger as well to keep database updated.
-                    //  Please delete the identical code in refreshStudentList() because that will
-                    //  cause numSharedCourse to increase multiple times.
-                    int numSharedCourses = 0;
-                    List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
-                    for (String courseStr : listOfUserCourses) {
-                        if (courses.toString().contains(courseStr)) {
-                            // the str of courses of a student contains a substring representing one of the
-                            // user's taken courses, the student is a match.
-                            numSharedCourses++;
+                        String[] checkWave = splitInfo[i].split(",");
+                        if (checkWave[1].equals("wave")){
+                            waveInfo.append(checkWave[0] + ",wave");
+                        }
+                        else {
+                            courses.append(splitInfo[i]);
+                            courses.append(" ");
                         }
                     }
+                    courses.deleteCharAt(courses.length() - 1);
+
+                    String newVal = idStr + " " + name + " " + url + " 1 " + courses.toString() + " ";
+
+                    // Modify session here
+                    newTime = Calendar.getInstance().getTime();
+                    String reNamed = newTime.toString();
+                    String key = currentTime.toString();
+                    SharedPreferences userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+                    Set<String> vals = userInfo.getStringSet(key, null);
+                    vals.add(newVal);
+                    Set<String> keys = userInfo.getStringSet("saved_session", null);
+                    //Removes entry from string set
+                    SharedPreferences.Editor UIEdit = userInfo.edit();
+                    UIEdit.remove(key);
+                    UIEdit.apply();
+                    UIEdit.putStringSet(reNamed, vals);
+                    UIEdit.apply();
+                    Log.d("Old keys", String.valueOf(keys));
+                    //Now will remove old session name from keys list
+                    UIEdit.remove("saved_session");
+                    UIEdit.apply();
+                    ArrayList<String> temp = new ArrayList<String>(keys);
+                    int renamevaL = temp.indexOf(key);
+                    temp.set(renamevaL, reNamed);
+                    Set<String> newKeys = new HashSet<String>(temp);
+                    Log.d("newKeys", String.valueOf(newKeys));
+                    UIEdit.putStringSet("saved_session", newKeys);
+                    UIEdit.apply();
+                    Log.d("Renamed", String.valueOf(userInfo.getStringSet(reNamed, null)));
+
+                    currentTime = newTime;
 
                     String fakedMessageStr = idStr + "\n" +
                             name + "\n" +
                             url + "\n" +
-                            courses;
+                            courses + "\n" +
+                            waveInfo;
                     Message fakedMessage = new Message(fakedMessageStr.getBytes(StandardCharsets.UTF_8));
                     searchingClassmate.onFound((fakedMessage));
                     DemoMock.setText("");
@@ -442,54 +533,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * This method shows a list of students who has taken the same course with the app's user, sorted by the
-     * number of classes the student shared with the user
+     * This method helps to refresh the recyclerView in Main Page
      */
-    public void refreshStudentList() {
-        // get user's taken courses
-        List<String> listOfUserCourses = formatUserCourses(dbCourse, userInfo);
-        // get list of students
-        List<Student> listOfStudents = studentDao.getAll();
-        // check whether the students' course match the user's
-        // if so, add the user to the students to display
-        for (Student student : listOfStudents) {
-            int numSharedCourses = 0;
-            for (String courseStr : listOfUserCourses) {
-                if (student.getCourses().contains(courseStr)) {
-                    // the str of courses of a student contains a substring representing one of the
-                    // user's taken courses, the student is a match.
-                    numSharedCourses++;
+    private void refreshStudentList(List<Student> studentList) {
+        try {
+            RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
+            StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(userInfo, studentList);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
+                    // This block handles sort-by-class-size / recency buttons on main
+                    Button classSortButtonMain = findViewById(R.id.class_size_sort_button_main);
+                    classSortButtonMain.setVisibility(View.VISIBLE);
+                    Button recencySortButtonMain = findViewById(R.id.recency_sort_button_main);
+                    recencySortButtonMain.setVisibility(View.VISIBLE);
+
+                    List<Course> courseList = dbCourse.courseDao().getAllCourses();
+//                    SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
+//                    sortUtil.setupButtons();
                 }
-            }
-            student.setNumSharedCourses(numSharedCourses);
-            studentDao.SetSharedCourse(student.getId(), numSharedCourses);
+            });
+
+        } catch (Exception e) {
+            Log.d("Error", String.valueOf(e));
         }
-
-        listOfStudents.sort(Comparator.comparing(Student::getNumSharedCourses).reversed());
-
-        for (Iterator<Student> it = listOfStudents.iterator(); it.hasNext();) {
-            Student student = it.next();
-            if (student.getNumSharedCourses() == 0) {
-                it.remove();
-            }
-        }
-        RecyclerView listOfStudentsView = findViewById(R.id.list_of_students);
-        StudentAdapter listOfStudentsViewAdapter = new StudentAdapter(userInfo, listOfStudents);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                listOfStudentsView.setAdapter(listOfStudentsViewAdapter);
-                // This block handles sort-by-class-size / recency buttons on main
-                Button classSortButtonMain = findViewById(R.id.class_size_sort_button_main);
-                classSortButtonMain.setVisibility(View.VISIBLE);
-                Button recencySortButtonMain = findViewById(R.id.recency_sort_button_main);
-                recencySortButtonMain.setVisibility(View.VISIBLE);
-
-                List<Course> courseList = dbCourse.courseDao().getAllCourses();
-                //SortUtil sortUtil = new SortUtil(userInfo, courseList, listOfStudents, classSortButtonMain, recencySortButtonMain, listOfStudentsView);
-                //sortUtil.setupButtons();
-            }
-        });
     }
 
 

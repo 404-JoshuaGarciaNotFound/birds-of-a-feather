@@ -1,19 +1,27 @@
 package com.example.myapplication;
 
+import static com.example.myapplication.CreateBuilderAlert.buildBuilder;
 import static com.example.myapplication.FormatUsersCourseInfo.formatUserCourses;
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executors;
 
 public class StudentDetailActivity extends AppCompatActivity {
 
@@ -57,11 +64,19 @@ public class StudentDetailActivity extends AppCompatActivity {
     //Message to send when waving
     private Message waveMessage;
 
+    //Student Info
+    private String studentId;
+
+    // Check if waveSend
+    private boolean waveSent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_detail_info);
         Log.d("student_detail_info", "onCreate: start ");
+        waveMessage = null;
+        waveSent = false;
 
         //Set up database
         userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
@@ -72,9 +87,10 @@ public class StudentDetailActivity extends AppCompatActivity {
         courseDao = dbCourse.courseDao();
 
         Intent intent = getIntent();
-        String studentId = intent.getStringExtra("student_id");
+        studentId = intent.getStringExtra("student_id");
         dbStudent = AppDatabaseStudent.singleton(this);
         student = dbStudent.studentDao().getStudentByID(studentId);
+        String studentName = student.getName();
 
         //Get Course list from both students and find shared course
         List<Course> myCourses = dbCourse.courseDao().getAllCourses();
@@ -87,11 +103,15 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //Set activity page
         ImageView studentHeadShot = findViewById(R.id.student_headshot);
-        TextView studentName = findViewById(R.id.student_name);
-        studentName.setText(student.getName());
+        TextView studentNameTextView = findViewById(R.id.student_name);
+        studentNameTextView.setText(studentName);
         studentHeadShot.setImageBitmap(getBitmapFromURL(student.getHeadShotURL()));
         waveButton = findViewById(R.id.sendWaveButton);
         waveButton.setImageDrawable(getDrawable(R.drawable.ic_wave_empty_hand));
+        if (student.isWaveReceived()){
+            waveBackPopUp(studentName, this, getLayoutInflater());
+        }
+
 
         //Set CourseViewAdapter and bind to recylerView
         coursesRecyclerView = findViewById(R.id.course_list);
@@ -113,8 +133,33 @@ public class StudentDetailActivity extends AppCompatActivity {
 
             }
         }
+    }
 
+    private void waveBackPopUp(String studentName, Context context, LayoutInflater inflater){
+        String infoText = studentName + " just waved you";
+        CreateBuilderAlert.returningVals AD = buildBuilder(context, R.layout.wave_back_pop_up,
+                inflater, false, infoText);
+        AlertDialog askToWaveBack = AD.alertDiag;
+        View askToWaveBackView = AD.viewy;
+        askToWaveBack.show();
 
+        // OK button
+        Button waveBackOK = (Button) askToWaveBackView.findViewById(R.id.wave_back_ok_button);
+        waveBackOK.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                generateWaveMessage();
+                askToWaveBack.cancel();
+            }
+        });
+
+        Button waveBackCancel = (Button) askToWaveBackView.findViewById(R.id.cancel_wave_button);
+        waveBackCancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                askToWaveBack.cancel();
+            }
+        });
     }
 
     //Function to find sharedCourse
@@ -144,7 +189,16 @@ public class StudentDetailActivity extends AppCompatActivity {
 
     // onClick function for sending wave
     public void sendWave(View view){
+        if (waveSent){
+            Log.d("wave", "sent");
+        }
+        else{
+            generateWaveMessage();
+        }
 
+    }
+
+    public void generateWaveMessage(){
         // initialize the shared preference that store user info
         userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
 
@@ -170,20 +224,23 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         //Change icon
         waveButton.setImageDrawable(getDrawable(R.drawable.ic_wave_hand));
+        waveSent = true;
 
         //Check waveMessage
         Log.d("Wave Message", new String(waveMessage.getContent()));
 
         //Display toast
         Toast.makeText(this, "Wave send", Toast.LENGTH_SHORT).show();
-
     }
 
     // onClick function for backButton
     public void goBack(View view){
-        finish();
+        //Change waveReceived to false
+        dbStudent.studentDao().setWaveReceived(studentId, false);
         if (waveMessage != null){
             Nearby.getMessagesClient(this).unpublish(waveMessage);
         }
+        finish();
+
     }
 }

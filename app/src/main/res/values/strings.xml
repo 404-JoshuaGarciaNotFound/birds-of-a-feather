@@ -15,6 +15,8 @@
     <string name="sort_by_class_size">Sort By Class Size</string>
     <string name="sort_by_recency">Sort By Recency</string>
     <string name="session_name">Session name</string>
+    <string name="xxxx_just_waved_you">xxxx just waved you</string>
+    <string name="do_you_want_to_wave_back">Do you want to wave back</string>
     <string-array name="year">
     <item>2022</item>
     <item>2021</item>

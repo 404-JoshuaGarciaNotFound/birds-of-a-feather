@@ -67,11 +67,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         private final ImageView personIcon;
         private final ImageButton favoritesStar;
         private final TextView personMatchClasses;
+        private final ImageButton waveButton;
+
         ViewHolder(View itemView) {
             super(itemView);
             this.personName = itemView.findViewById(R.id.student_firstname);
             this.personIcon = itemView.findViewById(R.id.student_headshot);
             this.personMatchClasses = itemView.findViewById(R.id.number_matches);
+            this.waveButton = itemView.findViewById(R.id.received_wave_button);
             favoritesStar = itemView.findViewById(R.id.favoriteStarDetailsPage);
             SharedPreferences.Editor insertStudentFav = returnSP().edit();
             Set<String> favoritesList = returnSP().getStringSet("favorites", null);
@@ -120,7 +123,6 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                                 insertStudentFav.apply();
                                 insertStudentFav.putStringSet("favorites", favoritesList);
                                 insertStudentFav.apply();
-
                                 favoritesList.add(student.getId() + " " + student.getName() + " " + student.getHeadShotURL());
                                 insertStudentFav.remove("favorites");
                                 insertStudentFav.putStringSet("favorites", favoritesList);
@@ -178,9 +180,16 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                 }
             }).start();
 
-
+            Log.d("isWaveReceived", String.valueOf(student.isWaveReceived()));
             this.personName.setText(student.getName());
-            this.personMatchClasses.setText(String.valueOf(student.getNumSharedCourses()));
+            String matchClassesText = "Number of Shared Courses: " + String.valueOf(student.getNumSharedCourses());
+            this.personMatchClasses.setText(matchClassesText);
+            if(student.isWaveReceived()){
+                waveButton.setVisibility(View.VISIBLE);
+            }
+            else{
+                waveButton.setVisibility(View.INVISIBLE);
+            }
 
             //This method updates the star shape if a student is a favorite.
             Set<String> favoritesList = sp.getStringSet("favorites", null);
@@ -195,8 +204,6 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
                     }
                 }
             }
-
-
         }
 
         @Override
