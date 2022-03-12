@@ -445,26 +445,31 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
                     Set<String> vals = userInfo.getStringSet(key, null);
 
-                    //Removes entry from string set
-                    SharedPreferences.Editor UIEdit = userInfo.edit();
-                    UIEdit.remove(key);
-                    UIEdit.apply();
-                    UIEdit.putStringSet(reNamed, vals);
-                    UIEdit.apply();
-                    Log.d("Old keys", String.valueOf(keys));
-                    //Now will remove old session name from keys list
-                    UIEdit.remove("saved_session");
-                    UIEdit.apply();
-                    ArrayList<String> temp = new ArrayList<String>(keys);
-                    int renamevaL = temp.indexOf(key);
-                    temp.set(renamevaL, reNamed);
-                    Set<String> newKeys = new HashSet<String>(temp);
-                    Log.d("newKeys", String.valueOf(newKeys));
-                    UIEdit.putStringSet("saved_session", newKeys);
-                    UIEdit.apply();
-                    Log.d("Renamed", String.valueOf(userInfo.getStringSet(reNamed, null)));
-                    saveSesh.cancel();
+                    boolean alreadyExist = keys.contains(reNamed);
+                    if (!alreadyExist) {
+                        //Removes entry from string set
+                        SharedPreferences.Editor UIEdit = userInfo.edit();
+                        UIEdit.remove(key);
+                        UIEdit.apply();
+                        UIEdit.putStringSet(reNamed, vals);
+                        UIEdit.apply();
+                        Log.d("Old keys", String.valueOf(keys));
+                        //Now will remove old session name from keys list
+                        UIEdit.remove("saved_session");
+                        UIEdit.apply();
+                        ArrayList<String> temp = new ArrayList<String>(keys);
+                        int renamevaL = temp.indexOf(key);
+                        temp.set(renamevaL, reNamed);
+                        Set<String> newKeys = new HashSet<String>(temp);
+                        Log.d("newKeys", String.valueOf(newKeys));
+                        UIEdit.putStringSet("saved_session", newKeys);
+                        UIEdit.apply();
+                        Log.d("Renamed", String.valueOf(userInfo.getStringSet(reNamed, null)));
+                        saveSesh.cancel();
+                    } else {
+                        seshName.setError("No duplicate names allowed!");
                     }
+                }
 
                 else{
                     seshName.setError("Your Session name can not be blank.");
