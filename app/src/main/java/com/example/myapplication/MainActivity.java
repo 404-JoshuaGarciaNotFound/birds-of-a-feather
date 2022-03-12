@@ -281,6 +281,29 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Bluetooth permission", "Bluetooth permission granted, allow to proceed");
                 startStop.setText("STOP");
                 currentTime = Calendar.getInstance().getTime();
+
+
+                // Create initial session that will be modified whenever new mock occurs
+                refreshStudentList();
+                String SName = currentTime.toString();
+                //Add if statement that checks DB if exists
+                SharedPreferences.Editor insertSavedSesh = userInfo.edit();
+                Set<String> strings = userInfo.getStringSet(USER_SAVEDSESSIONS, null);
+                boolean alreadyExists = false;
+                if (strings == null) {
+                    strings = new HashSet<>(Arrays.asList(SName));
+                } else {
+                    alreadyExists = strings.contains(SName);
+                }
+                if (!alreadyExists) {
+                    Session session = new Session(SName);
+                    session.populateSessionContentWithSameCourse(studentDao, courseDao);
+                    session.saveSession(userInfo);
+                }
+
+
+
+
                 Log.d("Nearby Messages Status", "ENABLED");
                 //Red color code
                 startStop.setBackgroundColor(0xFFFF0000);
@@ -334,8 +357,6 @@ public class MainActivity extends AppCompatActivity {
                         alreadyExists = strings.contains(SName);
                     }
                     if(!alreadyExists) {
-//                        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, SName);
-//                        savingSession.saveCurrentSession();
                         Session session = new Session(SName);
                         session.populateSessionContentWithSameCourse(studentDao, courseDao);
                         session.saveSession(userInfo);
@@ -496,8 +517,6 @@ public class MainActivity extends AppCompatActivity {
     //Cleans up program for shut down.
     @Override
     protected void onDestroy() {
-        savingSession = new SavingSession(userInfo, currentTime, studentDao, courseDao, "");
-        savingSession.saveCurrentSession();
         super.onDestroy();
         dbStudent.close();
     }
