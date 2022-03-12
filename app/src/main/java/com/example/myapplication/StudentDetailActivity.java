@@ -144,6 +144,12 @@ public class StudentDetailActivity extends AppCompatActivity {
         return listOfCourse;
 
     }
+    public void FavoriteSomeone(View view){
+        ImageButton favoritestar = view.findViewById(R.id.favoriteStarStudentDetails);
+        Set<String> favoritesList = userInfo.getStringSet("favorites", null);
+        //** IN PROGRESS **//
+    }
+
 
     // onClick function for sending wave
     public void sendWave(View view){

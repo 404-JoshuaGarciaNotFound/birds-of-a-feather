@@ -318,7 +318,11 @@ public class MainActivity extends AppCompatActivity {
                 // Clear Database for a new search
                 studentDao.clear();
 
+                Log.d("In db", userInfo.getString(USER_NAME, "no name"));
+                Log.d("In db", userInfo.getString(USER_COURSE_, "no name"));
+                Log.d("In db", userInfo.getString(HEAD_SHOT_URL, "no name"));
                 Log.d("publish message", new String(mMessage.getContent()));
+
                 Toast.makeText(this, "Start Searching", Toast.LENGTH_SHORT).show();
 
                 // Set up recyclerView of list of students

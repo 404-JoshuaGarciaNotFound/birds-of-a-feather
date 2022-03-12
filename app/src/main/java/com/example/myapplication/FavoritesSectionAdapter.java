@@ -2,9 +2,11 @@ package com.example.myapplication;
 
 import static com.example.myapplication.ImageLoadTask.getBitmapFromURL;
 import static com.example.myapplication.MainActivity.returnSP;
+import static com.example.myapplication.MainActivity.userInfo;
 
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,7 +104,6 @@ public class FavoritesSectionAdapter extends RecyclerView.Adapter<FavoritesSecti
         @Override
         public void onClick(View view) {
             //Clicking favorites does nothing
-
         }
         public void setFavorite(String s){
             this.favoriteName.setText(s.split(" ")[1]);
